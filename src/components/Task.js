@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-
+import ReactMarkdown from 'react-markdown'
+import ReactDom from 'react-dom'
+import remarkGfm from 'remark-gfm'
 
 function usePrevious(value) {
   const ref = useRef();
@@ -38,17 +40,15 @@ export default function Task(props) {
         <label className="task-label" htmlFor={props.id}>
           New name for {props.name}
         </label>
-        <input
+        <textarea
           id={props.id}
           className="task-text"
-          type="text"
           value={newName || props.name}
           onChange={handleChange}
           ref={editFieldRef}
         />
       </div>
       <div className="btn-group">
-
         <button
           type="button"
           className="btn task-cancel"
@@ -68,33 +68,32 @@ export default function Task(props) {
   const viewTemplate = (
     <div className="stack-small">
       <div className="c-cb">
-          <input
-            id={props.id}
-            type="checkbox"
-            defaultChecked={props.completed}
-            onChange={() => props.toggleTaskCompleted(props.id)}
-          />
-          <label className="task-label" htmlFor={props.id}>
-            {props.name}
-          </label>
-        </div>
-        <div className="btn-group">
+        <ReactMarkdown className="task-label" htmlFor={props.id} children={props.name} remarkPlugins={[remarkGfm]} />
+      </div>
+      <div className="btn-group">
         <button
           type="button"
           className="btn"
           onClick={() => setEditing(true)}
           ref={editButtonRef}
-          >
-            Edit <span className="visually-hidden">{props.name}</span>
-          </button>
-          <button
-            type="button"
-            className="btn btn__danger"
-            onClick={() => props.deleteTask(props.id)}
-          >
-            Delete <span className="visually-hidden">{props.name}</span>
-          </button>
-        </div>
+        >
+          Edit <span className="visually-hidden">{props.name}</span>
+        </button>
+        <button
+          type="button"
+          className="btn btn__primary"
+          onClick={() => props.toggleTaskCompleted(props.id)}
+        >
+          {props.completed ? 'Restore' : 'Complete'} <span className="visually-hidden">{props.name}</span>
+        </button>
+        <button
+          type="button"
+          className="btn btn__danger"
+          onClick={() => props.deleteTask(props.id)}
+        >
+          Delete <span className="visually-hidden">{props.name}</span>
+        </button>
+      </div>
     </div>
   );
 

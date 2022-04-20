@@ -26,8 +26,7 @@ function Form(props) {
         </label>
       </h2>
 
-      <input
-        type="text"
+      <textarea
         id="new-task-input"
         className="input input__lg"
         name="text"

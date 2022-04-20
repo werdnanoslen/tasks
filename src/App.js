@@ -14,7 +14,6 @@ function usePrevious(value) {
 }
 
 const FILTER_MAP = {
-  All: () => true,
   Active: task => !task.completed,
   Completed: task => task.completed
 };
@@ -23,7 +22,7 @@ const FILTER_NAMES = Object.keys(FILTER_MAP);
 
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState('Active');
 
   function toggleTaskCompleted(id) {
     const updatedTasks = tasks.map(task => {
@@ -85,10 +84,6 @@ function App(props) {
     setTasks([...tasks, newTask]);
   }
 
-
-  const tasksNoun = taskList.length !== 1 ? 'tasks' : 'task';
-  const headingText = `${taskList.length} ${tasksNoun} remaining`;
-
   const listHeadingRef = useRef(null);
   const prevTaskLength = usePrevious(tasks.length);
 
@@ -99,22 +94,23 @@ function App(props) {
   }, [tasks.length, prevTaskLength]);
 
   return (
-    <div className="taskapp stack-large">
-      <Form addTask={addTask} />
-      <div className="filters btn-group stack-exception">
-        {filterList}
+    <>
+      <h2 id="list-heading" tabIndex="-1" >Tasks</h2>
+      <div className="taskapp stack-large">
+        <Form addTask={addTask} />
+        <div className="filters btn-group stack-exception">
+          {filterList}
+        </div>
+        <ul
+          role="list"
+          className="task-list stack-large stack-exception"
+          aria-labelledby="list-heading"
+          ref={listHeadingRef}
+        >
+          {taskList}
+        </ul>
       </div>
-      <h2 id="list-heading" tabIndex="-1" ref={listHeadingRef}>
-        {headingText}
-      </h2>
-      <ul
-        role="list"
-        className="task-list stack-large stack-exception"
-        aria-labelledby="list-heading"
-      >
-        {taskList}
-      </ul>
-    </div>
+    </>
   );
 }
 
