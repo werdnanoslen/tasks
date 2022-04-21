@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 function Form(props) {
   const [name, setName] = useState('');
+  const inputLabel = 'Add a task';
+  const addButtonLabel = 'Add';
 
 
   function handleSubmit(e) {
@@ -15,27 +17,29 @@ function Form(props) {
 
 
   function handleChange(e) {
-    setName(e.target.value);
+    const element = e.target;
+    setName(element.value);
+    element.style.height = "0";
+    element.style.height = (element.scrollHeight)+"px";
+    console.log(element.style.height)
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="label-wrapper">
-        <label htmlFor="new-task-input" className="label__lg">
-          What needs to be done?
-        </label>
-      </h2>
-
+      <label htmlFor="add-task" className="visually-hidden">
+        {inputLabel}
+      </label>
       <textarea
-        id="new-task-input"
-        className="input input__lg"
+        className="input"
         name="text"
         autoComplete="off"
         value={name}
-        onChange={handleChange}
+        onInput={handleChange}
+        placeholder={inputLabel}
+        rows="1"
       />
-      <button type="submit" className="btn btn__primary btn__lg">
-        Add
+      <button type="submit" className="btn" id="add-button">
+        {addButtonLabel}
       </button>
     </form>
   );

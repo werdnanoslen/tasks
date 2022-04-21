@@ -95,21 +95,21 @@ function App(props) {
 
   return (
     <>
-      <h2 id="list-heading" tabIndex="-1" >Tasks</h2>
-      <div className="taskapp stack-large">
-        <Form addTask={addTask} />
+      <div id="controls">
+        <h1>Tasks</h1>
         <div className="filters btn-group stack-exception">
           {filterList}
         </div>
-        <ul
-          role="list"
-          className="task-list stack-large stack-exception"
-          aria-labelledby="list-heading"
-          ref={listHeadingRef}
-        >
-          {taskList}
-        </ul>
+        {(filter === 'Active') && <Form addTask={addTask} />}
       </div>
+      <ul
+        role="list"
+        className="task-list stack-exception"
+        aria-labelledby="list-heading"
+        ref={listHeadingRef}
+      >
+        {taskList}
+      </ul>
     </>
   );
 }
