@@ -5,7 +5,6 @@ function Form(props) {
   const inputLabel = 'Add a task';
   const addButtonLabel = 'Add';
 
-
   function handleSubmit(e) {
     e.preventDefault();
     if (!name.trim()) {
@@ -14,7 +13,6 @@ function Form(props) {
     props.addTask(name);
     setName("");
   }
-
 
   function handleChange(e) {
     const element = e.target;

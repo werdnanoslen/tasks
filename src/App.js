@@ -96,9 +96,11 @@ function App(props) {
   return (
     <>
       <div id="controls">
-        <h1>Tasks</h1>
-        <div className="filters btn-group stack-exception">
-          {filterList}
+        <div id="header">
+          <h1>Tasks</h1>
+          <div className="filters">
+            {filterList}
+          </div>
         </div>
         {(filter === 'Active') && <Form addTask={addTask} />}
       </div>
