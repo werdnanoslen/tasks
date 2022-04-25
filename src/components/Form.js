@@ -1,44 +1,58 @@
 import React, { useState } from "react";
 
 function Form(props) {
-  const [name, setName] = useState('');
+  const [isEditing, setEditing] = useState(false);
+  const [text, setText] = useState('');
   const inputLabel = 'Add a task';
   const addButtonLabel = 'Add';
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!name.trim()) {
+    if (!text.trim()) {
       return;
     }
-    props.addTask(name);
-    setName("");
+    props.addTask(text);
+    setText("");
+    setEditing(false);
+  }
+
+  function blurCancel(e) {
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setEditing(false);
+    }
   }
 
   function handleChange(e) {
     const element = e.target;
-    setName(element.value);
+    setText(element.value);
     element.style.height = "0";
     element.style.height = (element.scrollHeight)+"px";
-    console.log(element.style.height)
   }
 
+  const editingTemplate = (
+    <div className="btn-group">
+      <button type="submit" className="btn" id="add-button">
+        {addButtonLabel}
+      </button>
+    </div>
+  );
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} onBlur={blurCancel}>
       <label htmlFor="add-task" className="visually-hidden">
         {inputLabel}
       </label>
       <textarea
-        className="input"
+        id="add-task"
         name="text"
-        autoComplete="off"
-        value={name}
+        className="input"
+        value={text}
         onInput={handleChange}
+        onFocus={() => setEditing(true)}
         placeholder={inputLabel}
         rows="1"
       />
-      <button type="submit" className="btn" id="add-button">
-        {addButtonLabel}
-      </button>
+      {isEditing ? editingTemplate : ''}
     </form>
   );
 }

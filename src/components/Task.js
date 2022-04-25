@@ -7,7 +7,7 @@ import { ReactComponent as Rubbish} from '../images/rubbish.svg'
 
 export default function Task(props) {
   const [isEditing, setEditing] = useState(false);
-  const [newName, setNewName] = useState('');
+  const [text, setText] = useState('');
 
   const editFieldRef = useRef(null);
   const editButtonRef = useRef(null);
@@ -15,16 +15,16 @@ export default function Task(props) {
   const completeLabel = props.completed ? 'Restore' : 'Complete';
 
   function handleChange(e) {
-    setNewName(e.target.value);
+    setText(e.target.value);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!newName.trim()) {
+    if (!text.trim()) {
       return;
     }
-    props.editTask(props.id, newName);
-    setNewName("");
+    props.editTask(props.id, text);
+    setText("");
     setEditing(false);
   }
 
@@ -36,29 +36,28 @@ export default function Task(props) {
 
   function handleEdit(e) {
     setEditing(true);
-    console.log(editFieldRef)
     setTimeout(() => {editFieldRef.current.focus()}, 1); //omg why
   }
 
   const editingTemplate = (
-    <form className="task-edit" onSubmit={handleSubmit} onBlur={blurCancel}>
-      <label className="visually-hidden" htmlFor={props.id}>
-        New name for {props.name}
+    <form onSubmit={handleSubmit} onBlur={blurCancel}>
+      <label htmlFor={props.id} className="visually-hidden">
+        Edit task
       </label>
       <textarea
         id={props.id}
+        name="text"
         className="input"
-        value={newName || props.name}
+        value={text || props.text}
         onChange={handleChange}
         ref={editFieldRef}
       />
       <div className="btn-group">
-        <button type="button" className="btn visually-hidden" onClick={() => setEditing(false)}>
-          Cancel renaming {props.name}
-        </button>
         <button type="submit" className="btn">
           Save
-          <span className="visually-hidden">new name for {props.name}</span>
+        </button>
+        <button type="button" className="btn" onClick={() => setEditing(false)}>
+          Cancel
         </button>
       </div>
     </form>
@@ -69,7 +68,7 @@ export default function Task(props) {
       <ReactMarkdown
         className="task-label"
         htmlFor={props.id}
-        children={props.name}
+        children={props.text}
         remarkPlugins={[remarkGfm]}
       />
       <div className="btn-group">
@@ -79,7 +78,7 @@ export default function Task(props) {
           onClick={() => props.toggleTaskCompleted(props.id)}
         >
           <Check aria-hidden="true"/>
-          <span className="visually-hidden">{completeLabel} {props.name}</span>
+          <span className="visually-hidden">{completeLabel} {props.text}</span>
         </button>
         <button
           type="button"
@@ -87,11 +86,11 @@ export default function Task(props) {
           onClick={() => props.deleteTask(props.id)}
         >
           <Rubbish aria-hidden="true"/>
-          <span className="visually-hidden">Delete {props.name}</span>
+          <span className="visually-hidden">Delete {props.text}</span>
         </button>
       </div>
     </div>
   );
 
-  return <li className="task">{isEditing ? editingTemplate : viewTemplate}</li>;
+  return <li className="task" id={`li-${props.id}`}>{isEditing ? editingTemplate : viewTemplate}</li>;
 }

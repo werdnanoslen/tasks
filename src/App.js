@@ -18,7 +18,7 @@ const FILTER_MAP = {
   Completed: task => task.completed
 };
 
-const FILTER_NAMES = Object.keys(FILTER_MAP);
+const FILTER_TASKS = Object.keys(FILTER_MAP);
 
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
@@ -44,12 +44,12 @@ function App(props) {
   }
 
 
-  function editTask(id, newName) {
+  function editTask(id, newText) {
     const editedTaskList = tasks.map(task => {
     // if this task has the same ID as the edited task
       if (id === task.id) {
         //
-        return {...task, name: newName}
+        return {...task, text: newText}
       }
       return task;
     });
@@ -61,7 +61,7 @@ function App(props) {
   .map(task => (
     <Task
       id={task.id}
-      name={task.name}
+      text={task.text}
       completed={task.completed}
       key={task.id}
       toggleTaskCompleted={toggleTaskCompleted}
@@ -70,17 +70,17 @@ function App(props) {
     />
   ));
 
-  const filterList = FILTER_NAMES.map(name => (
+  const filterList = FILTER_TASKS.map(text => (
     <FilterButton
-      key={name}
-      name={name}
-      isPressed={name === filter}
+      key={text}
+      text={text}
+      isPressed={text === filter}
       setFilter={setFilter}
     />
   ));
 
-  function addTask(name) {
-    const newTask = { id: "task-" + nanoid(), name: name, completed: false };
+  function addTask(text) {
+    const newTask = { id: "task-" + nanoid(), text: text, completed: false };
     setTasks([...tasks, newTask]);
   }
 
