@@ -42,7 +42,7 @@ export default function Task(props) {
   const editingTemplate = (
     <form onSubmit={handleSubmit} onBlur={blurCancel}>
       <label htmlFor={props.id} className="visually-hidden">
-        Edit task
+        Edit <span className="visually-hidden">{props.text}</span>
       </label>
       <textarea
         id={props.id}
@@ -54,10 +54,10 @@ export default function Task(props) {
       />
       <div className="btn-group">
         <button type="submit" className="btn">
-          Save
+          Save <span className="visually-hidden">{props.text}</span>
         </button>
         <button type="button" className="btn" onClick={() => setEditing(false)}>
-          Cancel
+          Cancel <span className="visually-hidden">{props.text}</span>
         </button>
       </div>
     </form>
