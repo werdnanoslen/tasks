@@ -17,27 +17,20 @@ body {
   max-width: 40em;
   margin: 0 auto;
 }
-form,
-.task-view {
-  margin-top: 1rem;
-  border: 1px lightgrey solid;
-  border-radius: 8px;
-  position: relative;
-}
-.btn {
-  padding: 0.8rem 1rem 0.7rem;
-  border: 1px solid darkgrey;
-  cursor: pointer;
-  text-transform: capitalize;
-}
 #header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+.btn {
+  padding: 0.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
 .filters button {
   background: none;
   color: lightblue;
+  border: 1px solid darkgray;
 }
 .filters button[aria-pressed="true"] {
   background: lightblue;
@@ -50,15 +43,23 @@ form,
 .filters button:last-child {
   border-radius: 0 0.5rem 0.5rem 0;
 }
-.btn-group > * + * {
-  margin-left: 0.8rem;
-}
-.input,
+form,
 .task-view {
+  margin-top: 1rem;
+  border: 1px lightgrey solid;
+  border-radius: 0.5rem;
+  position: relative;
   padding: 1rem;
 }
-.task-view {
-  padding-bottom: 0.25rem;
+form:focus-within,
+.task-view:focus-within {
+  border: 1px lightblue outset;
+  outline: 1px lightblue solid;
+  padding-bottom: 0;
+}
+form:focus-within .btn-group {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 .input {
   background-color: initial;
@@ -66,26 +67,79 @@ form,
   resize: none;
   overflow: hidden;
   min-height: 1rem;
-  max-height: 10rem;
   border: none;
-  border-radius: 0.5rem;
   box-sizing: border-box;
-  padding-bottom: 3.5rem;
+  line-height: 1;
+  padding: 0;
+}
+.input:focus {
+  border: none;
+  outline: none;
+}
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: initial;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1px solid lightblue;
+  border-radius: 0.15rem;
+  transform: translateY(-0.075rem);
+  display: grid;
+  place-content: center;
+}
+input[type="checkbox"]:checked {
+  border-color: lightgray;
+}
+input[type="checkbox"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em lightgray;
+  background-color: initial;
+}
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+input[type="checkbox"]:focus {
+  outline: max(2px, 0.15em) solid lightblue;
+  outline-offset: max(2px, 0.15em);
+}
+input[type="checkbox"]:disabled {
+  color: #959495;
+  cursor: not-allowed;
+}
+input[type="checkbox"]:checked + textarea {
+  color: lightgray;
+  text-decoration: line-through;
+}
+
+form ul {
+  padding: 0;
+  margin: 0;
+}
+form li {
+  display: flex;
+}
+form li input {
+  margin-right: 1rem;
+}
+form .btn-group {
+  display: flex;
 }
 form .btn-group button {
   color: lightblue;
   background-color: initial;
   border: initial;
-}
-form .btn-group {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  margin-right: 1rem;
 }
 form .btn-group button:hover,
 form .btn-group button:focus {
   background-color: #ffffff1b;
-  border-radius: 0 0 0 0.5rem;
 }
 .btn__icon {
   width: 2rem;
@@ -96,7 +150,6 @@ form .btn-group button:focus {
 }
 .btn__icon:hover,
 .btn__icon:focus {
-  background-color: #ffffff1b;
   border-radius: 100%;
 }
 .btn__icon svg {

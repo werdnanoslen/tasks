@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 8 8">
+  <g class="layer">
+    <path d="M7.46 0a.57.57 0 0 0-.33.16L3.45 4.12l-1.31-.99c-.21-.16-.54-.12-.7.09s-.11.54.11.68L3.2 5.16a.5.5 0 0 0 .64-.05C4.93 3.99 6.76 1.95 7.83.84 7.97.7 8 .48 7.92.3S7.64 0 7.45 0v-.01zM0 1.26v5.26c0 .25.25.48.48.48h5.45c.26 0 .48-.25.48-.48V3.98c0-.26-.23-.48-.48-.48s-.48.23-.48.48v2.05H.97V1.74h3.8c.25.02.48-.23.48-.48S5 .78 4.77.78H.48C.2.8.01 1.08 0 1.26l-.01-.01z"/>
+    <use xlink:href="#u" x="70" y="644"/>
+    <use xlink:href="#d" x="91" y="644"/>
+    <use xlink:href="#b" x="104" y="644"/>
+    <use xlink:href="#l" x="123" y="644"/>
+    <use xlink:href="#a" x="142" y="644"/>
+    <use xlink:href="#b" x="156" y="644"/>
+    <use xlink:href="#g" x="175" y="644"/>
+    <use xlink:href="#k" x="204" y="644"/>
+    <use xlink:href="#j" x="225" y="644"/>
+    <use xlink:href="#i" x="253" y="644"/>
+    <use xlink:href="#f" x="274" y="644"/>
+    <use xlink:href="#e" x="284" y="644"/>
+    <use xlink:href="#e" x="313" y="644"/>
+    <use xlink:href="#f" x="342" y="644"/>
+    <use xlink:href="#t" x="361" y="644"/>
+    <use xlink:href="#a" x="382" y="644"/>
+    <use xlink:href="#h" x="395" y="644"/>
+    <use xlink:href="#g" x="415" y="644"/>
+    <use xlink:href="#f" x="435" y="644"/>
+    <use xlink:href="#c" x="445" y="644"/>
+    <use xlink:href="#s" x="70" y="672"/>
+    <use xlink:href="#d" x="82" y="672"/>
+    <use xlink:href="#c" x="96" y="672"/>
+    <use xlink:href="#e" x="115" y="672"/>
+    <use xlink:href="#a" x="154" y="672"/>
+    <use xlink:href="#r" x="168" y="672"/>
+    <use xlink:href="#b" x="188" y="672"/>
+    <use xlink:href="#q" x="216" y="672"/>
+    <use xlink:href="#c" x="240" y="672"/>
+    <use xlink:href="#h" x="259" y="672"/>
+    <use xlink:href="#p" x="279" y="672"/>
+    <use xlink:href="#o" x="309" y="672"/>
+    <use xlink:href="#d" x="329" y="672"/>
+    <use xlink:href="#c" x="343" y="672"/>
+    <use xlink:href="#n" x="362" y="672"/>
+    <use xlink:href="#b" x="372" y="672"/>
+    <use xlink:href="#m" x="391" y="672"/>
+    <use xlink:href="#a" x="407" y="672"/>
+  </g>
+</svg>

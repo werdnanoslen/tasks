@@ -12,7 +12,7 @@ export default function Task(props) {
   const editFieldRef = useRef(null);
   const editButtonRef = useRef(null);
 
-  const completeLabel = props.completed ? 'Restore' : 'Complete';
+  const completeLabel = props.done ? 'Restore' : 'Complete';
 
   function handleChange(e) {
     setText(e.target.value);
@@ -75,7 +75,7 @@ export default function Task(props) {
         <button
           type="button"
           className="btn btn__icon"
-          onClick={() => props.toggleTaskCompleted(props.id)}
+          onClick={() => props.toggleTaskDone(props.id)}
         >
           <Check aria-hidden="true"/>
           <span className="visually-hidden">{completeLabel} {props.text}</span>

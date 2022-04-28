@@ -14,23 +14,23 @@ function usePrevious(value) {
 }
 
 const FILTER_MAP = {
-  Active: task => !task.completed,
-  Completed: task => task.completed
+  Doing: task => !task.done,
+  Done: task => task.done
 };
 
 const FILTER_TASKS = Object.keys(FILTER_MAP);
 
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
-  const [filter, setFilter] = useState('Active');
+  const [filter, setFilter] = useState('Doing');
 
-  function toggleTaskCompleted(id) {
+  function toggleTaskDone(id) {
     const updatedTasks = tasks.map(task => {
       // if this task has the same ID as the edited task
       if (id === task.id) {
         // use object spread to make a new obkect
-        // whose `completed` prop has been inverted
-        return {...task, completed: !task.completed}
+        // whose `done` prop has been inverted
+        return {...task, done: !task.done}
       }
       return task;
     });
@@ -62,9 +62,9 @@ function App(props) {
     <Task
       id={task.id}
       text={task.text}
-      completed={task.completed}
+      done={task.done}
       key={task.id}
-      toggleTaskCompleted={toggleTaskCompleted}
+      toggleTaskDone={toggleTaskDone}
       deleteTask={deleteTask}
       editTask={editTask}
     />
@@ -80,7 +80,7 @@ function App(props) {
   ));
 
   function addTask(text) {
-    const newTask = { id: "task-" + nanoid(), text: text, completed: false };
+    const newTask = { id: "task-" + nanoid(), text: text, done: false };
     setTasks([...tasks, newTask]);
   }
 
@@ -102,7 +102,7 @@ function App(props) {
             {filterList}
           </div>
         </div>
-        {(filter === 'Active') && <Form addTask={addTask} />}
+        {(filter === 'Doing') && <Form addTask={addTask} />}
       </div>
       <ul
         role="list"
