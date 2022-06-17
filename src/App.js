@@ -44,12 +44,12 @@ function App(props) {
   }
 
 
-  function editTask(id, newText) {
+  function editTask(id, newData) {
     const editedTaskList = tasks.map(task => {
     // if this task has the same ID as the edited task
       if (id === task.id) {
         //
-        return {...task, text: newText}
+        return {...task, data: newData}
       }
       return task;
     });
@@ -61,7 +61,7 @@ function App(props) {
   .map(task => (
     <Task
       id={task.id}
-      text={task.text}
+      data={task.data}
       done={task.done}
       key={task.id}
       toggleTaskDone={toggleTaskDone}
@@ -70,17 +70,17 @@ function App(props) {
     />
   ));
 
-  const filterList = FILTER_TASKS.map(text => (
+  const filterList = FILTER_TASKS.map(data => (
     <FilterButton
-      key={text}
-      text={text}
-      isPressed={text === filter}
+      key={data}
+      data={data}
+      isPressed={data === filter}
       setFilter={setFilter}
     />
   ));
 
-  function addTask(text) {
-    const newTask = { id: "task-" + nanoid(), text: text, done: false };
+  function addTask(data) {
+    const newTask = { id: "task-" + nanoid(), data: data, done: false };
     setTasks([...tasks, newTask]);
   }
 

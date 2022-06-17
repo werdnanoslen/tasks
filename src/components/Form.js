@@ -3,18 +3,18 @@ import { ReactComponent as Checkbox } from '../images/checkbox.svg'
 
 function Form(props) {
   const [isEditing, setEditing] = useState(false);
-  const [text, setText] = useState('');
+  const [data, setData] = useState('');
   const [checklist, setChecklist] = useState(false);
   const inputLabel = 'Add a task';
   const addButtonLabel = 'Add';
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!text.trim()) {
+    if (!data.trim()) {
       return;
     }
-    props.addTask(text);
-    setText("");
+    props.addTask(data);
+    setData("");
     setEditing(false);
   }
 
@@ -26,7 +26,7 @@ function Form(props) {
 
   function handleChange(e) {
     const element = e.target;
-    setText(element.value);
+    setData(element.value);
     element.style.height = "0";
     element.style.height = (element.scrollHeight)+"px";
   }
@@ -51,12 +51,12 @@ function Form(props) {
     </div>
   );
 
-  const textArea = (
+  const dataArea = (
     <textarea
       id="add-task"
-      name="text"
+      name="data"
       className="input"
-      value={text}
+      value={data}
       onInput={handleChange}
       onFocus={() => setEditing(true)}
       placeholder={inputLabel}
@@ -66,7 +66,7 @@ function Form(props) {
 
   const checklistGroup = (
     <ul>
-      <li><input type='checkbox' aria-label='done'/>{textArea}</li>
+      <li><input type='checkbox' aria-label='done'/>{dataArea}</li>
     </ul>
   );
   console.log(checklistGroup)
@@ -76,7 +76,7 @@ function Form(props) {
         <label htmlFor="add-task" className="visually-hidden">
           {inputLabel}
         </label>
-        {checklist ? checklistGroup : textArea}
+        {checklist ? checklistGroup : dataArea}
         {isEditing ? editingTemplate : ''}
       </form>
     </>

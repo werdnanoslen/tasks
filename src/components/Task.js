@@ -7,7 +7,7 @@ import { ReactComponent as Rubbish} from '../images/rubbish.svg'
 
 export default function Task(props) {
   const [isEditing, setEditing] = useState(false);
-  const [text, setText] = useState('');
+  const [data, setData] = useState('');
 
   const editFieldRef = useRef(null);
   const editButtonRef = useRef(null);
@@ -15,16 +15,16 @@ export default function Task(props) {
   const completeLabel = props.done ? 'Restore' : 'Complete';
 
   function handleChange(e) {
-    setText(e.target.value);
+    setData(e.target.value);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!text.trim()) {
+    if (!data.trim()) {
       return;
     }
-    props.editTask(props.id, text);
-    setText("");
+    props.editTask(props.id, data);
+    setData("");
     setEditing(false);
   }
 
@@ -42,22 +42,22 @@ export default function Task(props) {
   const editingTemplate = (
     <form onSubmit={handleSubmit} onBlur={blurCancel}>
       <label htmlFor={props.id} className="visually-hidden">
-        Edit <span className="visually-hidden">{props.text}</span>
+        Edit <span className="visually-hidden">{props.data}</span>
       </label>
       <textarea
         id={props.id}
-        name="text"
+        name="data"
         className="input"
-        value={text || props.text}
+        value={data || props.data}
         onChange={handleChange}
         ref={editFieldRef}
       />
       <div className="btn-group">
         <button type="submit" className="btn">
-          Save <span className="visually-hidden">{props.text}</span>
+          Save <span className="visually-hidden">{props.data}</span>
         </button>
         <button type="button" className="btn" onClick={() => setEditing(false)}>
-          Cancel <span className="visually-hidden">{props.text}</span>
+          Cancel <span className="visually-hidden">{props.data}</span>
         </button>
       </div>
     </form>
@@ -68,7 +68,7 @@ export default function Task(props) {
       <ReactMarkdown
         className="task-label"
         htmlFor={props.id}
-        children={props.text}
+        children={props.data}
         remarkPlugins={[remarkGfm]}
       />
       <div className="btn-group">
@@ -78,7 +78,7 @@ export default function Task(props) {
           onClick={() => props.toggleTaskDone(props.id)}
         >
           <Check aria-hidden="true"/>
-          <span className="visually-hidden">{completeLabel} {props.text}</span>
+          <span className="visually-hidden">{completeLabel} {props.data}</span>
         </button>
         <button
           type="button"
@@ -86,7 +86,7 @@ export default function Task(props) {
           onClick={() => props.deleteTask(props.id)}
         >
           <Rubbish aria-hidden="true"/>
-          <span className="visually-hidden">Delete {props.text}</span>
+          <span className="visually-hidden">Delete {props.data}</span>
         </button>
       </div>
     </div>
