@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+//https://www.robinwieruch.de/react-update-item-in-list/
+import React, { useState, useRef, useEffect } from "react";
 import { ReactComponent as Checkbox } from '../images/checkbox.svg'
+import { nanoid } from "nanoid";
+
+function NewChecklistItem() {
+  return {
+    id: "task-" + nanoid(),
+    data: {},
+    done: false
+  }
+};
 
 function Form(props) {
   const [isEditing, setEditing] = useState(false);
   const [data, setData] = useState('');
+  const [checklistData, setChecklistData] = useState([NewChecklistItem()]);
   const [checklist, setChecklist] = useState(false);
   const inputLabel = 'Add a task';
   const addButtonLabel = 'Add';
+  const lastRef = useRef(null);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -24,6 +36,13 @@ function Form(props) {
     }
   }
 
+  function addChecklistItem(e) {
+    if (e.key == 'Enter') {
+      e.preventDefault();
+      setChecklistData([...checklistData, NewChecklistItem()]);
+    }
+  }
+
   function handleChange(e) {
     const element = e.target;
     setData(element.value);
@@ -32,7 +51,7 @@ function Form(props) {
   }
 
   function toggleChecklist() {
-    setChecklist(!checklist);
+    setChecklist(prevChecklist => !prevChecklist);
   }
 
   const editingTemplate = (
@@ -66,10 +85,33 @@ function Form(props) {
 
   const checklistGroup = (
     <ul>
-      <li><input type='checkbox' aria-label='done'/>{dataArea}</li>
+      {checklistData.map((item, i) => (
+        <li key={i}>
+          <input
+            type='checkbox'
+            aria-label='done'
+          /> <textarea
+            // id="add-task"
+            name="data"
+            className="input"
+            // value={data}
+            onInput={handleChange}
+            onKeyPress={addChecklistItem}
+            onFocus={() => setEditing(true)}
+            placeholder={inputLabel}
+            rows="1"
+            ref={i === checklistData.length - 1 ? lastRef : undefined}
+          />
+        </li>
+      ))}
     </ul>
   );
-  console.log(checklistGroup)
+
+  useEffect(() => {
+    if (lastRef.current)
+      lastRef.current.focus();
+  }, [checklistData]);
+
   return (
     <>
       <form onSubmit={handleSubmit} >
