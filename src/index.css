@@ -125,6 +125,9 @@ form ul {
 form li {
   display: flex;
 }
+form li + li {
+  margin-top: 0.5rem;
+}
 form li input {
   margin-right: 1rem;
 }

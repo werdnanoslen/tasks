@@ -15,6 +15,7 @@ function Form(props) {
   const [isEditing, setEditing] = useState(false);
   const [data, setData] = useState('');
   const [checklistData, setChecklistData] = useState([NewChecklistItem()]);
+  const [newItemId, setNewItemId] = useState('');
   const [checklist, setChecklist] = useState(false);
   const inputLabel = 'Add a task';
   const addButtonLabel = 'Add';
@@ -36,10 +37,14 @@ function Form(props) {
     }
   }
 
-  function addChecklistItem(e) {
+  function addChecklistItem(e, i) {
     if (e.key == 'Enter') {
       e.preventDefault();
-      setChecklistData([...checklistData, NewChecklistItem()]);
+      const newList = checklistData.slice();
+      const newItem = NewChecklistItem();
+      setNewItemId(newItem.id);
+      newList.splice(i+1, 0, newItem);
+      setChecklistData(newList);
     }
   }
 
@@ -96,11 +101,11 @@ function Form(props) {
             className="input"
             // value={data}
             onInput={handleChange}
-            onKeyPress={addChecklistItem}
+            onKeyPress={(e) => addChecklistItem(e, i)}
             onFocus={() => setEditing(true)}
             placeholder={inputLabel}
             rows="1"
-            ref={i === checklistData.length - 1 ? lastRef : undefined}
+            ref={newItemId == item.id ? lastRef : undefined}
           />
         </li>
       ))}
@@ -114,7 +119,7 @@ function Form(props) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} >
+      <form onSubmit={handleSubmit} onBlur={blurCancel}>
         <label htmlFor="add-task" className="visually-hidden">
           {inputLabel}
         </label>
