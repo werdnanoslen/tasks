@@ -6,7 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 
-const DATA = [
+const TASKS = [
   { id: "task-0", data: "Eat", done: true },
   { id: "task-1", data: "Sleep", done: false },
   { id: "task-2", data: "Repeat", done: false }
@@ -15,7 +15,7 @@ const DATA = [
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App tasks={DATA} />
+    <App tasks={TASKS} />
   </React.StrictMode>
 );
 

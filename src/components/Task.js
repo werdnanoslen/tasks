@@ -7,7 +7,7 @@ import { ReactComponent as Rubbish} from '../images/rubbish.svg'
 
 export default function Task(props) {
   const [isEditing, setEditing] = useState(false);
-  const [data, setData] = useState('');
+  const [data, setData] = useState({});
 
   const editFieldRef = useRef(null);
   const editButtonRef = useRef(null);
@@ -68,7 +68,11 @@ export default function Task(props) {
       <ReactMarkdown
         className="task-label"
         htmlFor={props.id}
-        children={props.data}
+        //TODO render this properly
+        children={
+          typeof(props.data) === 'object' ? JSON.stringify(props.data)
+          : props.data
+        }
         remarkPlugins={[remarkGfm]}
       />
       <div className="btn-group">
@@ -78,7 +82,7 @@ export default function Task(props) {
           onClick={() => props.toggleTaskDone(props.id)}
         >
           <Check aria-hidden="true"/>
-          <span className="visually-hidden">{completeLabel} {props.data}</span>
+          <span className="visually-hidden">{completeLabel} {props.id}</span>
         </button>
         <button
           type="button"
@@ -86,7 +90,7 @@ export default function Task(props) {
           onClick={() => props.deleteTask(props.id)}
         >
           <Rubbish aria-hidden="true"/>
-          <span className="visually-hidden">Delete {props.data}</span>
+          <span className="visually-hidden">Delete {props.id}</span>
         </button>
       </div>
     </div>

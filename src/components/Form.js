@@ -23,11 +23,9 @@ function Form(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!data.trim()) {
-      return;
-    }
-    props.addTask(data);
-    setData("");
+    checklist ? props.addTask(checklistData) : props.addTask(data);
+    setData('');
+    setChecklistData([NewChecklistItem()]);
     setEditing(false);
   }
 
@@ -48,9 +46,15 @@ function Form(props) {
     }
   }
 
-  function handleChange(e) {
+  function handleChange(e, i) {
     const element = e.target;
-    setData(element.value);
+    if (checklist) {
+      let checklistDataCopy = [ ...checklistData ];
+      checklistDataCopy[i] = {...checklistDataCopy[i], data: element.value};
+      setChecklistData(checklistDataCopy);
+    } else {
+      setData(element.value);
+    }
     element.style.height = "0";
     element.style.height = (element.scrollHeight)+"px";
   }
@@ -96,12 +100,12 @@ function Form(props) {
             type='checkbox'
             aria-label='done'
           /> <textarea
-            // id="add-task"
+            id={item.id}
             name="data"
             className="input"
-            // value={data}
-            onInput={handleChange}
-            onKeyPress={(e) => addChecklistItem(e, i)}
+            value={item.data}
+            onInput={(e) => handleChange(e, i)}
+            onKeyUp={(e) => addChecklistItem(e, i)}
             onFocus={() => setEditing(true)}
             placeholder={inputLabel}
             rows="1"
