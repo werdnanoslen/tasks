@@ -9,7 +9,8 @@ import reportWebVitals from './reportWebVitals';
 const TASKS = [
   { id: 'task-0', data: 'Eat', done: true },
   { id: 'task-1', data: 'Sleep', done: false },
-  { id: 'task-2', data: 'Repeat', done: false }
+  { id: 'task-2', data: 'Repeat', done: false },
+  { id: 'task-3', data: [{ id: 'task-4-1', data: 'Item 1', done: true },{ id: 'task-4-2', data: 'Item 2', done: true }], done: false }
 ];
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

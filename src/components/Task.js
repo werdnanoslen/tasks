@@ -65,17 +65,33 @@ export default function Task(props) {
     </form>
   )
 
+  const textViewTemplate = (
+    <ReactMarkdown
+      className="task-label"
+      htmlFor={props.id}
+      children={''+props.data}
+      remarkPlugins={[remarkGfm]}
+    />
+  )
+
+  function listViewTemplate() {
+    return (
+      <>
+        {props.data.map((item, index) => (
+          <ReactMarkdown
+            className="task-label"
+            htmlFor={props.id}
+            children={''+item.data}
+            remarkPlugins={[remarkGfm]}
+          />
+        ))}
+      </>
+    )
+  }
+
   const viewTemplate = (
     <div className="task-view" onClick={handleEdit}>
-      <ReactMarkdown
-        className="task-label"
-        htmlFor={props.id}
-        //TODO render this properly
-        children={
-          typeof props.data === 'object' ? JSON.stringify(props.data) : props.data
-        }
-        remarkPlugins={[remarkGfm]}
-      />
+      {typeof props.data === 'string' ? textViewTemplate : listViewTemplate() }
       <div className="btn-group">
         <button
           type="button"
