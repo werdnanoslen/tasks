@@ -36,7 +36,7 @@ function Form(props) {
   }
 
   function addChecklistItem(e, i) {
-    if (e.key == 'Enter') {
+    if (e.key === 'Enter') {
       e.preventDefault();
       const newList = checklistData.slice();
       const newItem = NewChecklistItem();
@@ -46,7 +46,7 @@ function Form(props) {
     }
   }
 
-  function handleChange(e, i) {
+  function handleInput(e, i) {
     const element = e.target;
     if (checklist) {
       let checklistDataCopy = [ ...checklistData ];
@@ -85,7 +85,7 @@ function Form(props) {
       name="data"
       className="input"
       value={data}
-      onInput={handleChange}
+      onInput={handleInput}
       onFocus={() => setEditing(true)}
       placeholder={inputLabel}
       rows="1"
@@ -104,8 +104,8 @@ function Form(props) {
             name="data"
             className="input"
             value={item.data}
-            onInput={(e) => handleChange(e, i)}
-            onKeyUp={(e) => addChecklistItem(e, i)}
+            onKeyDown={(e) => addChecklistItem(e, i)}
+            onInput={(e) => handleInput(e, i)}
             onFocus={() => setEditing(true)}
             placeholder={inputLabel}
             rows="1"
