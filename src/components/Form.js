@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 function NewChecklistItem() {
   return {
     id: "task-" + nanoid(),
-    data: {},
+    data: "",
     done: false
   }
 };
