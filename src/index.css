@@ -32,7 +32,7 @@ body {
   color: lightblue;
   border: 1px solid darkgray;
 }
-.filters button[aria-pressed="true"] {
+.filters button[aria-pressed='true'] {
   background: lightblue;
   color: #1b1b1b;
   text-decoration: none;
@@ -76,7 +76,7 @@ form:focus-within .btn-group {
   border: none;
   outline: none;
 }
-input[type="checkbox"] {
+input[type='checkbox'] {
   -webkit-appearance: none;
   appearance: none;
   background-color: initial;
@@ -88,11 +88,11 @@ input[type="checkbox"] {
   display: grid;
   place-content: center;
 }
-input[type="checkbox"]:checked {
+input[type='checkbox']:checked {
   border-color: lightgray;
 }
-input[type="checkbox"]::before {
-  content: "";
+input[type='checkbox']::before {
+  content: '';
   width: 0.65em;
   height: 0.65em;
   clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
@@ -102,18 +102,18 @@ input[type="checkbox"]::before {
   box-shadow: inset 1em 1em lightgray;
   background-color: initial;
 }
-input[type="checkbox"]:checked::before {
+input[type='checkbox']:checked::before {
   transform: scale(1);
 }
-input[type="checkbox"]:focus {
+input[type='checkbox']:focus {
   outline: max(2px, 0.15em) solid lightblue;
   outline-offset: max(2px, 0.15em);
 }
-input[type="checkbox"]:disabled {
+input[type='checkbox']:disabled {
   color: #959495;
   cursor: not-allowed;
 }
-input[type="checkbox"]:checked + textarea {
+input[type='checkbox']:checked + textarea {
   color: lightgray;
   text-decoration: line-through;
 }

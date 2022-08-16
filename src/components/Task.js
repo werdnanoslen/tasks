@@ -1,42 +1,44 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import ReactDom from 'react-dom'
 import remarkGfm from 'remark-gfm'
 import { ReactComponent as Check } from '../images/check.svg'
-import { ReactComponent as Rubbish} from '../images/rubbish.svg'
+import { ReactComponent as Rubbish } from '../images/rubbish.svg'
 
 export default function Task(props) {
-  const [isEditing, setEditing] = useState(false);
-  const [data, setData] = useState({});
+  const [isEditing, setEditing] = useState(false)
+  const [data, setData] = useState({})
 
-  const editFieldRef = useRef(null);
-  const editButtonRef = useRef(null);
+  const editFieldRef = useRef(null)
+  const editButtonRef = useRef(null)
 
-  const completeLabel = props.done ? 'Restore' : 'Complete';
+  const completeLabel = props.done ? 'Restore' : 'Complete'
 
   function handleChange(e) {
-    setData(e.target.value);
+    setData(e.target.value)
   }
 
   function handleSubmit(e) {
-    e.preventDefault();
+    e.preventDefault()
     if (!data.trim()) {
-      return;
+      return
     }
-    props.editTask(props.id, data);
-    setData("");
-    setEditing(false);
+    props.editTask(props.id, data)
+    setData('')
+    setEditing(false)
   }
 
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      setEditing(false);
+      setEditing(false)
     }
   }
 
   function handleEdit(e) {
-    setEditing(true);
-    setTimeout(() => {editFieldRef.current.focus()}, 1); //omg why
+    setEditing(true)
+    setTimeout(() => {
+      editFieldRef.current.focus()
+    }, 1) //omg why
   }
 
   const editingTemplate = (
@@ -61,7 +63,7 @@ export default function Task(props) {
         </button>
       </div>
     </form>
-  );
+  )
 
   const viewTemplate = (
     <div className="task-view" onClick={handleEdit}>
@@ -70,8 +72,7 @@ export default function Task(props) {
         htmlFor={props.id}
         //TODO render this properly
         children={
-          typeof(props.data) === 'object' ? JSON.stringify(props.data)
-          : props.data
+          typeof props.data === 'object' ? JSON.stringify(props.data) : props.data
         }
         remarkPlugins={[remarkGfm]}
       />
@@ -81,20 +82,26 @@ export default function Task(props) {
           className="btn btn__icon"
           onClick={() => props.toggleTaskDone(props.id)}
         >
-          <Check aria-hidden="true"/>
-          <span className="visually-hidden">{completeLabel} {props.id}</span>
+          <Check aria-hidden="true" />
+          <span className="visually-hidden">
+            {completeLabel} {props.id}
+          </span>
         </button>
         <button
           type="button"
           className="btn btn__icon"
           onClick={() => props.deleteTask(props.id)}
         >
-          <Rubbish aria-hidden="true"/>
+          <Rubbish aria-hidden="true" />
           <span className="visually-hidden">Delete {props.id}</span>
         </button>
       </div>
     </div>
-  );
+  )
 
-  return <li className="task" id={`li-${props.id}`}>{isEditing ? editingTemplate : viewTemplate}</li>;
+  return (
+    <li className="task" id={`li-${props.id}`}>
+      {isEditing ? editingTemplate : viewTemplate}
+    </li>
+  )
 }

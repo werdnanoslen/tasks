@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import Form from "./components/Form";
-import FilterButton from "./components/FilterButton";
-import Task from "./components/Task";
-import { nanoid } from "nanoid";
+import React, { useState, useRef, useEffect } from 'react';
+import Form from './components/Form';
+import FilterButton from './components/FilterButton';
+import Task from './components/Task';
+import { nanoid } from 'nanoid';
 
 
 function usePrevious(value) {
@@ -80,7 +80,7 @@ function App(props) {
   ));
 
   function addTask(data) {
-    const newTask = { id: "task-" + nanoid(), data: data, done: false };
+    const newTask = { id: 'task-' + nanoid(), data: data, done: false };
     setTasks([...tasks, newTask]);
   }
 
@@ -95,19 +95,19 @@ function App(props) {
 
   return (
     <>
-      <div id="controls">
-        <div id="header">
+      <div id='controls'>
+        <div id='header'>
           <h1>Tasks</h1>
-          <div className="filters">
+          <div className='filters'>
             {filterList}
           </div>
         </div>
         {(filter === 'Doing') && <Form addTask={addTask} />}
       </div>
       <ul
-        role="list"
-        className="task-list stack-exception"
-        aria-labelledby="list-heading"
+        role='list'
+        className='task-list stack-exception'
+        aria-labelledby='list-heading'
         ref={listHeadingRef}
       >
         {taskList}
