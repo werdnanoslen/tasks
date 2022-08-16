@@ -10,7 +10,11 @@ const TASKS = [
   { id: 'task-0', data: 'Eat', done: true },
   { id: 'task-1', data: 'Sleep', done: false },
   { id: 'task-2', data: 'Repeat', done: false },
-  { id: 'task-3', data: [{ id: 'task-4-1', data: 'Item 1', done: true },{ id: 'task-4-2', data: 'Item 2', done: true }], done: false }
+  { id: 'task-3', data: [
+      { id: 'task-3-1', data: 'Eat', done: true },
+      { id: 'task-3-2', data: 'Sleep', done: false },
+      { id: 'task-3-3', data: 'Repeat', done: false }
+    ], done: false }
 ];
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

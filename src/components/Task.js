@@ -80,7 +80,7 @@ export default function Task(props) {
         {props.data.map((item, index) => (
           <ReactMarkdown
             className="task-label"
-            htmlFor={props.id}
+            htmlFor={item.id}
             children={''+item.data}
             remarkPlugins={[remarkGfm]}
           />
