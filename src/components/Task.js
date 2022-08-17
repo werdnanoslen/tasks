@@ -24,12 +24,13 @@ export default function Task(props) {
       return
     }
     props.editTask(props.id, data)
-    setData('')
+    setData({})
     setEditing(false)
   }
 
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
+      props.editTask(props.id, data)
       setEditing(false)
     }
   }
@@ -50,7 +51,7 @@ export default function Task(props) {
         id={props.id}
         name="data"
         className="input"
-        value={data || props.data}
+        value={typeof(data) === 'string' ? data : props.data}
         onChange={handleChange}
         ref={editFieldRef}
       />
