@@ -51,7 +51,7 @@ export default function Task(props) {
         id={props.id}
         name="data"
         className="input"
-        value={typeof(data) === 'string' ? data : props.data}
+        value={typeof data === 'string' ? data : props.data}
         onChange={handleChange}
         ref={editFieldRef}
       />
@@ -70,7 +70,7 @@ export default function Task(props) {
     <ReactMarkdown
       className="task-label"
       htmlFor={props.id}
-      children={''+props.data}
+      children={'' + props.data}
       remarkPlugins={[remarkGfm]}
     />
   )
@@ -82,7 +82,8 @@ export default function Task(props) {
           <ReactMarkdown
             className="task-label"
             htmlFor={item.id}
-            children={''+item.data}
+            key={item.id}
+            children={'' + item.data}
             remarkPlugins={[remarkGfm]}
           />
         ))}
@@ -92,7 +93,7 @@ export default function Task(props) {
 
   const viewTemplate = (
     <div className="task-view" onClick={handleEdit}>
-      {typeof props.data === 'string' ? textViewTemplate : listViewTemplate() }
+      {typeof props.data === 'string' ? textViewTemplate : listViewTemplate()}
       <div className="btn-group">
         <button
           type="button"
