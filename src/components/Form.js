@@ -63,6 +63,34 @@ function Form(props) {
     setChecklist((prevChecklist) => !prevChecklist)
   }
 
+  function dataArea(item?, index?) {
+    return (
+      <textarea
+        id={item ? item.id : 'task-' + nanoid()}
+        name="data"
+        className="input"
+        value={item ? item.data : data}
+        onKeyDown={(e) => addChecklistItem(e, index)}
+        onInput={(e) => handleInput(e, index)}
+        onFocus={() => setEditing(true)}
+        placeholder={inputLabel}
+        rows="1"
+        ref={item && item.id === newItemId ? lastRef : undefined}
+      />
+    )
+  }
+
+  const checklistGroup = (
+    <ul>
+      {checklistData.map((item, i) => (
+        <li key={i}>
+          <input type="checkbox" aria-label="done" />
+          {dataArea(item, i)}
+        </li>
+      ))}
+    </ul>
+  )
+
   const editingTemplate = (
     <div className="btn-group">
       <button type="submit" className="btn" id="add-button">
@@ -75,41 +103,6 @@ function Form(props) {
     </div>
   )
 
-  const dataArea = (
-    <textarea
-      id="add-task"
-      name="data"
-      className="input"
-      value={data}
-      onInput={handleInput}
-      onFocus={() => setEditing(true)}
-      placeholder={inputLabel}
-      rows="1"
-    />
-  )
-
-  const checklistGroup = (
-    <ul>
-      {checklistData.map((item, i) => (
-        <li key={i}>
-          <input type="checkbox" aria-label="done" />{' '}
-          <textarea
-            id={item.id}
-            name="data"
-            className="input"
-            value={item.data}
-            onKeyDown={(e) => addChecklistItem(e, i)}
-            onInput={(e) => handleInput(e, i)}
-            onFocus={() => setEditing(true)}
-            placeholder={inputLabel}
-            rows="1"
-            ref={newItemId === item.id ? lastRef : undefined}
-          />
-        </li>
-      ))}
-    </ul>
-  )
-
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus()
   }, [checklistData])
@@ -120,7 +113,7 @@ function Form(props) {
         <label htmlFor="add-task" className="visually-hidden">
           {inputLabel}
         </label>
-        {checklist ? checklistGroup : dataArea}
+        {checklist ? checklistGroup : dataArea()}
         {isEditing ? editingTemplate : ''}
       </form>
     </>
