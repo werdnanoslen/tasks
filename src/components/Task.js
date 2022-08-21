@@ -28,9 +28,9 @@ export default function Task(props) {
     setEditing(false)
   }
 
-  function blurCancel(e) {
+  function handleCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      props.editTask(props.id, data)
+      setData({})
       setEditing(false)
     }
   }
@@ -43,7 +43,7 @@ export default function Task(props) {
   }
 
   const editingTemplate = (
-    <form onSubmit={handleSubmit} onBlur={blurCancel}>
+    <form onSubmit={handleSubmit} onBlur={handleCancel}>
       <label htmlFor={props.id} className="visually-hidden">
         Edit <span className="visually-hidden">{props.data}</span>
       </label>
@@ -59,7 +59,7 @@ export default function Task(props) {
         <button type="submit" className="btn">
           Save <span className="visually-hidden">{props.data}</span>
         </button>
-        <button type="button" className="btn" onClick={() => setEditing(false)}>
+        <button type="button" className="btn" onClick={handleCancel}>
           Cancel <span className="visually-hidden">{props.data}</span>
         </button>
       </div>
