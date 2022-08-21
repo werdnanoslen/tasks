@@ -80,7 +80,7 @@ export default function Task(props) {
       <ul>
         {props.data.map((item, index) => (
           <li key={index}>
-            <input type="checkbox" aria-label="done" checked={item.done} />{' '}
+            <input type="checkbox" aria-label="done" defaultChecked={item.done} />{' '}
             <ReactMarkdown
               className="task-label"
               htmlFor={item.id}
