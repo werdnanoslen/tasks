@@ -113,22 +113,25 @@ input[type='checkbox']:disabled {
   color: #959495;
   cursor: not-allowed;
 }
-input[type='checkbox']:checked + textarea {
+input[type='checkbox']:checked + * {
   color: lightgray;
   text-decoration: line-through;
 }
 
-form ul {
+form ul,
+.task ul {
   padding: 0;
   margin: 0;
 }
-form li {
+form li,
+.task li {
   display: flex;
 }
 form li + li {
   margin-top: 0.5rem;
 }
-form li input {
+form li input,
+.task li input {
   margin-right: 1rem;
 }
 form .btn-group {
@@ -171,7 +174,8 @@ form .btn-group button:focus {
 .stack-exception {
   margin-top: 1.2rem;
 }
-.task-list {
+.task-list,
+.task li {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

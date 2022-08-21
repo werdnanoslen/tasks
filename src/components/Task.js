@@ -77,17 +77,20 @@ export default function Task(props) {
 
   function listViewTemplate() {
     return (
-      <>
+      <ul>
         {props.data.map((item, index) => (
-          <ReactMarkdown
-            className="task-label"
-            htmlFor={item.id}
-            key={item.id}
-            children={'' + item.data}
-            remarkPlugins={[remarkGfm]}
-          />
+          <li key={index}>
+            <input type="checkbox" aria-label="done" checked={item.done} />{' '}
+            <ReactMarkdown
+              className="task-label"
+              htmlFor={item.id}
+              key={item.id}
+              children={'' + item.data}
+              remarkPlugins={[remarkGfm]}
+            />
+          </li>
         ))}
-      </>
+      </ul>
     )
   }
 
