@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { ReactComponent as Checkbox } from '../images/checkbox.svg'
 import { nanoid } from 'nanoid'
+import TextareaAutosize from 'react-textarea-autosize';
 
 function NewChecklistItem() {
   return {
@@ -47,26 +48,28 @@ function Form(props) {
   }
 
   function handleInput(e, i) {
-    const element = e.target
+    const input = e.target.value
     if (checklist) {
       let checklistDataCopy = [...checklistData]
-      checklistDataCopy[i] = { ...checklistDataCopy[i], data: element.value }
+      checklistDataCopy[i] = { ...checklistDataCopy[i], data: input }
       setChecklistData(checklistDataCopy)
     } else {
-      setData(element.value)
+      setData(input)
     }
-    element.style.height = '0'
-    element.style.height = element.scrollHeight + 'px'
   }
 
   function toggleChecklist() {
     setChecklist((prevChecklist) => !prevChecklist)
+    if (checklist) {
+      const n = String.fromCharCode(13, 10) //newline character
+      setData(checklistData.reduce((p, c) => p.concat(c.data + n), ''))
+    }
   }
 
   function dataArea(item?, index?) {
     return (
-      <textarea
-        id={item ? item.id : 'task-' + nanoid()}
+      <TextareaAutosize
+        id={item ? item.id : 'add-task'}
         name="data"
         className="input"
         value={item ? item.data : data}

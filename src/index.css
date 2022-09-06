@@ -195,3 +195,6 @@ form .btn-group button:focus {
   padding: 0.4rem 0.8rem;
   border: 2px solid #565656;
 }
+#add-task {
+  white-space: pre-wrap;
+}
