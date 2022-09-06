@@ -62,7 +62,9 @@ function Form(props) {
     setChecklist((prevChecklist) => !prevChecklist);
     if (checklist) {
       const n = String.fromCharCode(13, 10); //newline character
-      setData(checklistData.reduce((p, c) => p.concat(c.data + n), ''));
+      setData(
+        checklistData.reduce((p, c, i) => p.concat((i ? n : '') + c.data), '')
+      );
     }
   }
 
