@@ -1,7 +1,7 @@
 //https://www.robinwieruch.de/react-update-item-in-list/
-import React, { useState, useRef, useEffect } from 'react'
-import { ReactComponent as Checkbox } from '../images/checkbox.svg'
-import { nanoid } from 'nanoid'
+import React, { useState, useRef, useEffect } from 'react';
+import { ReactComponent as Checkbox } from '../images/checkbox.svg';
+import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 
 function NewChecklistItem() {
@@ -9,60 +9,60 @@ function NewChecklistItem() {
     id: 'task-' + nanoid(),
     data: '',
     done: false,
-  }
+  };
 }
 
 function Form(props) {
-  const [isEditing, setEditing] = useState(false)
-  const [data, setData] = useState('')
-  const [checklistData, setChecklistData] = useState([NewChecklistItem()])
-  const [newItemId, setNewItemId] = useState('')
-  const [checklist, setChecklist] = useState(false)
-  const inputLabel = 'Add a task'
-  const addButtonLabel = 'Add'
-  const lastRef = useRef(null)
+  const [isEditing, setEditing] = useState(false);
+  const [data, setData] = useState('');
+  const [checklistData, setChecklistData] = useState([NewChecklistItem()]);
+  const [newItemId, setNewItemId] = useState('');
+  const [checklist, setChecklist] = useState(false);
+  const inputLabel = 'Add a task';
+  const addButtonLabel = 'Add';
+  const lastRef = useRef(null);
 
   function handleSubmit(e) {
-    e.preventDefault()
-    checklist ? props.addTask(checklistData) : props.addTask(data)
-    setData('')
-    setChecklistData([NewChecklistItem()])
-    setEditing(false)
+    e.preventDefault();
+    checklist ? props.addTask(checklistData) : props.addTask(data);
+    setData('');
+    setChecklistData([NewChecklistItem()]);
+    setEditing(false);
   }
 
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      setEditing(false)
+      setEditing(false);
     }
   }
 
   function addChecklistItem(e, i) {
     if (e.key === 'Enter') {
-      e.preventDefault()
-      const newList = checklistData.slice()
-      const newItem = NewChecklistItem()
-      setNewItemId(newItem.id)
-      newList.splice(i + 1, 0, newItem)
-      setChecklistData(newList)
+      e.preventDefault();
+      const newList = checklistData.slice();
+      const newItem = NewChecklistItem();
+      setNewItemId(newItem.id);
+      newList.splice(i + 1, 0, newItem);
+      setChecklistData(newList);
     }
   }
 
   function handleInput(e, i) {
-    const input = e.target.value
+    const input = e.target.value;
     if (checklist) {
-      let checklistDataCopy = [...checklistData]
-      checklistDataCopy[i] = { ...checklistDataCopy[i], data: input }
-      setChecklistData(checklistDataCopy)
+      let checklistDataCopy = [...checklistData];
+      checklistDataCopy[i] = { ...checklistDataCopy[i], data: input };
+      setChecklistData(checklistDataCopy);
     } else {
-      setData(input)
+      setData(input);
     }
   }
 
   function toggleChecklist() {
-    setChecklist((prevChecklist) => !prevChecklist)
+    setChecklist((prevChecklist) => !prevChecklist);
     if (checklist) {
-      const n = String.fromCharCode(13, 10) //newline character
-      setData(checklistData.reduce((p, c) => p.concat(c.data + n), ''))
+      const n = String.fromCharCode(13, 10); //newline character
+      setData(checklistData.reduce((p, c) => p.concat(c.data + n), ''));
     }
   }
 
@@ -80,7 +80,7 @@ function Form(props) {
         rows="1"
         ref={item && item.id === newItemId ? lastRef : undefined}
       />
-    )
+    );
   }
 
   const checklistGroup = (
@@ -92,23 +92,27 @@ function Form(props) {
         </li>
       ))}
     </ul>
-  )
+  );
 
   const editingTemplate = (
     <div className="btn-group">
       <button type="submit" className="btn" id="add-button">
         {addButtonLabel}
       </button>
-      <button type="button" className="btn btn__icon" onClick={() => toggleChecklist()}>
+      <button
+        type="button"
+        className="btn btn__icon"
+        onClick={() => toggleChecklist()}
+      >
         <Checkbox aria-hidden="true" />
         <span className="visually-hidden">Checklist mode</span>
       </button>
     </div>
-  )
+  );
 
   useEffect(() => {
-    if (lastRef.current) lastRef.current.focus()
-  }, [checklistData])
+    if (lastRef.current) lastRef.current.focus();
+  }, [checklistData]);
 
   return (
     <>
@@ -120,7 +124,7 @@ function Form(props) {
         {isEditing ? editingTemplate : ''}
       </form>
     </>
-  )
+  );
 }
 
-export default Form
+export default Form;

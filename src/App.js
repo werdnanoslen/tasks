@@ -4,7 +4,6 @@ import FilterButton from './components/FilterButton';
 import Task from './components/Task';
 import { nanoid } from 'nanoid';
 
-
 function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
@@ -14,8 +13,8 @@ function usePrevious(value) {
 }
 
 const FILTER_MAP = {
-  Doing: task => !task.done,
-  Done: task => task.done
+  Doing: (task) => !task.done,
+  Done: (task) => task.done,
 };
 
 const FILTER_TASKS = Object.keys(FILTER_MAP);
@@ -25,31 +24,29 @@ function App(props) {
   const [filter, setFilter] = useState('Doing');
 
   function toggleTaskDone(id) {
-    const updatedTasks = tasks.map(task => {
+    const updatedTasks = tasks.map((task) => {
       // if this task has the same ID as the edited task
       if (id === task.id) {
         // use object spread to make a new obkect
         // whose `done` prop has been inverted
-        return {...task, done: !task.done}
+        return { ...task, done: !task.done };
       }
       return task;
     });
     setTasks(updatedTasks);
   }
 
-
   function deleteTask(id) {
-    const remainingTasks = tasks.filter(task => id !== task.id);
+    const remainingTasks = tasks.filter((task) => id !== task.id);
     setTasks(remainingTasks);
   }
 
-
   function editTask(id, newData) {
-    const editedTaskList = tasks.map(task => {
-    // if this task has the same ID as the edited task
+    const editedTaskList = tasks.map((task) => {
+      // if this task has the same ID as the edited task
       if (id === task.id) {
         //
-        return {...task, data: newData}
+        return { ...task, data: newData };
       }
       return task;
     });
@@ -57,20 +54,20 @@ function App(props) {
   }
 
   const taskList = tasks
-  .filter(FILTER_MAP[filter])
-  .map(task => (
-    <Task
-      id={task.id}
-      data={task.data}
-      done={task.done}
-      key={task.id}
-      toggleTaskDone={toggleTaskDone}
-      deleteTask={deleteTask}
-      editTask={editTask}
-    />
-  ));
+    .filter(FILTER_MAP[filter])
+    .map((task) => (
+      <Task
+        id={task.id}
+        data={task.data}
+        done={task.done}
+        key={task.id}
+        toggleTaskDone={toggleTaskDone}
+        deleteTask={deleteTask}
+        editTask={editTask}
+      />
+    ));
 
-  const filterList = FILTER_TASKS.map(data => (
+  const filterList = FILTER_TASKS.map((data) => (
     <FilterButton
       key={data}
       data={data}
@@ -95,19 +92,17 @@ function App(props) {
 
   return (
     <>
-      <div id='controls'>
-        <div id='header'>
+      <div id="controls">
+        <div id="header">
           <h1>Tasks</h1>
-          <div className='filters'>
-            {filterList}
-          </div>
+          <div className="filters">{filterList}</div>
         </div>
-        {(filter === 'Doing') && <Form addTask={addTask} />}
+        {filter === 'Doing' && <Form addTask={addTask} />}
       </div>
       <ul
-        role='list'
-        className='task-list stack-exception'
-        aria-labelledby='list-heading'
+        role="list"
+        className="task-list stack-exception"
+        aria-labelledby="list-heading"
         ref={listHeadingRef}
       >
         {taskList}

@@ -1,45 +1,45 @@
-import React, { useEffect, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import ReactDom from 'react-dom'
-import remarkGfm from 'remark-gfm'
-import { ReactComponent as Check } from '../images/check.svg'
-import { ReactComponent as Rubbish } from '../images/rubbish.svg'
+import React, { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import ReactDom from 'react-dom';
+import remarkGfm from 'remark-gfm';
+import { ReactComponent as Check } from '../images/check.svg';
+import { ReactComponent as Rubbish } from '../images/rubbish.svg';
 
 export default function Task(props) {
-  const [isEditing, setEditing] = useState(false)
-  const [data, setData] = useState({})
+  const [isEditing, setEditing] = useState(false);
+  const [data, setData] = useState({});
 
-  const editFieldRef = useRef(null)
-  const editButtonRef = useRef(null)
+  const editFieldRef = useRef(null);
+  const editButtonRef = useRef(null);
 
-  const completeLabel = props.done ? 'Restore' : 'Complete'
+  const completeLabel = props.done ? 'Restore' : 'Complete';
 
   function handleChange(e) {
-    setData(e.target.value)
+    setData(e.target.value);
   }
 
   function handleSubmit(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (!data.trim()) {
-      return
+      return;
     }
-    props.editTask(props.id, data)
-    setData({})
-    setEditing(false)
+    props.editTask(props.id, data);
+    setData({});
+    setEditing(false);
   }
 
   function handleCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      setData({})
-      setEditing(false)
+      setData({});
+      setEditing(false);
     }
   }
 
   function handleEdit(e) {
-    setEditing(true)
+    setEditing(true);
     setTimeout(() => {
-      editFieldRef.current.focus()
-    }, 1) //omg why
+      editFieldRef.current.focus();
+    }, 1); //omg why
   }
 
   const editingTemplate = (
@@ -64,7 +64,7 @@ export default function Task(props) {
         </button>
       </div>
     </form>
-  )
+  );
 
   const textViewTemplate = (
     <ReactMarkdown
@@ -73,14 +73,18 @@ export default function Task(props) {
       children={'' + props.data}
       remarkPlugins={[remarkGfm]}
     />
-  )
+  );
 
   function listViewTemplate() {
     return (
       <ul>
         {props.data.map((item, index) => (
           <li key={index}>
-            <input type="checkbox" aria-label="done" defaultChecked={item.done} />{' '}
+            <input
+              type="checkbox"
+              aria-label="done"
+              defaultChecked={item.done}
+            />{' '}
             <ReactMarkdown
               className="task-label"
               htmlFor={item.id}
@@ -91,7 +95,7 @@ export default function Task(props) {
           </li>
         ))}
       </ul>
-    )
+    );
   }
 
   const viewTemplate = (
@@ -118,11 +122,11 @@ export default function Task(props) {
         </button>
       </div>
     </div>
-  )
+  );
 
   return (
     <li className="task" id={`li-${props.id}`}>
       {isEditing ? editingTemplate : viewTemplate}
     </li>
-  )
+  );
 }
