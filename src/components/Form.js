@@ -37,7 +37,7 @@ function Form(props) {
   }
 
   function addChecklistItem(e, i) {
-    if (e.key === 'Enter') {
+    if (checklist && e.key === 'Enter') {
       e.preventDefault();
       const newList = checklistData.slice();
       const newItem = NewChecklistItem();
