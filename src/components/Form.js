@@ -4,10 +4,10 @@ import { ReactComponent as Checkbox } from '../images/checkbox.svg';
 import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 
-function NewChecklistItem() {
+function NewChecklistItem(data?) {
   return {
     id: 'task-' + nanoid(),
-    data: '',
+    data: data ? data : '',
     done: false,
   };
 }
@@ -60,11 +60,13 @@ function Form(props) {
 
   function toggleChecklist() {
     setChecklist((prevChecklist) => !prevChecklist);
+    const n = String.fromCharCode(10); //newline character
     if (checklist) {
-      const n = String.fromCharCode(13, 10); //newline character
-      setData(
-        checklistData.reduce((p, c, i) => p.concat((i ? n : '') + c.data), '')
-      );
+      const listify = (p, c, i) => p.concat((i ? n : '') + c.data);
+      setData(checklistData.reduce(listify, ''));
+    } else {
+      const unlistify = data.split(n).map((line) => NewChecklistItem(line));
+      setChecklistData(unlistify);
     }
   }
 
