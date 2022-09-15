@@ -1,3 +1,7 @@
+# A simple tasks app
+
+This lets you take simple notes and checklists in a browser.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
