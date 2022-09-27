@@ -1,6 +1,8 @@
 //https://www.robinwieruch.de/react-update-item-in-list/
 import React, { useState, useRef, useEffect } from 'react';
 import { ReactComponent as Checkbox } from '../images/checkbox.svg';
+import { ReactComponent as Check } from '../images/check.svg';
+import { ReactComponent as Rubbish } from '../images/rubbish.svg';
 import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -13,25 +15,39 @@ function NewChecklistItem(data?) {
 }
 
 function Form(props) {
+  const iChecklist = props.data && typeof props.data !== 'string';
+  const [checklist, setChecklist] = useState(iChecklist);
+
+  const [data, setData] = useState(iChecklist ? '' : props.data);
+
+  const iChecklistData = iChecklist ? props.data : NewChecklistItem();
+  const [checklistData, setChecklistData] = useState(iChecklistData);
+
+  const [taskID, settaskID] = useState(props.id ? props.id : '');
+
   const [isEditing, setEditing] = useState(false);
-  const [data, setData] = useState('');
-  const [checklistData, setChecklistData] = useState([NewChecklistItem()]);
   const [newItemId, setNewItemId] = useState('');
-  const [checklist, setChecklist] = useState(false);
-  const inputLabel = 'Add a task';
-  const addButtonLabel = 'Add';
+  const newTask = props.id === 'new-task';
+  const inputLabel = newTask ? 'Add task' : 'Edit task';
   const lastRef = useRef(null);
+  const completeLabel = props.done ? 'Restore' : 'Complete';
 
   function handleSubmit(e) {
     e.preventDefault();
-    checklist ? props.addTask(checklistData) : props.addTask(data);
-    setData('');
-    setChecklistData([NewChecklistItem()]);
+    const newData = checklist ? checklistData : data;
+    if (newTask) {
+      props.addTask(newData);
+      setData('');
+      setChecklistData([NewChecklistItem()]);
+    } else {
+      props.editTask(props.id, newData);
+    }
     setEditing(false);
   }
 
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
+      checklist ? setChecklistData(props.data) : setData(props.data);
       setEditing(false);
     }
   }
@@ -73,7 +89,7 @@ function Form(props) {
   function dataArea(item?, index?) {
     return (
       <TextareaAutosize
-        id={item ? item.id : 'add-task'}
+        id={`edit-${props.id}`}
         name="data"
         className="input"
         value={item ? item.data : data}
@@ -81,28 +97,64 @@ function Form(props) {
         onInput={(e) => handleInput(e, index)}
         onFocus={() => setEditing(true)}
         placeholder={inputLabel}
+        aria-label={inputLabel}
         rows="1"
         ref={item && item.id === newItemId ? lastRef : undefined}
       />
     );
   }
 
-  const checklistGroup = (
-    <ul>
-      {checklistData.map((item, i) => (
-        <li key={i}>
-          <input type="checkbox" aria-label="done" />
-          {dataArea(item, i)}
-        </li>
-      ))}
-    </ul>
+  function checklistGroup() {
+    return (
+      <ul>
+        {checklistData.map((item, i) => (
+          <li key={i}>
+            <input type="checkbox" aria-label="done" />
+            {dataArea(item, i)}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  const editingTools = (
+    <>
+      <button type="submit" className="btn">
+        Save <span className="visually-hidden">{props.id}</span>
+      </button>
+      <button type="button" className="btn" onClick={blurCancel}>
+        Cancel <span className="visually-hidden">{props.id}</span>
+      </button>
+      <button
+        type="button"
+        className="btn btn__icon"
+        onClick={() => props.toggleTaskDone(props.id)}
+      >
+        <Check aria-hidden="true" />
+        <span className="visually-hidden">
+          {completeLabel} {props.id}
+        </span>
+      </button>
+      <button
+        type="button"
+        className="btn btn__icon"
+        onClick={() => props.deleteTask(props.id)}
+      >
+        <Rubbish aria-hidden="true" />
+        <span className="visually-hidden">Delete {props.id}</span>
+      </button>
+    </>
   );
 
-  const editingTemplate = (
+  const addingTools = (
+    <button type="submit" className="btn" id="add-button">
+      Add
+    </button>
+  );
+
+  const toolbar = (
     <div className="btn-group">
-      <button type="submit" className="btn" id="add-button">
-        {addButtonLabel}
-      </button>
+      {newTask ? addingTools : editingTools}
       <button
         type="button"
         className="btn btn__icon"
@@ -120,12 +172,9 @@ function Form(props) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} onBlur={blurCancel}>
-        <label htmlFor="add-task" className="visually-hidden">
-          {inputLabel}
-        </label>
-        {checklist ? checklistGroup : dataArea()}
-        {isEditing ? editingTemplate : ''}
+      <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id}>
+        {checklist ? checklistGroup() : dataArea()}
+        {isEditing && toolbar}
       </form>
     </>
   );

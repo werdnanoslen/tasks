@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
-import Task from './components/Task';
 import { nanoid } from 'nanoid';
 
 function usePrevious(value) {
@@ -56,7 +55,7 @@ function App(props) {
   const taskList = tasks
     .filter(FILTER_MAP[filter])
     .map((task) => (
-      <Task
+      <Form
         id={task.id}
         data={task.data}
         done={task.done}
@@ -95,9 +94,10 @@ function App(props) {
       <div id="controls">
         <div id="header">
           <h1>Tasks</h1>
+          <button onClick={() => console.log(tasks)}>test</button>
           <div className="filters">{filterList}</div>
         </div>
-        {filter === 'Doing' && <Form addTask={addTask} />}
+        {filter === 'Doing' && <Form addTask={addTask} id="new-task" />}
       </div>
       <ul
         role="list"
