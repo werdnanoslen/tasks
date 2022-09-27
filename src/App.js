@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Form from './components/Form';
+import Task from './components/Task';
 import FilterButton from './components/FilterButton';
 import { nanoid } from 'nanoid';
 
@@ -55,7 +55,7 @@ function App(props) {
   const taskList = tasks
     .filter(FILTER_MAP[filter])
     .map((task) => (
-      <Form
+      <Task
         id={task.id}
         data={task.data}
         done={task.done}
@@ -97,7 +97,7 @@ function App(props) {
           <button onClick={() => console.log(tasks)}>test</button>
           <div className="filters">{filterList}</div>
         </div>
-        {filter === 'Doing' && <Form addTask={addTask} id="new-task" />}
+        {filter === 'Doing' && <Task addTask={addTask} id="new-task" />}
       </div>
       <ul
         role="list"
