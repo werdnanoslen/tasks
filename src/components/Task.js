@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ReactComponent as Checkbox } from '../images/checkbox.svg';
 import { ReactComponent as Check } from '../images/check.svg';
 import { ReactComponent as Rubbish } from '../images/rubbish.svg';
+import { ReactComponent as Pin } from '../images/pin.svg';
 import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -122,9 +123,6 @@ function Form(props) {
       <button type="submit" className="btn">
         Save <span className="visually-hidden">{props.id}</span>
       </button>
-      <button type="button" className="btn" onClick={blurCancel}>
-        Cancel <span className="visually-hidden">{props.id}</span>
-      </button>
       <button
         type="button"
         className="btn btn__icon"
@@ -142,6 +140,14 @@ function Form(props) {
       >
         <Rubbish aria-hidden="true" />
         <span className="visually-hidden">Delete {props.id}</span>
+      </button>
+      <button
+        type="button"
+        className="btn btn__icon"
+        onClick={() => props.toggleTaskPinned(props.id)}
+      >
+        <Pin aria-hidden="true" />
+        <span className="visually-hidden">{props.pinned && 'Un-'}Pin task</span>
       </button>
     </>
   );

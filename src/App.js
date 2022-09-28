@@ -24,11 +24,18 @@ function App(props) {
 
   function toggleTaskDone(id) {
     const updatedTasks = tasks.map((task) => {
-      // if this task has the same ID as the edited task
       if (id === task.id) {
-        // use object spread to make a new obkect
-        // whose `done` prop has been inverted
         return { ...task, done: !task.done };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  }
+
+  function toggleTaskPinned(id) {
+    const updatedTasks = tasks.map((task) => {
+      if (id === task.id) {
+        return { ...task, pinned: !task.pinned };
       }
       return task;
     });
@@ -52,19 +59,43 @@ function App(props) {
     setTasks(editedTaskList);
   }
 
-  const taskList = tasks
+  const taskListUnpinned = tasks
     .filter(FILTER_MAP[filter])
-    .map((task) => (
-      <Task
-        id={task.id}
-        data={task.data}
-        done={task.done}
-        key={task.id}
-        toggleTaskDone={toggleTaskDone}
-        deleteTask={deleteTask}
-        editTask={editTask}
-      />
-    ));
+    .map(
+      (task) =>
+        !task.pinned && (
+          <Task
+            id={task.id}
+            data={task.data}
+            done={task.done}
+            toggleTaskDone={toggleTaskDone}
+            pinned={task.pinned}
+            toggleTaskPinned={toggleTaskPinned}
+            key={task.id}
+            deleteTask={deleteTask}
+            editTask={editTask}
+          />
+        )
+    );
+
+  const taskListPinned = tasks
+    .filter(FILTER_MAP[filter])
+    .map(
+      (task) =>
+        task.pinned && (
+          <Task
+            id={task.id}
+            data={task.data}
+            done={task.done}
+            toggleTaskDone={toggleTaskDone}
+            pinned={task.pinned}
+            toggleTaskPinned={toggleTaskPinned}
+            key={task.id}
+            deleteTask={deleteTask}
+            editTask={editTask}
+          />
+        )
+    );
 
   const filterList = FILTER_TASKS.map((data) => (
     <FilterButton
@@ -105,7 +136,8 @@ function App(props) {
         aria-labelledby="list-heading"
         ref={listHeadingRef}
       >
-        {taskList}
+        {taskListPinned}
+        {taskListUnpinned}
       </ul>
     </>
   );
