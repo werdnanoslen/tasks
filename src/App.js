@@ -125,7 +125,6 @@ function App(props) {
       <div id="controls">
         <div id="header">
           <h1>Tasks</h1>
-          <button onClick={() => console.log(tasks)}>test</button>
           <div className="filters">{filterList}</div>
         </div>
         {filter === 'Doing' && <Task addTask={addTask} id="new-task" />}
