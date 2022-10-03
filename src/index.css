@@ -63,14 +63,13 @@ form:focus-within .btn-group {
 }
 .input {
   background-color: initial;
-  width: 100%;
   resize: none;
   overflow: hidden;
-  min-height: 1rem;
   border: none;
   box-sizing: border-box;
   line-height: 1;
   padding: 0;
+  flex-grow: 1;
 }
 .input:focus {
   border: none;
@@ -123,16 +122,8 @@ form ul,
   padding: 0;
   margin: 0;
 }
-form li,
-.task li {
-  display: flex;
-}
 form li + li {
   margin-top: 0.5rem;
-}
-form li input,
-.task li input {
-  margin-right: 1rem;
 }
 form .btn-group {
   display: flex;
@@ -180,21 +171,14 @@ form .btn-group button:focus {
   flex-direction: row;
   flex-wrap: wrap;
   list-style-type: none;
+  gap: 1rem;
 }
 .task {
   margin: 1em;
   width: 24rem;
   max-width: 100%;
+  list-style-type: none;
 }
-.task-label > * {
-  margin-top: 0;
-}
-.task-text {
+#edit-new-task {
   width: 100%;
-  min-height: 4.4rem;
-  padding: 0.4rem 0.8rem;
-  border: 2px solid #565656;
-}
-#add-task {
-  white-space: pre-wrap;
 }

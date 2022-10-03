@@ -177,12 +177,17 @@ function Form(props) {
   }, [checklistData]);
 
   return (
-    <>
-      <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id}>
+    <li className="task">
+      <form
+        onSubmit={handleSubmit}
+        onBlur={blurCancel}
+        id={props.id}
+        className="task-view"
+      >
         {checklist ? checklistGroup() : dataArea()}
         {isEditing && toolbar}
       </form>
-    </>
+    </li>
   );
 }
 
