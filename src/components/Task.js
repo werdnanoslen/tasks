@@ -6,6 +6,7 @@ import { ReactComponent as Rubbish } from '../images/rubbish.svg';
 import { ReactComponent as Pin } from '../images/pin.svg';
 import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
+import { ReactSortable } from 'react-sortablejs';
 
 function NewChecklistItem(data?) {
   return {
@@ -105,13 +106,11 @@ function Form(props) {
     );
   }
 
-  function handleDrag() {}
-
   function checklistGroup() {
     return (
-      <ul>
+      <ReactSortable tag="ul" list={checklistData} setList={setChecklistData}>
         {checklistData.map((item, i) => (
-          <li draggable key={i} onDrag={handleDrag()}>
+          <li key={i}>
             <div className="list-controls">
               <button className="btn btn__icon btn__drag">
                 {String.fromCharCode(8661)}
@@ -121,7 +120,7 @@ function Form(props) {
             {dataArea(item, i)}
           </li>
         ))}
-      </ul>
+      </ReactSortable>
     );
   }
 

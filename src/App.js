@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Task from './components/Task';
 import FilterButton from './components/FilterButton';
 import { nanoid } from 'nanoid';
+import { ReactSortable } from 'react-sortablejs';
 
 function usePrevious(value) {
   const ref = useRef();
