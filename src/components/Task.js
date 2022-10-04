@@ -105,12 +105,19 @@ function Form(props) {
     );
   }
 
+  function handleDrag() {}
+
   function checklistGroup() {
     return (
       <ul>
         {checklistData.map((item, i) => (
-          <li key={i}>
-            <input type="checkbox" aria-label="done" />
+          <li draggable key={i} onDrag={handleDrag()}>
+            <div className="list-controls">
+              <button className="btn btn__icon btn__drag">
+                {String.fromCharCode(8661)}
+              </button>
+              <input type="checkbox" aria-label="done" />
+            </div>
             {dataArea(item, i)}
           </li>
         ))}
