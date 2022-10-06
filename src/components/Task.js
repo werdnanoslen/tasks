@@ -22,7 +22,7 @@ function Form(props) {
 
   const [data, setData] = useState(iChecklist ? '' : props.data);
 
-  const iChecklistData = iChecklist ? props.data : NewChecklistItem();
+  const iChecklistData = iChecklist ? props.data : [NewChecklistItem()];
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
   const [taskID, settaskID] = useState(props.id ? props.id : '');
@@ -49,7 +49,7 @@ function Form(props) {
 
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      checklist ? setChecklistData(props.data) : setData(props.data);
+      checklist ? setChecklistData(iChecklistData) : setData(props.data);
       setEditing(false);
     }
   }
@@ -83,8 +83,11 @@ function Form(props) {
       const listify = (p, c, i) => p.concat((i ? n : '') + c.data);
       setData(checklistData.reduce(listify, ''));
     } else {
-      const unlistify = data.split(n).map((line) => NewChecklistItem(line));
-      setChecklistData(unlistify);
+      if (data && data.length > 0) {
+        setChecklistData(data.split(n).map((line) => NewChecklistItem(line)));
+      } else {
+        setChecklistData([NewChecklistItem()]);
+      }
     }
   }
 
