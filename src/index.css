@@ -67,6 +67,9 @@ form:focus-within .btn-group {
   border: none;
   outline: none;
 }
+form > .input {
+  width: 100%;
+}
 input[type='checkbox'] {
   -webkit-appearance: none;
   appearance: none;
