@@ -123,19 +123,12 @@ function App(props) {
 
   return (
     <>
-      <div id="controls">
-        <div id="header">
-          <h1>Tasks</h1>
-          <div className="filters">{filterList}</div>
-        </div>
+      <header>
+        <h1>Tasks</h1>
+        <div className="filters">{filterList}</div>
+      </header>
+      <ul role="main" ref={listHeadingRef}>
         {filter === 'Doing' && <Task addTask={addTask} id="new-task" />}
-      </div>
-      <ul
-        role="list"
-        className="task-list stack-exception"
-        aria-labelledby="list-heading"
-        ref={listHeadingRef}
-      >
         {taskListPinned}
         {taskListUnpinned}
       </ul>

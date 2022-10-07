@@ -50,6 +50,7 @@ function Form(props) {
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       checklist ? setChecklistData(iChecklistData) : setData(props.data);
+      setChecklist(false);
       setEditing(false);
     }
   }
@@ -187,12 +188,7 @@ function Form(props) {
 
   return (
     <li className="task">
-      <form
-        onSubmit={handleSubmit}
-        onBlur={blurCancel}
-        id={props.id}
-        className="task-view"
-      >
+      <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id}>
         {checklist ? checklistGroup() : dataArea()}
         {isEditing && toolbar}
       </form>

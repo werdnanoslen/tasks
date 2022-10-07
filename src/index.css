@@ -10,14 +10,9 @@ textarea {
   color: #ffffff;
 }
 body {
-  max-width: 1600px;
-  padding: 0 1em;
+  padding: 0 2rem;
 }
-#controls {
-  max-width: 40em;
-  margin: 0 auto;
-}
-#header {
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -43,16 +38,13 @@ body {
 .filters button:last-child {
   border-radius: 0 0.5rem 0.5rem 0;
 }
-form,
-.task-view {
-  margin-top: 1rem;
+form {
   border: 1px lightgrey solid;
   border-radius: 0.5rem;
   position: relative;
   padding: 1.25rem;
 }
-form:focus-within,
-.task-view:focus-within {
+form:focus-within {
   border: 1px lightblue outset;
   outline: 1px lightblue solid;
   padding-bottom: 0;
@@ -163,25 +155,24 @@ form .btn-group button:focus {
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap;
 }
-.stack-exception {
-  margin-top: 1.2rem;
-}
-.task-list,
+ul[role="main"],
 .task li {
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
-  list-style-type: none;
   gap: 1rem;
 }
+ul[role="main"] {
+  margin: 0;
+  padding: 0;
+}
 .task {
-  margin: 1em;
-  width: 24rem;
-  max-width: 100%;
+  width: auto;
+  max-width: 24rem;
   list-style-type: none;
 }
-form > #edit-new-task {
-  width: 100%;
+#new-task {
+  background-color: rgba(173, 216, 230, 0.05);
+  border-color: lightblue;
 }
 .list-controls {
   display: flex;
