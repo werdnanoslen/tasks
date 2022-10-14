@@ -17,6 +17,9 @@ header {
   justify-content: space-between;
   align-items: center;
 }
+.hide {
+  display: none;
+}
 .btn {
   padding: 0.5rem;
   cursor: pointer;
@@ -158,14 +161,13 @@ form .btn-group button:focus {
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap;
 }
-ul[role="main"],
+main > ul,
 .task li {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
-ul[role="main"] {
-  margin: 0;
+main > ul {
   padding: 0;
 }
 .task {

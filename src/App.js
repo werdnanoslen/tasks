@@ -34,12 +34,20 @@ function App(props) {
   }
 
   function toggleTaskPinned(id) {
-    const updatedTasks = tasks.map((task) => {
+    let updatedTasks = [...tasks];
+    let fromIndex = -1;
+    let toIndex = -1;
+    let updatedTask: Task;
+    tasks.forEach((task, i) => {
       if (id === task.id) {
-        return { ...task, pinned: !task.pinned };
+        fromIndex = i;
+        updatedTask = { ...task, pinned: !task.pinned };
+      } else {
+        if (task.pinned) toIndex = i + 1;
       }
-      return task;
     });
+    updatedTasks.splice(fromIndex, 1)[0];
+    updatedTasks.splice(toIndex, 0, updatedTask);
     setTasks(updatedTasks);
   }
 
@@ -60,44 +68,6 @@ function App(props) {
     setTasks(editedTaskList);
   }
 
-  const taskListUnpinned = tasks
-    .filter(FILTER_MAP[filter])
-    .map(
-      (task) =>
-        !task.pinned && (
-          <Task
-            id={task.id}
-            data={task.data}
-            done={task.done}
-            toggleTaskDone={toggleTaskDone}
-            pinned={task.pinned}
-            toggleTaskPinned={toggleTaskPinned}
-            key={task.id}
-            deleteTask={deleteTask}
-            editTask={editTask}
-          />
-        )
-    );
-
-  const taskListPinned = tasks
-    .filter(FILTER_MAP[filter])
-    .map(
-      (task) =>
-        task.pinned && (
-          <Task
-            id={task.id}
-            data={task.data}
-            done={task.done}
-            toggleTaskDone={toggleTaskDone}
-            pinned={task.pinned}
-            toggleTaskPinned={toggleTaskPinned}
-            key={task.id}
-            deleteTask={deleteTask}
-            editTask={editTask}
-          />
-        )
-    );
-
   const filterList = FILTER_TASKS.map((data) => (
     <FilterButton
       key={data}
@@ -109,7 +79,14 @@ function App(props) {
 
   function addTask(data) {
     const newTask = { id: 'task-' + nanoid(), data: data, done: false };
-    setTasks([...tasks, newTask]);
+    let updatedTasks = [...tasks];
+    for (var i = 0; i < tasks.length; i++) {
+      if (!tasks[i].pinned) {
+        updatedTasks.splice(i, 0, newTask);
+        break;
+      }
+    }
+    setTasks(updatedTasks);
   }
 
   const listHeadingRef = useRef(null);
@@ -127,11 +104,24 @@ function App(props) {
         <h1>Tasks</h1>
         <div className="filters">{filterList}</div>
       </header>
-      <ul role="main" ref={listHeadingRef}>
-        {filter === 'Doing' && <Task addTask={addTask} id="new-task" />}
-        {taskListPinned}
-        {taskListUnpinned}
-      </ul>
+      <main ref={listHeadingRef}>
+        <ReactSortable tag="ul" list={tasks} setList={setTasks} id="TaskList">
+          <Task addTask={addTask} id="new-task" hide={'Done' === filter} />
+          {tasks.filter(FILTER_MAP[filter]).map((task) => (
+            <Task
+              id={task.id}
+              data={task.data}
+              done={task.done}
+              toggleTaskDone={toggleTaskDone}
+              pinned={task.pinned}
+              toggleTaskPinned={toggleTaskPinned}
+              key={task.id}
+              deleteTask={deleteTask}
+              editTask={editTask}
+            />
+          ))}
+        </ReactSortable>
+      </main>
     </>
   );
 }
