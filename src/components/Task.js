@@ -186,13 +186,13 @@ function Form(props) {
     if (lastRef.current) lastRef.current.focus();
   }, [checklistData]);
 
-  return React.createElement(
-    newTask ? 'li' : 'li',
-    { className: `task ${props.hide ? 'hide' : ''}` },
-    <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id}>
-      {checklist ? checklistGroup() : dataArea()}
-      {isEditing && toolbar}
-    </form>
+  return (
+    <li className={`task ${props.hide ? 'hide' : ''}`}>
+      <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id}>
+        {checklist ? checklistGroup() : dataArea()}
+        {isEditing && toolbar}
+      </form>
+    </li>
   );
 }
 

@@ -105,7 +105,14 @@ function App(props) {
         <div className="filters">{filterList}</div>
       </header>
       <main ref={listHeadingRef}>
-        <ReactSortable tag="ul" list={tasks} setList={setTasks} id="TaskList">
+        <ReactSortable
+          tag="ul"
+          list={tasks}
+          setList={setTasks}
+          id="TaskList"
+          filter="#new-task"
+          preventOnFilter={false}
+        >
           <Task addTask={addTask} id="new-task" hide={'Done' === filter} />
           {tasks.filter(FILTER_MAP[filter]).map((task) => (
             <Task
