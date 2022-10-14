@@ -50,7 +50,7 @@ function Form(props) {
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       checklist ? setChecklistData(iChecklistData) : setData(props.data);
-      setChecklist(false);
+      newTask && setChecklist(false);
       setEditing(false);
     }
   }
