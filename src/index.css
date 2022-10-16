@@ -184,7 +184,8 @@ main > ul {
   gap: 0.5rem;
   margin-left: -0.625rem;
 }
-.btn__drag {
+.btn__drag,
+.btn__close {
   width: auto;
   height: 1rem;
   cursor: grab;
@@ -192,6 +193,9 @@ main > ul {
   display: flex;
   opacity: 0;
 }
-.task li:hover .btn__drag {
+.btn__close {
+  cursor: pointer;
+}
+.task li:hover .btn__icon {
   opacity: 1;
 }

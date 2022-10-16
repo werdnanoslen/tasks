@@ -66,6 +66,16 @@ function Form(props) {
     }
   }
 
+  function deleteListItem(id) {
+    const remainingItems = checklistData.filter((item) => id !== item.id);
+    setChecklistData(remainingItems);
+    if (remainingItems.length === 0) {
+      setChecklistData(iChecklistData);
+      setChecklist(false);
+      setData('');
+    }
+  }
+
   function handleInput(e, i) {
     const input = e.target.value;
     if (checklist) {
@@ -117,11 +127,19 @@ function Form(props) {
           <li key={i}>
             <div className="list-controls">
               <button className="btn btn__icon btn__drag">
-                {String.fromCharCode(8661)}
+                <span className="visually-hidden">Move list item</span>
+                <span aria-hidden="true">{String.fromCharCode(8661)}</span>
               </button>
               <input type="checkbox" aria-label="done" />
             </div>
             {dataArea(item, i)}
+            <button
+              className="btn btn__icon btn__close"
+              onClick={() => deleteListItem(item.id)}
+            >
+              <span className="visually-hidden">Delete list item</span>
+              <span aria-hidden="true">{String.fromCharCode(10005)}</span>
+            </button>
           </li>
         ))}
       </ReactSortable>
