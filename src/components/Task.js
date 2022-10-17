@@ -1,4 +1,3 @@
-//https://www.robinwieruch.de/react-update-item-in-list/
 import React, { useState, useRef, useEffect } from 'react';
 import { ReactComponent as Checkbox } from '../images/checkbox.svg';
 import { ReactComponent as Check } from '../images/check.svg';
@@ -29,6 +28,7 @@ function Form(props) {
 
   const [isEditing, setEditing] = useState(false);
   const [newItemId, setNewItemId] = useState('');
+  const [isMoving, setIsMoving] = useState(false);
   const newTask = props.id === 'new-task';
   const inputLabel = newTask ? 'Add task' : 'Edit task';
   const lastRef = useRef(null);
@@ -99,6 +99,25 @@ function Form(props) {
       } else {
         setChecklistData([NewChecklistItem()]);
       }
+    }
+  }
+
+  function moveTask(e) {
+    if (newTask) return;
+    switch (e.key) {
+      case ' ':
+      case 'Enter':
+        setIsMoving((prevIsMoving) => !prevIsMoving);
+        props.moveTask(props.id, 0, !isMoving);
+        break;
+      case 'ArrowRight':
+      case 'ArrowDown':
+        isMoving && props.moveTask(props.id, 1);
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        isMoving && props.moveTask(props.id, -1);
+        break;
     }
   }
 
@@ -205,7 +224,23 @@ function Form(props) {
   }, [checklistData]);
 
   return (
-    <li className={`task ${props.hide ? 'hide' : ''}`}>
+    <li
+      className={`task ${props.hide ? 'hide' : ''} ${isMoving ? 'moving' : ''}`}
+      tabIndex={isMoving ? 0 : props.movement ? -1 : 0}
+      name="Task"
+      draggable="true"
+      role="option"
+      aria-describedby={newTask ? 'instructions' : ''}
+      aria-grabbed={isMoving}
+      aria-dropeffect={isMoving ? 'move' : 'none'}
+      onKeyDown={(e) => moveTask(e)}
+      onBlur={(e) => {
+        if (isMoving) {
+          setIsMoving(false);
+          props.moveTask(props.id, 0, false);
+        }
+      }}
+    >
       <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id}>
         {checklist ? checklistGroup() : dataArea()}
         {isEditing && toolbar}

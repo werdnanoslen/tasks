@@ -172,8 +172,13 @@ main > ul {
 }
 .task {
   width: auto;
+  height: fit-content;
   max-width: 24rem;
   list-style-type: none;
+  cursor: move;
+}
+li.moving:focus-visible {
+  outline: 2px dashed red;
 }
 #new-task {
   background-color: rgba(173, 216, 230, 0.05);

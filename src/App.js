@@ -22,6 +22,8 @@ const FILTER_TASKS = Object.keys(FILTER_MAP);
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
   const [filter, setFilter] = useState('Doing');
+  const [narrator, setNarrator] = useState('');
+  const [movement, setMovement] = useState(false);
 
   function toggleTaskDone(id) {
     const updatedTasks = tasks.map((task) => {
@@ -49,6 +51,36 @@ function App(props) {
     updatedTasks.splice(fromIndex, 1)[0];
     updatedTasks.splice(toIndex, 0, updatedTask);
     setTasks(updatedTasks);
+  }
+
+  function moveTask(id, indexes: Number, moving?: Boolean) {
+    let updatedTasks = [...tasks];
+    const fromIndex: Number = tasks.findIndex((task) => id === task.id);
+    if (moving !== undefined) {
+      if (moving) {
+        setNarrator(
+          `Grabbed task at position ${
+            fromIndex + 1
+          }. Use arrows to change position, spacebar to drop.`
+        );
+        setMovement(true);
+      } else {
+        setNarrator(`Dropped task at position ${fromIndex + 1}.`);
+        setMovement(false);
+      }
+      return;
+    }
+    const toIndex: Number = fromIndex + indexes;
+    if (toIndex < 0 || toIndex > updatedTasks.length) return;
+    const task = tasks[fromIndex];
+    updatedTasks.splice(fromIndex, 1)[0];
+    updatedTasks.splice(toIndex, 0, task);
+    setTasks(updatedTasks);
+    setNarrator(
+      `Moved to position ${
+        toIndex + 1
+      }. Use arrows to change position, spacebar to drop.`
+    );
   }
 
   function deleteTask(id) {
@@ -105,12 +137,25 @@ function App(props) {
         <div className="filters">{filterList}</div>
       </header>
       <main ref={listHeadingRef}>
+        <div id="instructions" className="visually-hidden">
+          Press spacebar to move task with arrow keys
+        </div>
+        <div
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          tabIndex="-1"
+          className="visually-hidden"
+        >
+          {narrator}
+        </div>
         <ReactSortable
           tag="ul"
           list={tasks}
           setList={setTasks}
           id="TaskList"
           filter="#new-task"
+          role="listbox"
           preventOnFilter={false}
         >
           <Task addTask={addTask} id="new-task" hide={'Done' === filter} />
@@ -122,6 +167,8 @@ function App(props) {
               toggleTaskDone={toggleTaskDone}
               pinned={task.pinned}
               toggleTaskPinned={toggleTaskPinned}
+              moveTask={moveTask}
+              movement={movement}
               key={task.id}
               deleteTask={deleteTask}
               editTask={editTask}
