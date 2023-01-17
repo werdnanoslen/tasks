@@ -26,7 +26,7 @@ function Form(props) {
 
   const [taskID, settaskID] = useState(props.id ? props.id : '');
 
-  const [isEditing, setEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [newItemId, setNewItemId] = useState('');
   const [isMoving, setIsMoving] = useState(false);
   const newTask = props.id === 'new-task';
@@ -44,14 +44,14 @@ function Form(props) {
     } else {
       props.editTask(props.id, newData);
     }
-    setEditing(false);
+    setIsEditing(false);
   }
 
   function blurCancel(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       checklist ? setChecklistData(iChecklistData) : setData(props.data);
       setChecklist(iChecklist);
-      setEditing(false);
+      setIsEditing(false);
     }
   }
 
@@ -130,7 +130,7 @@ function Form(props) {
         value={item ? item.data : data}
         onKeyDown={(e) => addChecklistItem(e, index)}
         onInput={(e) => handleInput(e, index)}
-        onFocus={() => setEditing(true)}
+        onFocus={() => setIsEditing(true)}
         placeholder={inputLabel}
         aria-label={inputLabel}
         rows="1"
@@ -241,7 +241,7 @@ function Form(props) {
         }
       }}
     >
-      <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id}>
+      <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id} className={isEditing && 'isEditing'}>
         {checklist ? checklistGroup() : dataArea()}
         {isEditing && toolbar}
       </form>

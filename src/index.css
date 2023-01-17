@@ -47,12 +47,12 @@ form {
   position: relative;
   padding: 1.25rem;
 }
-form:focus-within {
+form.isEditing {
   border: 1px lightblue outset;
   outline: 1px lightblue solid;
   padding-bottom: 0;
 }
-form:focus-within .btn-group {
+form.isEditing .btn-group {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
