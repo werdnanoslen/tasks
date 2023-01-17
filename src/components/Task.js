@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
 
-function NewChecklistItem(data?) {
+function NewChecklistItem(data) {
   return {
     id: 'task-' + nanoid(),
     data: data ? data : '',
@@ -121,7 +121,7 @@ function Form(props) {
     }
   }
 
-  function dataArea(item?, index?) {
+  function dataArea(item, index) {
     return (
       <TextareaAutosize
         id={`edit-${props.id}`}
