@@ -90,9 +90,7 @@ function App(props) {
 
   function editTask(id, newData) {
     const editedTaskList = tasks.map((task) => {
-      // if this task has the same ID as the edited task
       if (id === task.id) {
-        //
         return { ...task, data: newData };
       }
       return task;
@@ -125,10 +123,11 @@ function App(props) {
   const prevTaskLength = usePrevious(tasks.length);
 
   useEffect(() => {
+    console.table(tasks);
     if (tasks.length - prevTaskLength === -1) {
       listHeadingRef.current.focus();
     }
-  }, [tasks.length, prevTaskLength]);
+  }, [tasks, prevTaskLength]);
 
   return (
     <>

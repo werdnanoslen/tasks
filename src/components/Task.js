@@ -35,7 +35,7 @@ function Form(props) {
   const completeLabel = props.done ? 'Restore' : 'Complete';
 
   function handleSubmit(e) {
-    e.preventDefault();
+    e && e.preventDefault();
     const newData = checklist ? checklistData : data;
     if (newTask) {
       props.addTask(newData);
@@ -74,6 +74,18 @@ function Form(props) {
       setChecklist(false);
       setData('');
     }
+    handleSubmit();
+  }
+
+  function toggleListItemDone(id) {
+    const updatedItems = [...checklistData]
+    updatedItems.forEach((item) => {
+      if (id === item.id) {
+        item.done = !item.done
+      }
+    });
+    setChecklistData(updatedItems);
+    handleSubmit();
   }
 
   function handleInput(e, i) {
@@ -149,7 +161,7 @@ function Form(props) {
                 <span className="visually-hidden">Move list item</span>
                 <span aria-hidden="true">{String.fromCharCode(8661)}</span>
               </button>
-              <input type="checkbox" aria-label="done" />
+              <input type="checkbox" defaultChecked={item.done} aria-label="done" onClick={() => toggleListItemDone(item.id)} />
             </div>
             {dataArea(item, i)}
             <button
@@ -233,6 +245,7 @@ function Form(props) {
       aria-describedby={newTask ? 'instructions' : ''}
       aria-grabbed={isMoving}
       aria-dropeffect={isMoving ? 'move' : 'none'}
+      onDragEnd={handleSubmit}
       onKeyDown={(e) => moveTask(e)}
       onBlur={(e) => {
         if (isMoving) {
