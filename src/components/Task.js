@@ -115,7 +115,7 @@ function Form(props) {
       }
       setChecklistData(newData)
     }
-    props.editTask(props.id, newData);
+    !newTask && props.editTask(props.id, newData);
   }
 
   function moveTask(e) {
