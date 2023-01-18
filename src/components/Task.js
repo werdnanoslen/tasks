@@ -102,16 +102,20 @@ function Form(props) {
   function toggleChecklist() {
     setChecklist((prevChecklist) => !prevChecklist);
     const n = String.fromCharCode(10); //newline character
+    let newData
     if (checklist) {
       const listify = (p, c, i) => p.concat((i ? n : '') + c.data);
-      setData(checklistData.reduce(listify, ''));
+      newData = checklistData.reduce(listify, '');
+      setData(newData);
     } else {
       if (data && data.length > 0) {
-        setChecklistData(data.split(n).map((line) => NewChecklistItem(line)));
+        newData = data.split(n).map((line) => NewChecklistItem(line));
       } else {
-        setChecklistData([NewChecklistItem()]);
+        newData = [NewChecklistItem()]
       }
+      setChecklistData(newData)
     }
+    props.editTask(props.id, newData);
   }
 
   function moveTask(e) {
