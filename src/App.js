@@ -151,7 +151,7 @@ function App(props) {
         <ReactSortable
           tag="ul"
           list={tasks}
-          setList={setTasks}
+          setList={(newItems, _, {dragging}) => {dragging && setTasks(newItems)}}
           id="TaskList"
           filter="#new-task"
           role="listbox"

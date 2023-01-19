@@ -63,6 +63,7 @@ function Form(props) {
       setNewItemId(newItem.id);
       newList.splice(i + 1, 0, newItem);
       setChecklistData(newList);
+      !newTask && handleSubmit();
     }
   }
 
@@ -74,7 +75,7 @@ function Form(props) {
       setChecklist(false);
       setData('');
     }
-    handleSubmit();
+    !newTask && handleSubmit();
   }
 
   function toggleListItemDone(id) {
@@ -85,7 +86,7 @@ function Form(props) {
       }
     });
     setChecklistData(updatedItems);
-    handleSubmit();
+    !newTask && handleSubmit();
   }
 
   function handleInput(e, i) {
@@ -97,6 +98,7 @@ function Form(props) {
     } else {
       setData(input);
     }
+    !newTask && handleSubmit();
   }
 
   function toggleChecklist() {
@@ -157,7 +159,7 @@ function Form(props) {
 
   function checklistGroup() {
     return (
-      <ReactSortable tag="ul" list={checklistData} setList={setChecklistData}>
+      <ReactSortable tag="ul" list={checklistData} setList={(newItems, _, {dragging}) => {dragging && setChecklistData(newItems)}}>
         {checklistData.map((item, i) => (
           <li key={i}>
             <div className="list-controls">
@@ -247,9 +249,7 @@ function Form(props) {
       draggable="true"
       role="option"
       aria-describedby={newTask ? 'instructions' : ''}
-      aria-grabbed={isMoving}
-      aria-dropeffect={isMoving ? 'move' : 'none'}
-      onDragEnd={handleSubmit}
+      onDragEnd={newTask ? null : handleSubmit}
       onKeyDown={(e) => moveTask(e)}
       onBlur={(e) => {
         if (isMoving) {
@@ -258,7 +258,7 @@ function Form(props) {
         }
       }}
     >
-      <form onSubmit={handleSubmit} onBlur={blurCancel} id={props.id} className={isEditing ? 'isEditing' : undefined}>
+      <form onSubmit={handleSubmit} onBlur={handleSubmit} id={props.id} className={isEditing ? 'isEditing' : undefined}>
         {checklist ? checklistGroup() : dataArea()}
         {isEditing && toolbar}
       </form>
