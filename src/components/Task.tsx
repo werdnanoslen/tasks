@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ReactComponent as Checkbox } from '../images/checkbox.svg';
-import { ReactComponent as Check } from '../images/check.svg';
-import { ReactComponent as Rubbish } from '../images/rubbish.svg';
-import { ReactComponent as Pin } from '../images/pin.svg';
+import checkbox from '../images/checkbox.svg';
+import check from '../images/check.svg';
+import rubbish from '../images/rubbish.svg';
+import pin from '../images/pin.svg';
 import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
 
-function NewChecklistItem(data) {
+function NewChecklistItem(data?) {
   return {
     id: 'task-' + nanoid(),
     data: data ? data : '',
@@ -31,10 +31,10 @@ function Form(props) {
   const [isMoving, setIsMoving] = useState(false);
   const newTask = props.id === 'new-task';
   const inputLabel = newTask ? 'Add task' : 'Edit task';
-  const lastRef = useRef(null);
+  const lastRef = useRef<HTMLTextAreaElement>(null);
   const completeLabel = props.done ? 'Restore' : 'Complete';
 
-  function handleSubmit(e) {
+  function handleSubmit(e?) {
     e && e.preventDefault();
     const newData = checklist ? checklistData : data;
     if (newTask) {
@@ -139,7 +139,7 @@ function Form(props) {
     }
   }
 
-  function dataArea(item, index) {
+  function dataArea(item?, index?) {
     return (
       <TextareaAutosize
         id={`edit-${props.id}`}
@@ -151,7 +151,7 @@ function Form(props) {
         onFocus={() => setIsEditing(true)}
         placeholder={inputLabel}
         aria-label={inputLabel}
-        rows="1"
+        rows={1}
         ref={item && item.id === newItemId ? lastRef : undefined}
       />
     );
@@ -193,7 +193,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.toggleTaskDone(props.id)}
       >
-        <Check aria-hidden="true" />
+        <img src={check} aria-hidden="true" />
         <span className="visually-hidden">
           {completeLabel} {props.id}
         </span>
@@ -203,7 +203,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.deleteTask(props.id)}
       >
-        <Rubbish aria-hidden="true" />
+        <img src={rubbish} aria-hidden="true" />
         <span className="visually-hidden">Delete {props.id}</span>
       </button>
       <button
@@ -211,7 +211,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.toggleTaskPinned(props.id)}
       >
-        <Pin aria-hidden="true" />
+        <img src={pin} aria-hidden="true" />
         <span className="visually-hidden">{props.pinned && 'Un-'}Pin task</span>
       </button>
     </>
@@ -231,7 +231,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => toggleChecklist()}
       >
-        <Checkbox aria-hidden="true" />
+        <img src={checkbox} aria-hidden="true" />
         <span className="visually-hidden">Checklist mode</span>
       </button>
     </div>
@@ -245,11 +245,10 @@ function Form(props) {
     <li
       className={`task ${props.hide ? 'hide' : ''} ${isMoving ? 'moving' : ''}`}
       tabIndex={isMoving ? 0 : props.movement ? -1 : 0}
-      name="Task"
       draggable="true"
       role="option"
       aria-describedby={newTask ? 'instructions' : ''}
-      onDragEnd={newTask ? null : handleSubmit}
+      onDragEnd={newTask ? undefined : handleSubmit}
       onKeyDown={(e) => moveTask(e)}
       onBlur={(e) => {
         if (isMoving) {

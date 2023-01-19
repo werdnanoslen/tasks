@@ -39,7 +39,7 @@ function App(props) {
     let updatedTasks = [...tasks];
     let fromIndex = -1;
     let toIndex = -1;
-    let updatedTask: Task;
+    let updatedTask;
     tasks.forEach((task, i) => {
       if (id === task.id) {
         fromIndex = i;
@@ -53,9 +53,9 @@ function App(props) {
     setTasks(updatedTasks);
   }
 
-  function moveTask(id, indexes: Number, moving?: Boolean) {
+  function moveTask(id, indexes: number, moving?: Boolean) {
     let updatedTasks = [...tasks];
-    const fromIndex: Number = tasks.findIndex((task) => id === task.id);
+    const fromIndex: number = tasks.findIndex((task) => id === task.id);
     if (moving !== undefined) {
       if (moving) {
         setNarrator(
@@ -70,7 +70,7 @@ function App(props) {
       }
       return;
     }
-    const toIndex: Number = fromIndex + indexes;
+    const toIndex: number = fromIndex + indexes;
     if (toIndex < 0 || toIndex > updatedTasks.length) return;
     const task = tasks[fromIndex];
     updatedTasks.splice(fromIndex, 1)[0];
@@ -119,13 +119,13 @@ function App(props) {
     setTasks(updatedTasks);
   }
 
-  const listHeadingRef = useRef(null);
+  const listHeadingRef = useRef<HTMLInputElement>(null);
   const prevTaskLength = usePrevious(tasks.length);
 
   useEffect(() => {
     console.table(tasks);
-    if (tasks.length - prevTaskLength === -1) {
-      listHeadingRef.current.focus();
+    if (prevTaskLength && tasks.length - prevTaskLength === -1) {
+      listHeadingRef.current && listHeadingRef.current.focus();
     }
   }, [tasks, prevTaskLength]);
 
@@ -143,7 +143,7 @@ function App(props) {
           role="alert"
           aria-live="assertive"
           aria-atomic="true"
-          tabIndex="-1"
+          tabIndex={-1}
           className="visually-hidden"
         >
           {narrator}
@@ -154,7 +154,6 @@ function App(props) {
           setList={(newItems, _, {dragging}) => {dragging && setTasks(newItems)}}
           id="TaskList"
           filter="#new-task"
-          role="listbox"
           preventOnFilter={false}
         >
           <Task addTask={addTask} id="new-task" hide={'Done' === filter} />
