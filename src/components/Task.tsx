@@ -223,20 +223,6 @@ function Form(props) {
     </button>
   );
 
-  const toolbar = (
-    <div className="btn-group">
-      {newTask ? addingTools : editingTools}
-      <button
-        type="button"
-        className="btn btn__icon"
-        onClick={() => toggleChecklist()}
-      >
-        <img src={checkbox} aria-hidden="true" />
-        <span className="visually-hidden">Checklist mode</span>
-      </button>
-    </div>
-  );
-
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
   }, [checklistData]);
@@ -259,7 +245,17 @@ function Form(props) {
     >
       <form onSubmit={handleSubmit} onBlur={newTask ? blurCancel : handleSubmit} id={props.id} className={isEditing ? 'isEditing' : undefined}>
         {checklist ? checklistGroup() : dataArea()}
-        {isEditing && toolbar}
+        <div className="btn-group">
+          {newTask ? addingTools : editingTools}
+          <button
+            type="button"
+            className="btn btn__icon"
+            onClick={() => toggleChecklist()}
+          >
+            <img src={checkbox} aria-hidden="true" />
+            <span className="visually-hidden">Checklist mode</span>
+          </button>
+        </div>
       </form>
     </li>
   );

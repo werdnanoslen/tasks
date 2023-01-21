@@ -46,15 +46,11 @@ form {
   border-radius: 0.5rem;
   position: relative;
   padding: 1.25rem;
+  padding-bottom: 0;
 }
 form.isEditing {
   border: 1px lightblue outset;
   outline: 1px lightblue solid;
-  padding-bottom: 0;
-}
-form.isEditing .btn-group {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 .input {
   background-color: initial;
@@ -126,6 +122,12 @@ form li + li {
 }
 form .btn-group {
   display: flex;
+  visibility: hidden;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+li.task:hover form .btn-group {
+  visibility: initial;
 }
 form .btn-group button {
   color: lightblue;
