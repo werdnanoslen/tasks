@@ -257,7 +257,7 @@ function Form(props) {
         }
       }}
     >
-      <form onSubmit={handleSubmit} onBlur={handleSubmit} id={props.id} className={isEditing ? 'isEditing' : undefined}>
+      <form onSubmit={handleSubmit} onBlur={newTask ? blurCancel : handleSubmit} id={props.id} className={isEditing ? 'isEditing' : undefined}>
         {checklist ? checklistGroup() : dataArea()}
         {isEditing && toolbar}
       </form>
