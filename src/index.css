@@ -150,8 +150,7 @@ form .btn-group button:focus {
 .btn__icon:focus {
   border-radius: 100%;
 }
-.btn__icon svg {
-  fill: lightblue;
+.btn__icon img {
   padding: 0.5rem;
 }
 .visually-hidden {

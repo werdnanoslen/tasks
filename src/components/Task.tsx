@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
-import pin from '../images/pin.svg';
+import pinned from '../images/pinned.svg';
+import unpinned from '../images/unpinned.svg';
 import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
@@ -185,8 +186,8 @@ function Form(props) {
 
   const editingTools = (
     <>
-      <button type="submit" className="btn">
-        Save <span className="visually-hidden">{props.id}</span>
+      <button type="submit" className="btn visually-hidden">
+        Save {props.id}
       </button>
       <button
         type="button"
@@ -211,7 +212,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.toggleTaskPinned(props.id)}
       >
-        <img src={pin} aria-hidden="true" />
+        <img src={props.pinned ? pinned : unpinned} aria-hidden="true" />
         <span className="visually-hidden">{props.pinned && 'Un-'}Pin task</span>
       </button>
     </>
