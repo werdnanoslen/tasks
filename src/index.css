@@ -42,7 +42,7 @@ header {
   border-radius: 0 0.5rem 0.5rem 0;
 }
 form {
-  border: 1px lightgrey solid;
+  border: 1px gray solid;
   border-radius: 0.5rem;
   position: relative;
   padding: 1.25rem;
@@ -83,7 +83,7 @@ input[type='checkbox'] {
   cursor: pointer;
 }
 input[type='checkbox']:checked {
-  border-color: lightgray;
+  border-color: gray;
 }
 input[type='checkbox']::before {
   content: '';
@@ -93,7 +93,7 @@ input[type='checkbox']::before {
   transform: scale(0);
   transform-origin: bottom left;
   transition: 120ms transform ease-in-out;
-  box-shadow: inset 1em 1em lightgray;
+  box-shadow: inset 1em 1em gray;
   background-color: initial;
 }
 input[type='checkbox']:checked::before {
@@ -107,8 +107,8 @@ input[type='checkbox']:disabled {
   color: #959495;
   cursor: not-allowed;
 }
-input[type='checkbox']:checked + * {
-  color: lightgray;
+input[type='checkbox']:checked, .done {
+  color: gray;
   text-decoration: line-through;
 }
 
@@ -167,6 +167,9 @@ main > ul,
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+.task li {
+  align-items: center
 }
 main > ul {
   padding: 0;

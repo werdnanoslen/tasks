@@ -140,12 +140,12 @@ function Form(props) {
     }
   }
 
-  function dataArea(item?, index?) {
+  function dataArea(item?, index?, done?) {
     return (
       <TextareaAutosize
         id={`edit-${props.id}`}
         name="data"
-        className="input"
+        className={`input ${done ? 'done' : ''}`}
         value={item ? item.data : data}
         onKeyDown={(e) => addChecklistItem(e, index)}
         onInput={(e) => handleInput(e, index)}
@@ -170,7 +170,7 @@ function Form(props) {
               </button>
               <input type="checkbox" defaultChecked={item.done} aria-label="done" onClick={() => toggleListItemDone(item.id)} />
             </div>
-            {dataArea(item, i)}
+            {dataArea(item, i, item.done)}
             <button
               className="btn btn__icon btn__close"
               onClick={() => deleteListItem(item.id)}
