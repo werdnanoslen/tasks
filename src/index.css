@@ -27,19 +27,23 @@ header {
 }
 .filters button {
   background: none;
-  color: lightblue;
-  border: 1px solid darkgray;
+  color: rgb(157, 157, 157);
+  border: 1px solid gray;
+  padding-bottom: 0.4rem;
 }
 .filters button[aria-pressed='true'] {
-  background: lightblue;
-  color: #1b1b1b;
+  /* background: lightblue; */
+  border-color: lightblue;
+  color: lightblue;
   text-decoration: none;
 }
 .filters button:first-child {
   border-radius: 0.5rem 0 0 0.5rem;
+  /* border-right: none; */
 }
 .filters button:last-child {
   border-radius: 0 0.5rem 0.5rem 0;
+  /* border-left: none; */
 }
 form {
   border: 1px gray solid;
@@ -108,7 +112,7 @@ input[type='checkbox']:disabled {
   cursor: not-allowed;
 }
 input[type='checkbox']:checked, .done {
-  color: gray;
+  color: rgb(157, 157, 157);
   text-decoration: line-through;
 }
 
