@@ -32,18 +32,21 @@ header {
   padding-bottom: 0.4rem;
 }
 .filters button[aria-pressed='true'] {
-  /* background: lightblue; */
   border-color: lightblue;
   color: lightblue;
   text-decoration: none;
 }
 .filters button:first-child {
   border-radius: 0.5rem 0 0 0.5rem;
-  /* border-right: none; */
 }
 .filters button:last-child {
   border-radius: 0 0.5rem 0.5rem 0;
-  /* border-left: none; */
+}
+.filters button:first-child[aria-pressed='false'] {
+  border-right: none;
+}
+.filters button:last-child[aria-pressed='false'] {
+  border-left: none;
 }
 form {
   border: 1px gray solid;
