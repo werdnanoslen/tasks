@@ -25,8 +25,6 @@ function Form(props) {
   const iChecklistData = iChecklist ? props.data : [NewChecklistItem()];
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
-  const [taskID, settaskID] = useState(props.id ? props.id : '');
-
   const [isEditing, setIsEditing] = useState(false);
   const [newItemId, setNewItemId] = useState('');
   const [isMoving, setIsMoving] = useState(false);
@@ -36,7 +34,7 @@ function Form(props) {
   const completeLabel = props.done ? 'Restore' : 'Complete';
 
   function handleSubmit(e?) {
-    e && e.preventDefault();
+    if (e) e.preventDefault();
     const newData = checklist ? checklistData : data;
     if (newTask) {
       props.addTask(newData);
@@ -64,7 +62,7 @@ function Form(props) {
       setNewItemId(newItem.id);
       newList.splice(i + 1, 0, newItem);
       setChecklistData(newList);
-      !newTask && handleSubmit();
+      if (!newTask) handleSubmit();
     }
   }
 
@@ -76,18 +74,27 @@ function Form(props) {
       setChecklist(false);
       setData('');
     }
-    !newTask && handleSubmit();
+    if (!newTask) handleSubmit();
   }
 
   function toggleListItemDone(id) {
-    const updatedItems = [...checklistData]
-    updatedItems.forEach((item) => {
+    let updatedItems = [...checklistData];
+    for (let i = 0; i < checklistData.length; i++) {
+      const item = checklistData[i];
       if (id === item.id) {
-        item.done = !item.done
+        updatedItems.splice(i, 1)[0];
+        const nowDone = !item.done
+        const newItem = { ...item, done: nowDone }
+        if (nowDone) {
+          updatedItems.push(newItem);
+        } else {
+          updatedItems.unshift(newItem);
+        }
+        setChecklistData(updatedItems);
+        if (!newTask) handleSubmit();
+        break;
       }
-    });
-    setChecklistData(updatedItems);
-    !newTask && handleSubmit();
+    }
   }
 
   function handleInput(e, i) {
@@ -99,7 +106,7 @@ function Form(props) {
     } else {
       setData(input);
     }
-    !newTask && handleSubmit();
+    if (!newTask) handleSubmit();
   }
 
   function toggleChecklist() {
@@ -131,11 +138,11 @@ function Form(props) {
         break;
       case 'ArrowRight':
       case 'ArrowDown':
-        isMoving && props.moveTask(props.id, 1);
+        if (isMoving) props.moveTask(props.id, 1);
         break;
       case 'ArrowUp':
       case 'ArrowLeft':
-        isMoving && props.moveTask(props.id, -1);
+        if (isMoving) props.moveTask(props.id, -1);
         break;
     }
   }
@@ -168,7 +175,7 @@ function Form(props) {
                 <span className="visually-hidden">Move list item</span>
                 <span aria-hidden="true">{String.fromCharCode(8661)}</span>
               </button>
-              <input type="checkbox" defaultChecked={item.done} aria-label="done" onClick={() => toggleListItemDone(item.id)} />
+              <input type="checkbox" checked={item.done} aria-label="done" onChange={() => toggleListItemDone(item.id)} />
             </div>
             {dataArea(item, i, item.done)}
             <button

@@ -6,15 +6,15 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const TASKS = [
-  { id: 'task-0', data: 'Eat', done: true, pinned: true },
+  { id: 'task-0', data: 'Eat', done: false, pinned: true },
   { id: 'task-1', data: 'Sleep', done: false, pinned: true },
-  { id: 'task-2', data: 'Repeat', done: false, pinned: false },
+  { id: 'task-2', data: 'Repeat', done: true, pinned: false },
   {
     id: 'task-3',
     data: [
-      { id: 'task-3-1', data: 'Eat', done: true },
+      { id: 'task-3-1', data: 'Eat', done: false },
       { id: 'task-3-2', data: 'Sleep', done: false },
-      { id: 'task-3-3', data: 'Repeat', done: false },
+      { id: 'task-3-3', data: 'Repeat', done: true },
     ],
     done: false,
   },
