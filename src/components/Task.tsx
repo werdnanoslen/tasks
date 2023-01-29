@@ -28,6 +28,7 @@ function Form(props) {
   const [isEditing, setIsEditing] = useState(false);
   const [newItemId, setNewItemId] = useState('');
   const [isMoving, setIsMoving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask = props.id === 'new-task';
   const inputLabel = newTask ? 'Add task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
@@ -209,7 +210,7 @@ function Form(props) {
       <button
         type="button"
         className="btn btn__icon"
-        onClick={() => props.deleteTask(props.id)}
+        onClick={() => setConfirmDelete(true)}
       >
         <img src={rubbish} aria-hidden="true" />
         <span className="visually-hidden">Delete {props.id}</span>
@@ -221,6 +222,17 @@ function Form(props) {
       >
         <img src={props.pinned ? pinned : unpinned} aria-hidden="true" />
         <span className="visually-hidden">{props.pinned && 'Un-'}Pin task</span>
+      </button>
+    </>
+  );
+
+  const confirmDeleteButtons = (
+    <>
+      <button type="button" className="btn" onClick={() => props.deleteTask(props.id) && setConfirmDelete(false)}>
+        Confirm delete
+      </button>
+      <button type="submit" className="btn" onClick={() => setConfirmDelete(false)}>
+        Cancel
       </button>
     </>
   );
@@ -254,15 +266,17 @@ function Form(props) {
       <form onSubmit={handleSubmit} onBlur={newTask ? blurCancel : handleSubmit} id={props.id} className={isEditing ? 'isEditing' : undefined}>
         {checklist ? checklistGroup() : dataArea()}
         <div className="btn-group">
-          {newTask ? addingTools : editingTools}
-          <button
-            type="button"
-            className="btn btn__icon"
-            onClick={() => toggleChecklist()}
-          >
-            <img src={checkbox} aria-hidden="true" />
-            <span className="visually-hidden">Checklist mode</span>
-          </button>
+          {newTask ? addingTools : confirmDelete ? confirmDeleteButtons : editingTools}
+          {!confirmDelete && 
+            <button
+              type="button"
+              className="btn btn__icon"
+              onClick={() => toggleChecklist()}
+            >
+              <img src={checkbox} aria-hidden="true" />
+              <span className="visually-hidden">Checklist mode</span>
+            </button>
+          }
         </div>
       </form>
     </li>
