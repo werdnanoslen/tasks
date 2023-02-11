@@ -4,13 +4,12 @@ import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
 import pinned from '../images/pinned.svg';
 import unpinned from '../images/unpinned.svg';
-import { nanoid } from 'nanoid';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
 
 function NewChecklistItem(data?) {
   return {
-    id: 'task-' + nanoid(),
+    id: Date.now(),
     data: data ? data : '',
     done: false,
   };
@@ -26,7 +25,7 @@ function Form(props) {
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [newItemId, setNewItemId] = useState('');
+  const [newItemId, setNewItemId] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask = props.id === 'new-task';

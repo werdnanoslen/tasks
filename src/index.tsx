@@ -6,17 +6,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const TASKS = [
-  { id: 'task-0', data: 'Eat', done: false, pinned: true },
-  { id: 'task-1', data: 'Sleep', done: false, pinned: true },
-  { id: 'task-2', data: 'Repeat', done: true, pinned: false },
+  { id: 0, data: 'Eat', done: false, pinned: true },
+  { id: 1, data: 'Sleep', done: false, pinned: true },
+  { id: 2, data: 'Repeat', done: true, pinned: false },
   {
-    id: 'task-3',
+    id: 3,
     data: [
-      { id: 'task-3-1', data: 'Eat', done: false },
-      { id: 'task-3-2', data: 'Sleep', done: false },
-      { id: 'task-3-3', data: 'Repeat', done: true },
+      { id: 31, data: 'Eat', done: false },
+      { id: 32, data: 'Sleep', done: false },
+      { id: 33, data: 'Repeat', done: true },
     ],
     done: false,
+    pinned: false
   },
 ];
 

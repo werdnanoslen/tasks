@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Task from './components/Task';
 import FilterButton from './components/FilterButton';
-import { nanoid } from 'nanoid';
 import { ReactSortable } from 'react-sortablejs';
 
 function usePrevious(value) {
@@ -20,7 +19,7 @@ const FILTER_MAP = {
 const FILTER_TASKS = Object.keys(FILTER_MAP);
 
 function App(props) {
-  const [tasks, setTasks] = useState(props.tasks);
+  const [tasks, setTasks] = useState<any>(props.tasks);
   const [filter, setFilter] = useState('Doing');
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
@@ -108,7 +107,7 @@ function App(props) {
   ));
 
   function addTask(data) {
-    const newTask = { id: 'task-' + nanoid(), data: data, done: false };
+    const newTask = { id: Date.now(), data: data, done: false };
     let updatedTasks = [...tasks];
     for (var i = 0; i < tasks.length; i++) {
       if (!tasks[i].pinned) {
