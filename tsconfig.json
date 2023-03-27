@@ -3,12 +3,14 @@
       "outDir": "./dist/",        // path to output directory
       "sourceMap": true,          // allow sourcemap support
       "strictNullChecks": true,   // enable strict null checks as a best practice
-      "module": "ESNext",            // specify module code generation
+      "module": "ESNext",         // specify module code generation
       "jsx": "react",             // use typescript to transpile jsx to js
       "target": "es5",            // specify ECMAScript target version
       "allowJs": true,            // allow a partial TypeScript and JavaScript codebase
-      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,    // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
+      "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export. This does not affect code emit, just typechecking.
       "moduleResolution": "node",
+      "skipLibCheck": true
   },
   "include": [
       "./src/*/",
