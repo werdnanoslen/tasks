@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Task from './components/Task';
-import FilterButton from './components/FilterButton';
 import { ReactSortable } from 'react-sortablejs';
+import Form from './components/Form';
+import FilterButton from './components/FilterButton';
+import { Task } from './models/task';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -19,7 +20,7 @@ const FILTER_MAP = {
 const FILTER_TASKS = Object.keys(FILTER_MAP);
 
 function App(props) {
-  const [tasks, setTasks] = useState<any>(props.tasks);
+  const [tasks, setTasks] = useState<Task[]>(props.tasks);
   const [filter, setFilter] = useState('Doing');
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
@@ -35,7 +36,7 @@ function App(props) {
   }
 
   function toggleTaskPinned(id) {
-    let updatedTasks = [...tasks];
+    let updatedTasks: Task[] = [...tasks];
     let fromIndex = -1;
     let toIndex = -1;
     let updatedTask;
@@ -53,7 +54,7 @@ function App(props) {
   }
 
   function moveTask(id, indexes: number, moving?: Boolean) {
-    let updatedTasks = [...tasks];
+    let updatedTasks: Task[] = [...tasks];
     const fromIndex: number = tasks.findIndex((task) => id === task.id);
     if (moving !== undefined) {
       if (moving) {
@@ -83,12 +84,12 @@ function App(props) {
   }
 
   function deleteTask(id) {
-    const remainingTasks = tasks.filter((task) => id !== task.id);
+    const remainingTasks: Task[] = tasks.filter((task) => id !== task.id);
     setTasks(remainingTasks);
   }
 
   function editTask(id, newData) {
-    const editedTaskList = tasks.map((task) => {
+    const editedTaskList: Task[] = tasks.map((task) => {
       if (id === task.id) {
         return { ...task, data: newData };
       }
@@ -107,8 +108,8 @@ function App(props) {
   ));
 
   function addTask(data) {
-    const newTask = { id: Date.now(), data: data, done: false };
-    let updatedTasks = [...tasks];
+    const newTask: Task = { id: Date.now(), data: data, done: false, pinned: false };
+    let updatedTasks: Task[] = [...tasks];
     for (var i = 0; i < tasks.length; i++) {
       if (!tasks[i].pinned) {
         updatedTasks.splice(i, 0, newTask);
@@ -155,9 +156,9 @@ function App(props) {
           filter="#new-task"
           preventOnFilter={false}
         >
-          <Task addTask={addTask} id="new-task" hide={'Done' === filter} />
+          <Form addTask={addTask} id="new-task" hide={'Done' === filter} />
           {tasks.filter(FILTER_MAP[filter]).map((task) => (
-            <Task
+            <Form
               id={task.id}
               data={task.data}
               done={task.done}
