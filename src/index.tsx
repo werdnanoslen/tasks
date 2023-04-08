@@ -5,26 +5,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-const TASKS = [
-  { id: 0, data: 'Eat', done: false, pinned: true },
-  { id: 1, data: 'Sleep', done: false, pinned: true },
-  { id: 2, data: 'Repeat', done: true, pinned: false },
-  {
-    id: 3,
-    data: [
-      { id: 31, data: 'Eat', done: false },
-      { id: 32, data: 'Sleep', done: false },
-      { id: 33, data: 'Repeat', done: true },
-    ],
-    done: false,
-    pinned: false
-  },
-];
-
 const root = createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
-    <App tasks={TASKS} />
+    <App />
   </React.StrictMode>
 );
 

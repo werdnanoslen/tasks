@@ -3,6 +3,7 @@ import { ReactSortable } from 'react-sortablejs';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
 import { Task } from './models/task';
+import * as API from './API';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -19,8 +20,8 @@ const FILTER_MAP = {
 
 const FILTER_TASKS = Object.keys(FILTER_MAP);
 
-function App(props) {
-  const [tasks, setTasks] = useState<Task[]>(props.tasks);
+export default function App() {  
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState('Doing');
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
@@ -121,6 +122,10 @@ function App(props) {
 
   const listHeadingRef = useRef<HTMLInputElement>(null);
   const prevTaskLength = usePrevious(tasks.length);
+  
+  useEffect(() => {
+    API.getTasks().then(setTasks);
+  }, []);
 
   useEffect(() => {
     console.table(tasks);
@@ -177,5 +182,3 @@ function App(props) {
     </>
   );
 }
-
-export default App;

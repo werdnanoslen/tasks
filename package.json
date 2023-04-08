@@ -25,7 +25,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "node --trace-warnings ./dist/api.js"
+    "server": "mysql.server start && node --trace-warnings ./dist/server.js"
   },
   "browserslist": {
     "production": [
