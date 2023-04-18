@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
+import TextareaAutosize from 'react-textarea-autosize';
+import { ReactSortable } from 'react-sortablejs';
+import { Task, ListItem } from '../models/task';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
 import pinned from '../images/pinned.svg';
 import unpinned from '../images/unpinned.svg';
-import TextareaAutosize from 'react-textarea-autosize';
-import { ReactSortable } from 'react-sortablejs';
 
-function NewChecklistItem(data?) {
+function NewChecklistItem(data?): ListItem {
   return {
     id: Date.now(),
     data: data ? data : '',
@@ -16,19 +17,19 @@ function NewChecklistItem(data?) {
 }
 
 function Form(props) {
-  const iChecklist = props.data && typeof props.data !== 'string';
+  const iChecklist: boolean = props.data && typeof props.data !== 'string';
   const [checklist, setChecklist] = useState(iChecklist);
 
   const [data, setData] = useState(iChecklist ? '' : props.data);
 
-  const iChecklistData = iChecklist ? props.data : [NewChecklistItem()];
+  const iChecklistData: ListItem[] = iChecklist ? props.data : [NewChecklistItem()];
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newItemId, setNewItemId] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const newTask = props.id === 'new-task';
+  const newTask: boolean = props.id === 'new-task';
   const inputLabel = newTask ? 'Add task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const completeLabel = props.done ? 'Restore' : 'Complete';
@@ -161,6 +162,7 @@ function Form(props) {
         aria-label={inputLabel}
         rows={1}
         ref={item && item.id === newItemId ? lastRef : undefined}
+        maxLength={500}
       />
     );
   }
