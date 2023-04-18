@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
-import { Task } from './models/task';
+import { Task, ListItem } from './models/task';
 import * as API from './API';
 
 function usePrevious(value) {
@@ -26,14 +26,16 @@ export default function App() {
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
 
+  function refreshTasks() {
+    API.getTasks().then(setTasks)
+  }
+
   function toggleTaskDone(id) {
-    const updatedTasks = tasks.map((task) => {
+    tasks.map((task) => {
       if (id === task.id) {
-        return { ...task, done: !task.done };
+        API.updateTask({ ...task, done: !task.done }).then(refreshTasks)
       }
-      return task;
     });
-    setTasks(updatedTasks);
   }
 
   function toggleTaskPinned(id) {
@@ -51,7 +53,7 @@ export default function App() {
     });
     updatedTasks.splice(fromIndex, 1)[0];
     updatedTasks.splice(toIndex, 0, updatedTask);
-    setTasks(updatedTasks);
+    API.replaceTasks(updatedTasks).then(refreshTasks);
   }
 
   function moveTask(id, indexes: number, moving?: Boolean) {
@@ -76,7 +78,7 @@ export default function App() {
     const task = tasks[fromIndex];
     updatedTasks.splice(fromIndex, 1)[0];
     updatedTasks.splice(toIndex, 0, task);
-    setTasks(updatedTasks);
+    API.replaceTasks(updatedTasks).then(refreshTasks);
     setNarrator(
       `Moved to position ${
         toIndex + 1
@@ -84,19 +86,24 @@ export default function App() {
     );
   }
 
-  function deleteTask(id) {
-    const remainingTasks: Task[] = tasks.filter((task) => id !== task.id);
-    setTasks(remainingTasks);
+  function editTask(id, newData) {
+    tasks.map((task) => {
+      if (id === task.id) {
+        API.updateTask({ ...task, data: newData }).then(refreshTasks)
+      }
+    });
   }
 
-  function editTask(id, newData) {
-    const editedTaskList: Task[] = tasks.map((task) => {
-      if (id === task.id) {
-        return { ...task, data: newData };
+  function addTask(data: string | ListItem[]) {
+    const newTask: Task = { id: Date.now(), data: data, done: false, pinned: false };
+    let updatedTasks: Task[] = [...tasks];
+    for (var i = 0; i <= tasks.length; i++) {
+      if (i === tasks.length || !tasks[i].pinned) {
+        updatedTasks.splice(i, 0, newTask);
+        break;
       }
-      return task;
-    });
-    setTasks(editedTaskList);
+    }
+    API.replaceTasks(updatedTasks).then(refreshTasks);
   }
 
   const filterList = FILTER_TASKS.map((data) => (
@@ -108,25 +115,10 @@ export default function App() {
     />
   ));
 
-  function addTask(data) {
-    const newTask: Task = { id: Date.now(), data: data, done: false, pinned: false };
-    let updatedTasks: Task[] = [...tasks];
-    for (var i = 0; i < tasks.length; i++) {
-      if (!tasks[i].pinned) {
-        updatedTasks.splice(i, 0, newTask);
-        break;
-      }
-    }
-    setTasks(updatedTasks);
-  }
-
   const listHeadingRef = useRef<HTMLInputElement>(null);
   const prevTaskLength = usePrevious(tasks.length);
   
-  useEffect(() => {
-    API.getTasks().then(setTasks);
-  }, []);
-
+  useEffect(refreshTasks, []);
   useEffect(() => {
     console.table(tasks);
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
@@ -156,7 +148,7 @@ export default function App() {
         <ReactSortable
           tag="ul"
           list={tasks}
-          setList={(newItems, _, {dragging}) => {dragging && setTasks(newItems)}}
+          setList={(newItems, _, {dragging}) => {dragging && API.replaceTasks(newItems).then(refreshTasks);}}
           id="TaskList"
           filter="#new-task"
           preventOnFilter={false}
@@ -173,7 +165,7 @@ export default function App() {
               moveTask={moveTask}
               movement={movement}
               key={task.id}
-              deleteTask={deleteTask}
+              deleteTask={() => API.deleteTask(task.id).then(refreshTasks)}
               editTask={editTask}
             />
           ))}
