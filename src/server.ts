@@ -31,7 +31,6 @@ async function getTasks(): Promise<Task[]> {
   const sql: string = 'SELECT * FROM tasks';
   const tasks = await query(sql);
   tasks.map((task) => {
-    console.log('task', task.data);
     try {
       task.data = JSON.parse(task.data);
     } catch { }
@@ -98,5 +97,5 @@ APP.delete('/:id', async (req, res) => {
 });
 
 APP.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  console.log(`Server started on http://localhost:${PORT}${APP.mountpath}`);
 });
