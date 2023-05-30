@@ -42,7 +42,7 @@ function Form(props) {
       setData('');
       setChecklistData([NewChecklistItem()]);
     } else {
-      props.editTask(props.id, newData);
+      props.updateTask(props.id, newData);
     }
     setIsEditing(false);
   }
@@ -126,7 +126,7 @@ function Form(props) {
       }
       setChecklistData(newData)
     }
-    !newTask && props.editTask(props.id, newData);
+    !newTask && props.updateTask(props.id, newData);
   }
 
   function moveTask(e) {

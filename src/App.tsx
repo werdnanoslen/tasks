@@ -86,7 +86,7 @@ export default function App() {
     );
   }
 
-  function editTask(id, newData) {
+  function updateTask(id, newData) {
     tasks.map((task) => {
       if (id === task.id) {
         API.updateTask({ ...task, data: newData }).then(refreshTasks)
@@ -166,7 +166,7 @@ export default function App() {
               movement={movement}
               key={task.id}
               deleteTask={() => API.deleteTask(task.id).then(refreshTasks)}
-              editTask={editTask}
+              updateTask={updateTask}
             />
           ))}
         </ReactSortable>

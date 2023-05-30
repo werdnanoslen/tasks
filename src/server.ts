@@ -49,6 +49,9 @@ async function addTask(task: Task): Promise<number> {
 
 async function updateTask(id: string, task: Task): Promise<number> {
   const sql: string = 'UPDATE tasks SET ? WHERE id = ?';
+  if (typeof(task.data) !== 'string') {
+    task.data = JSON.stringify(task.data);
+  }
   const result = await query(sql, [task, id]);
   return result.affectedRows;
 }
