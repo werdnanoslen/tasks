@@ -95,7 +95,7 @@ export default function App() {
   }
 
   function addTask(data: string | ListItem[]) {
-    const newTask: Task = { id: Date.now(), data: data, done: false, pinned: false };
+    const newTask: Task = { index: null, id: Date.now(), data: data, done: false, pinned: false };
     let updatedTasks: Task[] = [...tasks];
     for (var i = 0; i <= tasks.length; i++) {
       if (i === tasks.length || !tasks[i].pinned) {
