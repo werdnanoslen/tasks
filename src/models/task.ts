@@ -5,7 +5,7 @@ export type ListItem = {
 };
 
 export type Task = {
-    index: number | null;
+    position: number;
     id: number;
     data: string | ListItem[];
     done: boolean;

@@ -28,7 +28,7 @@ function query(sql: string, values?): Promise<any> {
 }
 
 async function getTasks(): Promise<Task[]> {
-  const sql: string = 'SELECT * FROM tasks';
+  const sql: string = 'SELECT * FROM tasks ORDER BY position';
   const tasks = await query(sql);
   tasks.map((task) => {
     try {
@@ -39,6 +39,8 @@ async function getTasks(): Promise<Task[]> {
 }
 
 async function addTask(task: Task): Promise<number> {
+  const countResult = await query('SELECT COUNT(*) as count FROM tasks');
+  task.position = countResult[0].count + 1;
   const sql: string = 'INSERT INTO tasks SET ?';
   if (typeof(task.data) !== 'string') {
     task.data = JSON.stringify(task.data);
@@ -54,6 +56,18 @@ async function updateTask(id: string, task: Task): Promise<number> {
   }
   const result = await query(sql, [task, id]);
   return result.affectedRows;
+}
+
+async function moveTask(id: string, newPos: number): Promise<number> {
+  const posResult = await query('SELECT position FROM tasks WHERE id = ?', id);
+  const oldPos: number = posResult[0].position;
+  const [minPos, maxPos] = oldPos < newPos ? [oldPos, newPos] : [newPos, oldPos];
+  const posOffset = newPos < oldPos ? 1 : -1;
+  const prepSql: string = 'UPDATE tasks SET position = position + ? WHERE position >= ? AND position <= ?;';
+  const prepResult = await query(prepSql, [posOffset, minPos, maxPos]);
+  const setSql: string =  'UPDATE tasks SET position = ? WHERE id = ?';
+  const setResult = await query(setSql, [newPos, id]);
+  return setResult.affectedRows;
 }
 
 async function deleteTask(id: string): Promise<number> {
@@ -85,6 +99,13 @@ APP.post('/', async (req, res) => {
 APP.put('/:id', async (req, res) => {
   const id = req.params.id;
   const result = await updateTask(id, req.body);
+  res.json({ result });
+});
+
+APP.put('/:id/move/:newPosition', async (req, res) => {
+  const id = req.params.id;
+  const newPosition = Number(req.params.newPosition)
+  const result = await moveTask(id, newPosition);
   res.json({ result });
 });
 

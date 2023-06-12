@@ -40,53 +40,58 @@ export default function App() {
 
   function toggleTaskPinned(id) {
     let updatedTasks: Task[] = [...tasks];
-    let fromIndex = -1;
-    let toIndex = -1;
+    let fromPosition = -1;
+    let toPosition = -1;
     let updatedTask;
     tasks.forEach((task, i) => {
       if (id === task.id) {
-        fromIndex = i;
+        fromPosition = i;
         updatedTask = { ...task, pinned: !task.pinned };
       } else {
-        if (task.pinned) toIndex = i + 1;
+        if (task.pinned) toPosition = i + 1;
       }
     });
-    updatedTasks.splice(fromIndex, 1)[0];
-    updatedTasks.splice(toIndex, 0, updatedTask);
+    updatedTasks.splice(fromPosition, 1)[0];
+    updatedTasks.splice(toPosition, 0, updatedTask);
     API.replaceTasks(updatedTasks).then(refreshTasks);
   }
 
   function moveTask(id, indexes: number, moving?: Boolean) {
     let updatedTasks: Task[] = [...tasks];
-    const fromIndex: number = tasks.findIndex((task) => id === task.id);
+    const fromPosition: number = tasks.findIndex((task) => id === task.id);
     if (moving !== undefined) {
       if (moving) {
         setNarrator(
           `Grabbed task at position ${
-            fromIndex + 1
+            fromPosition + 1
           }. Use arrows to change position, spacebar to drop.`
         );
         setMovement(true);
       } else {
-        setNarrator(`Dropped task at position ${fromIndex + 1}.`);
+        setNarrator(`Dropped task at position ${fromPosition + 1}.`);
         setMovement(false);
       }
       return;
     }
-    const toIndex: number = fromIndex + indexes;
-    if (toIndex < 0 || toIndex > updatedTasks.length) return;
-    const task = tasks[fromIndex];
-    updatedTasks.splice(fromIndex, 1)[0];
-    updatedTasks.splice(toIndex, 0, task);
+    const toPosition: number = fromPosition + indexes;
+    if (toPosition < 0 || toPosition > updatedTasks.length) return;
+    const task = tasks[fromPosition];
+    updatedTasks.splice(fromPosition, 1)[0];
+    updatedTasks.splice(toPosition, 0, task);
     API.replaceTasks(updatedTasks).then(refreshTasks);
     setNarrator(
       `Moved to position ${
-        toIndex + 1
+        toPosition + 1
       }. Use arrows to change position, spacebar to drop.`
     );
   }
 
-  function updateTask(id, newData) {
+  function dragTask(event) {
+    const { item, newIndex } = event;
+    API.moveTask(item.id, newIndex).then(refreshTasks)
+  }
+
+  function updateData(id, newData) {
     tasks.map((task) => {
       if (id === task.id) {
         API.updateTask({ ...task, data: newData }).then(refreshTasks)
@@ -95,7 +100,7 @@ export default function App() {
   }
 
   function addTask(data: string | ListItem[]) {
-    const newTask: Task = { index: null, id: Date.now(), data: data, done: false, pinned: false };
+    const newTask: Task = { position: tasks.length + 1, id: Date.now(), data: data, done: false, pinned: false };
     let updatedTasks: Task[] = [...tasks];
     for (var i = 0; i <= tasks.length; i++) {
       if (i === tasks.length || !tasks[i].pinned) {
@@ -103,7 +108,8 @@ export default function App() {
         break;
       }
     }
-    API.replaceTasks(updatedTasks).then(refreshTasks);
+    // API.replaceTasks(updatedTasks).then(refreshTasks);
+    API.addTask(newTask).then(refreshTasks);
   }
 
   const filterList = FILTER_TASKS.map((data) => (
@@ -120,7 +126,7 @@ export default function App() {
   
   useEffect(refreshTasks, []);
   useEffect(() => {
-    console.table(tasks);
+    console.table(tasks.sort(function(a,b){return a.position-b.position}));
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }
@@ -148,10 +154,11 @@ export default function App() {
         <ReactSortable
           tag="ul"
           list={tasks}
-          setList={(newItems, _, {dragging}) => {dragging && API.replaceTasks(newItems).then(refreshTasks);}}
+          setList={setTasks}
           id="TaskList"
           filter="#new-task"
           preventOnFilter={false}
+          onChange={dragTask}
         >
           <Form addTask={addTask} id="new-task" hide={'Done' === filter} />
           {tasks.filter(FILTER_MAP[filter]).map((task) => (
@@ -166,7 +173,7 @@ export default function App() {
               movement={movement}
               key={task.id}
               deleteTask={() => API.deleteTask(task.id).then(refreshTasks)}
-              updateTask={updateTask}
+              updateData={updateData}
             />
           ))}
         </ReactSortable>

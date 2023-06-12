@@ -42,7 +42,7 @@ function Form(props) {
       setData('');
       setChecklistData([NewChecklistItem()]);
     } else {
-      props.updateTask(props.id, newData);
+      props.updateData(props.id, newData);
     }
     setIsEditing(false);
   }
@@ -126,7 +126,7 @@ function Form(props) {
       }
       setChecklistData(newData)
     }
-    !newTask && props.updateTask(props.id, newData);
+    !newTask && props.updateData(props.id, newData);
   }
 
   function moveTask(e) {
@@ -250,6 +250,7 @@ function Form(props) {
 
   return (
     <li
+      id={props.id}
       className={`task ${props.hide ? 'hide' : ''} ${isMoving ? 'moving' : ''}`}
       tabIndex={isMoving ? 0 : props.movement ? -1 : 0}
       draggable="true"

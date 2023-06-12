@@ -18,21 +18,21 @@ DROP TABLE IF EXISTS `Tasks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Tasks` (
-  `index` SMALLINT AUTO_INCREMENT,
-  `id` BIGINT NOT NULL,
+  `id` BIGINT,
+  `position` SMALLINT NOT NULL,
   `data` NVARCHAR(500),
   `done` BOOLEAN NOT NULL DEFAULT false,
   `pinned` BOOLEAN NOT NULL DEFAULT false,
-  PRIMARY KEY (`index`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
+CREATE INDEX idx_position ON tasks (position);
 --
 -- Dumping data for table `Tasks`
 --
 
 LOCK TABLES `Tasks` WRITE;
 /*!40000 ALTER TABLE `Tasks` DISABLE KEYS */;
-INSERT INTO `Tasks` VALUES (NULL,1,"Eat",false,true),(NULL,2,"Sleep",false,true),(NULL,3,"Repeat",true,false),(NULL,4,'[{"id": 41, "data": "Eat", "done": false}, {"id": 42, "data": "Sleep", "done": false}, {"id": 43, "data": "Repeat", "done": true}]',false,false);
+INSERT INTO `Tasks` VALUES (1,1,"Eat",false,false),(2,2,"Sleep",false,false),(3,3,"Repeat",false,false),(4,4,'[{"id": 41, "data": "Eat", "done": false}, {"id": 42, "data": "Sleep", "done": false}, {"id": 43, "data": "Repeat", "done": true}]',false,false);
 /*!40000 ALTER TABLE `Tasks` ENABLE KEYS */;
 UNLOCK TABLES;
