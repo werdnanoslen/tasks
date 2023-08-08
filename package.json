@@ -17,15 +17,16 @@
     "react-scripts": "5.0.1",
     "react-sortablejs": "^6.1.4",
     "react-textarea-autosize": "^8.3.4",
-    "sortablejs": "^1.15.0",
-    "web-vitals": "^2.1.4"
+    "sortablejs": "^1.15.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "mysql.server start && node --trace-warnings ./dist/server.js"
+    "server": "mysql.server start && node --trace-warnings ./dist/server.js",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
+    "format:fix": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\""
   },
   "browserslist": {
     "production": [
@@ -47,7 +48,7 @@
     "prettier": "2.7.1",
     "source-map-loader": "^4.0.1",
     "ts-loader": "^9.4.2",
-    "typescript": "^4.9.4",
+    "typescript": "^4.9.5",
     "url-loader": "^4.1.1",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1"
