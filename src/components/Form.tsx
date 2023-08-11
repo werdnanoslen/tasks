@@ -252,10 +252,10 @@ function Form(props) {
     <li
       id={props.id}
       className={`task ${props.hide ? 'hide' : ''} ${isMoving ? 'moving' : ''}`}
-      tabIndex={isMoving ? 0 : props.movement ? -1 : 0}
-      draggable="true"
+      tabIndex={isMoving || !props.movement ? 0 : -1}
+      draggable={newTask ? false : true}
       role="option"
-      aria-describedby={newTask ? 'instructions' : ''}
+      aria-describedby={newTask ? 'instructions' : undefined}
       onDragEnd={newTask ? undefined : handleSubmit}
       onKeyDown={(e) => moveTask(e)}
       onBlur={(e) => {
@@ -268,7 +268,7 @@ function Form(props) {
       <form onSubmit={handleSubmit} onBlur={newTask ? blurCancel : handleSubmit} id={props.id} className={isEditing ? 'isEditing' : undefined}>
         {checklist ? checklistGroup() : dataArea()}
         <div className="btn-group">
-          {newTask ? addingTools : confirmDelete ? confirmDeleteButtons : editingTools}
+          {newTask ? addingTools : (confirmDelete ? confirmDeleteButtons : editingTools)}
           {!confirmDelete && 
             <button
               type="button"

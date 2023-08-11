@@ -194,6 +194,7 @@ li.moving:focus-visible {
 #new-task {
   background-color: rgba(173, 216, 230, 0.05);
   border-color: lightblue;
+  cursor: initial;
 }
 .list-controls {
   display: flex;
