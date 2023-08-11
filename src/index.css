@@ -114,7 +114,8 @@ input[type='checkbox']:disabled {
   color: #959495;
   cursor: not-allowed;
 }
-input[type='checkbox']:checked, .done {
+input[type='checkbox']:checked,
+.done {
   color: rgb(157, 157, 157);
   text-decoration: line-through;
 }
@@ -176,7 +177,7 @@ main > ul,
   gap: 1rem;
 }
 .task li {
-  align-items: center
+  align-items: center;
 }
 main > ul {
   padding: 0;

@@ -20,20 +20,20 @@ const FILTER_MAP = {
 
 const FILTER_TASKS = Object.keys(FILTER_MAP);
 
-export default function App() {  
+export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState('Doing');
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
 
   function refreshTasks() {
-    API.getTasks().then(setTasks)
+    API.getTasks().then(setTasks);
   }
 
   function toggleTaskDone(id) {
     tasks.map((task) => {
       if (id === task.id) {
-        API.updateTask({ ...task, done: !task.done }).then(refreshTasks)
+        API.updateTask({ ...task, done: !task.done }).then(refreshTasks);
       }
     });
   }
@@ -88,19 +88,25 @@ export default function App() {
 
   function dragTask(event) {
     const { item, newIndex } = event;
-    API.moveTask(item.id, newIndex).then(refreshTasks)
+    API.moveTask(item.id, newIndex).then(refreshTasks);
   }
 
   function updateData(id, newData) {
     tasks.map((task) => {
       if (id === task.id) {
-        API.updateTask({ ...task, data: newData }).then(refreshTasks)
+        API.updateTask({ ...task, data: newData }).then(refreshTasks);
       }
     });
   }
 
   function addTask(data: string | ListItem[]) {
-    const newTask: Task = { position: tasks.length + 1, id: Date.now(), data: data, done: false, pinned: false };
+    const newTask: Task = {
+      position: tasks.length + 1,
+      id: Date.now(),
+      data: data,
+      done: false,
+      pinned: false,
+    };
     let updatedTasks: Task[] = [...tasks];
     for (var i = 0; i <= tasks.length; i++) {
       if (i === tasks.length || !tasks[i].pinned) {
@@ -123,10 +129,14 @@ export default function App() {
 
   const listHeadingRef = useRef<HTMLInputElement>(null);
   const prevTaskLength = usePrevious(tasks.length);
-  
+
   useEffect(refreshTasks, []);
   useEffect(() => {
-    console.table(tasks.sort(function(a,b){return a.position-b.position}));
+    console.table(
+      tasks.sort(function (a, b) {
+        return a.position - b.position;
+      })
+    );
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }

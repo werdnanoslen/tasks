@@ -22,7 +22,9 @@ function Form(props) {
 
   const [data, setData] = useState(iChecklist ? '' : props.data);
 
-  const iChecklistData: ListItem[] = iChecklist ? props.data : [NewChecklistItem()];
+  const iChecklistData: ListItem[] = iChecklist
+    ? props.data
+    : [NewChecklistItem()];
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -84,8 +86,8 @@ function Form(props) {
       const item = checklistData[i];
       if (id === item.id) {
         updatedItems.splice(i, 1)[0];
-        const nowDone = !item.done
-        const newItem = { ...item, done: nowDone }
+        const nowDone = !item.done;
+        const newItem = { ...item, done: nowDone };
         if (nowDone) {
           updatedItems.push(newItem);
         } else {
@@ -113,7 +115,7 @@ function Form(props) {
   function toggleChecklist() {
     setChecklist((prevChecklist) => !prevChecklist);
     const n = String.fromCharCode(10); //newline character
-    let newData
+    let newData;
     if (checklist) {
       const listify = (p, c, i) => p.concat((i ? n : '') + c.data);
       newData = checklistData.reduce(listify, '');
@@ -122,9 +124,9 @@ function Form(props) {
       if (data && data.length > 0) {
         newData = data.split(n).map((line) => NewChecklistItem(line));
       } else {
-        newData = [NewChecklistItem()]
+        newData = [NewChecklistItem()];
       }
-      setChecklistData(newData)
+      setChecklistData(newData);
     }
     !newTask && props.updateData(props.id, newData);
   }
@@ -169,7 +171,13 @@ function Form(props) {
 
   function checklistGroup() {
     return (
-      <ReactSortable tag="ul" list={checklistData} setList={(newItems, _, {dragging}) => {dragging && setChecklistData(newItems)}}>
+      <ReactSortable
+        tag="ul"
+        list={checklistData}
+        setList={(newItems, _, { dragging }) => {
+          dragging && setChecklistData(newItems);
+        }}
+      >
         {checklistData.map((item, i) => (
           <li key={i}>
             <div className="list-controls">
@@ -177,7 +185,12 @@ function Form(props) {
                 <span className="visually-hidden">Move list item</span>
                 <span aria-hidden="true">{String.fromCharCode(8661)}</span>
               </button>
-              <input type="checkbox" checked={item.done} aria-label="done" onChange={() => toggleListItemDone(item.id)} />
+              <input
+                type="checkbox"
+                checked={item.done}
+                aria-label="done"
+                onChange={() => toggleListItemDone(item.id)}
+              />
             </div>
             {dataArea(item, i, item.done)}
             <button
@@ -229,10 +242,18 @@ function Form(props) {
 
   const confirmDeleteButtons = (
     <>
-      <button type="button" className="btn" onClick={() => props.deleteTask(props.id) && setConfirmDelete(false)}>
+      <button
+        type="button"
+        className="btn"
+        onClick={() => props.deleteTask(props.id) && setConfirmDelete(false)}
+      >
         Confirm delete
       </button>
-      <button type="submit" className="btn" onClick={() => setConfirmDelete(false)}>
+      <button
+        type="submit"
+        className="btn"
+        onClick={() => setConfirmDelete(false)}
+      >
         Cancel
       </button>
     </>
@@ -265,11 +286,20 @@ function Form(props) {
         }
       }}
     >
-      <form onSubmit={handleSubmit} onBlur={newTask ? blurCancel : handleSubmit} id={props.id} className={isEditing ? 'isEditing' : undefined}>
+      <form
+        onSubmit={handleSubmit}
+        onBlur={newTask ? blurCancel : handleSubmit}
+        id={props.id}
+        className={isEditing ? 'isEditing' : undefined}
+      >
         {checklist ? checklistGroup() : dataArea()}
         <div className="btn-group">
-          {newTask ? addingTools : (confirmDelete ? confirmDeleteButtons : editingTools)}
-          {!confirmDelete && 
+          {newTask
+            ? addingTools
+            : confirmDelete
+            ? confirmDeleteButtons
+            : editingTools}
+          {!confirmDelete && (
             <button
               type="button"
               className="btn btn__icon"
@@ -278,7 +308,7 @@ function Form(props) {
               <img src={checkbox} aria-hidden="true" />
               <span className="visually-hidden">Checklist mode</span>
             </button>
-          }
+          )}
         </div>
       </form>
     </li>

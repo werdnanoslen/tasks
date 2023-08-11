@@ -33,8 +33,8 @@ async function getTasks(): Promise<Task[]> {
   tasks.map((task) => {
     try {
       task.data = JSON.parse(task.data);
-    } catch { }
-  })
+    } catch {}
+  });
   return tasks;
 }
 
@@ -42,7 +42,7 @@ async function addTask(task: Task): Promise<number> {
   const countResult = await query('SELECT COUNT(*) as count FROM tasks');
   task.position = countResult[0].count + 1;
   const sql: string = 'INSERT INTO tasks SET ?';
-  if (typeof(task.data) !== 'string') {
+  if (typeof task.data !== 'string') {
     task.data = JSON.stringify(task.data);
   }
   const result = await query(sql, task);
@@ -51,7 +51,7 @@ async function addTask(task: Task): Promise<number> {
 
 async function updateTask(id: string, task: Task): Promise<number> {
   const sql: string = 'UPDATE tasks SET ? WHERE id = ?';
-  if (typeof(task.data) !== 'string') {
+  if (typeof task.data !== 'string') {
     task.data = JSON.stringify(task.data);
   }
   const result = await query(sql, [task, id]);
@@ -61,11 +61,13 @@ async function updateTask(id: string, task: Task): Promise<number> {
 async function moveTask(id: string, newPos: number): Promise<number> {
   const posResult = await query('SELECT position FROM tasks WHERE id = ?', id);
   const oldPos: number = posResult[0].position;
-  const [minPos, maxPos] = oldPos < newPos ? [oldPos, newPos] : [newPos, oldPos];
+  const [minPos, maxPos] =
+    oldPos < newPos ? [oldPos, newPos] : [newPos, oldPos];
   const posOffset = newPos < oldPos ? 1 : -1;
-  const prepSql: string = 'UPDATE tasks SET position = position + ? WHERE position >= ? AND position <= ?;';
+  const prepSql: string =
+    'UPDATE tasks SET position = position + ? WHERE position >= ? AND position <= ?;';
   const prepResult = await query(prepSql, [posOffset, minPos, maxPos]);
-  const setSql: string =  'UPDATE tasks SET position = ? WHERE id = ?';
+  const setSql: string = 'UPDATE tasks SET position = ? WHERE id = ?';
   const setResult = await query(setSql, [newPos, id]);
   return setResult.affectedRows;
 }
@@ -81,7 +83,7 @@ async function replaceTasks(tasks: Task[]): Promise<number> {
   await query(sql);
   let affectedRows = 0;
   for (const task of tasks) {
-    await addTask(task).then((ret) => affectedRows += ret);
+    await addTask(task).then((ret) => (affectedRows += ret));
   }
   return affectedRows;
 }
@@ -104,7 +106,7 @@ APP.put('/:id', async (req, res) => {
 
 APP.put('/:id/move/:newPosition', async (req, res) => {
   const id = req.params.id;
-  const newPosition = Number(req.params.newPosition)
+  const newPosition = Number(req.params.newPosition);
   const result = await moveTask(id, newPosition);
   res.json({ result });
 });
