@@ -88,7 +88,8 @@ export default function App() {
 
   function dragTask(event) {
     const { item, newIndex } = event;
-    API.moveTask(item.id, newIndex).then(refreshTasks);
+    item.position = Math.max(newIndex, 1);
+    API.moveTask(item.id, item.position).then(refreshTasks);
   }
 
   function updateData(id, newData) {
