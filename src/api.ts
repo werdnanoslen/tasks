@@ -7,8 +7,6 @@ const SERVER = 'http://localhost:8080';
 
 export async function getTasks(): Promise<Task[]> {
   const response = await axios.get(SERVER);
-  console.table(response.data);
-
   return response.data;
 }
 

@@ -272,9 +272,9 @@ function Form(props) {
   return (
     <li
       id={props.id}
-      className={`task ${props.hide ? 'hide' : ''} ${isMoving ? 'moving' : ''}`}
+      className={`task ${props.hide ? 'hide' : ''} ${isMoving ? 'moving' : ''} ${props.pinned || newTask ? 'filtered' : ''}`}
       tabIndex={isMoving || !props.movement ? 0 : -1}
-      draggable={newTask ? false : true}
+      draggable={newTask || props.pinned ? false : true}
       role="option"
       aria-describedby={newTask ? 'instructions' : undefined}
       onDragEnd={newTask ? undefined : handleSubmit}

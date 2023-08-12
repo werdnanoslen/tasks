@@ -166,7 +166,7 @@ export default function App() {
           list={tasks}
           setList={setTasks}
           id="TaskList"
-          filter="#new-task"
+          filter=".filtered"
           preventOnFilter={false}
           onChange={dragTask}
         >

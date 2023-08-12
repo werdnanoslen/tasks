@@ -192,10 +192,12 @@ main > ul {
 li.moving:focus-visible {
   outline: 2px dashed red;
 }
+.filtered {
+  cursor: initial;
+}
 #new-task {
   background-color: rgba(173, 216, 230, 0.05);
   border-color: lightblue;
-  cursor: initial;
 }
 .list-controls {
   display: flex;
