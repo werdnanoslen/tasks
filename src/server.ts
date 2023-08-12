@@ -41,6 +41,7 @@ async function getTasks(): Promise<Task[]> {
 async function addTask(task: Task): Promise<number> {
   const countResult = await query('SELECT COUNT(*) as count FROM tasks');
   task.position = countResult[0].count + 1;
+  delete task.chosen;
   const sql: string = 'INSERT INTO tasks SET ?';
   if (typeof task.data !== 'string') {
     task.data = JSON.stringify(task.data);
@@ -50,6 +51,7 @@ async function addTask(task: Task): Promise<number> {
 }
 
 async function updateTask(id: string, task: Task): Promise<number> {
+  delete task.chosen;
   const sql: string = 'UPDATE tasks SET ? WHERE id = ?';
   if (typeof task.data !== 'string') {
     task.data = JSON.stringify(task.data);

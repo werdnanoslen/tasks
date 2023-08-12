@@ -39,20 +39,20 @@ export default function App() {
   }
 
   function toggleTaskPinned(id) {
-    let updatedTasks: Task[] = [...tasks];
-    let fromPosition = -1;
-    let toPosition = -1;
-    let updatedTask;
-    tasks.forEach((task, i) => {
+    let updatedTasks = [...tasks];
+    let fromPosition = 0;
+    let toPosition = 0;
+    updatedTasks.forEach((task, i) => {
+      delete updatedTasks[i].chosen;
       if (id === task.id) {
         fromPosition = i;
-        updatedTask = { ...task, pinned: !task.pinned };
-      } else {
-        if (task.pinned) toPosition = i + 1;
+        updatedTasks[i].pinned = !task.pinned;
+      } else if (task.pinned) {
+        ++toPosition;
       }
     });
-    updatedTasks.splice(fromPosition, 1)[0];
-    updatedTasks.splice(toPosition, 0, updatedTask);
+    const movedTask = updatedTasks.splice(fromPosition, 1)[0];
+    updatedTasks.splice(toPosition, 0, movedTask);
     API.replaceTasks(updatedTasks).then(refreshTasks);
   }
 
