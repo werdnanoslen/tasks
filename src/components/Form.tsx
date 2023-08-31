@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, SyntheticEvent } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
 import { Task, ListItem } from '../models/task';
@@ -36,7 +36,7 @@ function Form(props) {
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const completeLabel = props.done ? 'Restore' : 'Complete';
 
-  function handleSubmit(e?) {
+  function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
     const newData = checklist ? checklistData : data;
     if (newTask) {
@@ -49,7 +49,7 @@ function Form(props) {
     setIsEditing(false);
   }
 
-  function blurCancel(e) {
+  function handleBlur(e: React.FocusEvent) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       checklist ? setChecklistData(iChecklistData) : setData(props.data);
       setChecklist(iChecklist);
@@ -57,7 +57,7 @@ function Form(props) {
     }
   }
 
-  function addChecklistItem(e, i) {
+  function addChecklistItem(e: React.KeyboardEvent, i: number) {
     if (checklist && e.key === 'Enter') {
       e.preventDefault();
       const newList = checklistData.slice();
@@ -65,22 +65,21 @@ function Form(props) {
       setNewItemId(newItem.id);
       newList.splice(i + 1, 0, newItem);
       setChecklistData(newList);
-      if (!newTask) handleSubmit();
     }
   }
 
-  function deleteListItem(id) {
+  async function deleteListItem(id: number, e: React.MouseEvent) {
     const remainingItems = checklistData.filter((item) => id !== item.id);
-    setChecklistData(remainingItems);
     if (remainingItems.length === 0) {
       setChecklistData(iChecklistData);
       setChecklist(false);
       setData('');
+    } else {
+      setChecklistData(remainingItems);
     }
-    if (!newTask) handleSubmit();
   }
 
-  function toggleListItemDone(id) {
+  function toggleListItemDone(id: number) {
     let updatedItems = [...checklistData];
     for (let i = 0; i < checklistData.length; i++) {
       const item = checklistData[i];
@@ -94,13 +93,12 @@ function Form(props) {
           updatedItems.unshift(newItem);
         }
         setChecklistData(updatedItems);
-        if (!newTask) handleSubmit();
         break;
       }
     }
   }
 
-  function handleInput(e, i) {
+  function handleInput(e, i: number) {
     const input = e.target.value;
     if (checklist) {
       let checklistDataCopy = [...checklistData];
@@ -164,7 +162,6 @@ function Form(props) {
         aria-label={inputLabel}
         rows={1}
         ref={item && item.id === newItemId ? lastRef : undefined}
-        maxLength={500}
       />
     );
   }
@@ -195,7 +192,7 @@ function Form(props) {
             {dataArea(item, i, item.done)}
             <button
               className="btn btn__icon btn__close"
-              onClick={() => deleteListItem(item.id)}
+              onClick={(e) => deleteListItem(item.id, e)}
             >
               <span className="visually-hidden">Delete list item</span>
               <span aria-hidden="true">{String.fromCharCode(10005)}</span>
@@ -267,12 +264,15 @@ function Form(props) {
 
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
+    if (!newTask) handleSubmit();
   }, [checklistData]);
 
   return (
     <li
       id={props.id}
-      className={`task ${props.hide ? 'hide' : ''} ${isMoving ? 'moving' : ''} ${props.pinned || newTask ? 'filtered' : ''}`}
+      className={`task ${props.hide ? 'hide' : ''} ${
+        isMoving ? 'moving' : ''
+      } ${props.pinned || newTask ? 'filtered' : ''}`}
       tabIndex={isMoving || !props.movement ? 0 : -1}
       draggable={newTask || props.pinned ? false : true}
       role="option"
@@ -288,7 +288,7 @@ function Form(props) {
     >
       <form
         onSubmit={handleSubmit}
-        onBlur={newTask ? blurCancel : handleSubmit}
+        onBlur={newTask ? handleBlur : handleSubmit}
         id={props.id}
         className={isEditing ? 'isEditing' : undefined}
       >
