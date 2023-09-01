@@ -162,6 +162,7 @@ function Form(props) {
         aria-label={inputLabel}
         rows={1}
         ref={item && item.id === newItemId ? lastRef : undefined}
+        maxLength={4000}
       />
     );
   }

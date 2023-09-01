@@ -20,7 +20,7 @@ DROP TABLE IF EXISTS `Tasks`;
 CREATE TABLE `Tasks` (
   `id` BIGINT,
   `position` SMALLINT NOT NULL,
-  `data` NVARCHAR(500),
+  `data` NVARCHAR(4000),
   `done` BOOLEAN NOT NULL DEFAULT false,
   `pinned` BOOLEAN NOT NULL DEFAULT false,
   PRIMARY KEY (`id`)

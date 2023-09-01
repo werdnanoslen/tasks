@@ -15,8 +15,8 @@ export async function addTask(task: Task): Promise<Task> {
   return response.data;
 }
 
-export async function updateTask(task: Task): Promise<Task> {
-  const taskCopy: any = task;
+export async function updateTask(task: Task): Promise<any> {
+  const taskCopy: Task = task;
   delete taskCopy.chosen;
   const response = await axios.put(`${SERVER}/${task.id}`, taskCopy);
   return response.data;

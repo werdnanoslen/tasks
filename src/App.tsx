@@ -25,6 +25,7 @@ export default function App() {
   const [filter, setFilter] = useState('Doing');
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
+  const [error, setError] = useState<undefined | string>();
 
   function refreshTasks() {
     API.getTasks().then(setTasks);
@@ -95,7 +96,14 @@ export default function App() {
   function updateData(id, newData) {
     tasks.map((task) => {
       if (id === task.id) {
-        API.updateTask({ ...task, data: newData }).then(refreshTasks);
+        API.updateTask({ ...task, data: newData }).then((ret) => {
+          if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
+            setError('Task content is too long. No changes have been saved.');
+          } else {
+            setError(undefined);
+            refreshTasks();
+          }
+        });
       }
     });
   }
@@ -115,7 +123,6 @@ export default function App() {
         break;
       }
     }
-    // API.replaceTasks(updatedTasks).then(refreshTasks);
     API.addTask(newTask).then(refreshTasks);
   }
 
@@ -150,6 +157,7 @@ export default function App() {
         <div className="filters">{filterList}</div>
       </header>
       <main ref={listHeadingRef}>
+        {error && <div role="status">{error}</div>}
         <div id="instructions" className="visually-hidden">
           Press spacebar to move task with arrow keys
         </div>

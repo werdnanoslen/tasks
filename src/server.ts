@@ -50,14 +50,19 @@ async function addTask(task: Task): Promise<number> {
   return result.affectedRows;
 }
 
-async function updateTask(id: string, task: Task): Promise<number> {
+async function updateTask(id: string, task: Task): Promise<any> {
   delete task.chosen;
   const sql: string = 'UPDATE tasks SET ? WHERE id = ?';
   if (typeof task.data !== 'string') {
     task.data = JSON.stringify(task.data);
   }
-  const result = await query(sql, [task, id]);
-  return result.affectedRows;
+  return await query(sql, [task, id])
+    .then((result) => {
+      return result.affectedRows;
+    })
+    .catch((e) => {
+      return e;
+    });
 }
 
 async function moveTask(id: string, newPos: number): Promise<number> {
@@ -103,7 +108,7 @@ APP.post('/', async (req, res) => {
 APP.put('/:id', async (req, res) => {
   const id = req.params.id;
   const result = await updateTask(id, req.body);
-  res.json({ result });
+  res.json(result);
 });
 
 APP.put('/:id/move/:newPosition', async (req, res) => {
