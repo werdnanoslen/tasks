@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, SyntheticEvent } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
-import { Task, ListItem } from '../models/task';
+import { ListItem } from '../models/task';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
@@ -35,6 +35,7 @@ function Form(props) {
   const inputLabel = newTask ? 'Add task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const completeLabel = props.done ? 'Restore' : 'Complete';
+  const MAXLENGTH = 1000;
 
   function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
@@ -120,7 +121,14 @@ function Form(props) {
       setData(newData);
     } else {
       if (data && data.length > 0) {
-        newData = data.split(n).map((line) => NewChecklistItem(line));
+        const splitData = data.split(n)
+        if (splitData.length > MAXLENGTH-1) {
+          newData = splitData.splice(0, MAXLENGTH-1);
+          newData.push(splitData.join(n));
+        } else {
+          newData = splitData;
+        }
+        newData = newData.map((line) => NewChecklistItem(line));
       } else {
         newData = [NewChecklistItem()];
       }
@@ -162,7 +170,7 @@ function Form(props) {
         aria-label={inputLabel}
         rows={1}
         ref={item && item.id === newItemId ? lastRef : undefined}
-        maxLength={4000}
+        maxLength={MAXLENGTH}
       />
     );
   }
@@ -293,6 +301,7 @@ function Form(props) {
         id={props.id}
         className={isEditing ? 'isEditing' : undefined}
       >
+        {props.error && <div role="status">{props.error}</div>}
         {checklist ? checklistGroup() : dataArea()}
         <div className="btn-group">
           {newTask

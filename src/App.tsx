@@ -157,7 +157,6 @@ export default function App() {
         <div className="filters">{filterList}</div>
       </header>
       <main ref={listHeadingRef}>
-        {error && <div role="status">{error}</div>}
         <div id="instructions" className="visually-hidden">
           Press spacebar to move task with arrow keys
         </div>
@@ -193,6 +192,7 @@ export default function App() {
               key={task.id}
               deleteTask={() => API.deleteTask(task.id).then(refreshTasks)}
               updateData={updateData}
+              error={error}
             />
           ))}
         </ReactSortable>
