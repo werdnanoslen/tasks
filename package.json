@@ -12,8 +12,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "react-sortablejs": "^6.1.4",
-    "react-textarea-autosize": "^8.3.4",
-    "sortablejs": "^1.15.0"
+    "react-textarea-autosize": "^8.3.4"
   },
   "scripts": {
     "start": "react-scripts start",
