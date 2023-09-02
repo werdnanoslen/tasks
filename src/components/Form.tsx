@@ -121,9 +121,9 @@ function Form(props) {
       setData(newData);
     } else {
       if (data && data.length > 0) {
-        const splitData = data.split(n)
-        if (splitData.length > MAXLENGTH-1) {
-          newData = splitData.splice(0, MAXLENGTH-1);
+        const splitData = data.split(n);
+        if (splitData.length > MAXLENGTH - 1) {
+          newData = splitData.splice(0, MAXLENGTH - 1);
           newData.push(splitData.join(n));
         } else {
           newData = splitData;
