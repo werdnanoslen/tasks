@@ -134,7 +134,8 @@ form .btn-group {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
-li.task:hover form .btn-group {
+li.task:hover form .btn-group,
+li.task:focus-within form .btn-group {
   visibility: initial;
 }
 form .btn-group button {
