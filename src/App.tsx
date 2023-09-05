@@ -65,7 +65,7 @@ export default function App() {
         setNarrator(
           `Grabbed task at position ${
             fromPosition + 1
-          }. Use arrows to change position, spacebar to drop.`
+          }. Use arrows to change position, space to drop.`
         );
         setMovement(true);
       } else {
@@ -83,7 +83,7 @@ export default function App() {
     setNarrator(
       `Moved to position ${
         toPosition + 1
-      }. Use arrows to change position, spacebar to drop.`
+      }. Use arrows to change position, space to drop.`
     );
   }
 
@@ -153,22 +153,13 @@ export default function App() {
   return (
     <>
       <header>
+        <a href="#main" id="skip-main">
+          Skip to main content
+        </a>
         <h1>Tasks</h1>
         <div className="filters">{filterList}</div>
       </header>
-      <main ref={listHeadingRef}>
-        <div id="instructions" className="visually-hidden">
-          Press spacebar to move task with arrow keys
-        </div>
-        <div
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-          tabIndex={-1}
-          className="visually-hidden"
-        >
-          {narrator}
-        </div>
+      <main id="main" ref={listHeadingRef}>
         <ReactSortable
           tag="ul"
           list={tasks}
@@ -197,6 +188,15 @@ export default function App() {
           ))}
         </ReactSortable>
       </main>
+      <div
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        tabIndex={-1}
+        className="visually-hidden"
+      >
+        {narrator}
+      </div>
     </>
   );
 }

@@ -12,6 +12,19 @@ textarea {
 body {
   padding: 0 2rem;
 }
+a#skip-main {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.5rem 1rem;
+}
+a#skip-main:focus {
+  opacity: 1;
+  display: initial;
+  background-color: #eee;
+  color: #333;
+}
 header {
   display: flex;
   justify-content: space-between;
@@ -47,6 +60,9 @@ header {
 }
 .filters button:last-child[aria-pressed='false'] {
   border-left: none;
+}
+.filters button:focus {
+  outline: 2px dashed lightblue;
 }
 form {
   border: 1px gray solid;

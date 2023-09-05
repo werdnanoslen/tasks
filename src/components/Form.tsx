@@ -32,7 +32,7 @@ function Form(props) {
   const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
-  const inputLabel = newTask ? 'Add task' : 'Edit task';
+  const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
@@ -167,7 +167,6 @@ function Form(props) {
         onInput={(e) => handleInput(e, index)}
         onFocus={() => setIsEditing(true)}
         placeholder={inputLabel}
-        aria-label={inputLabel}
         rows={1}
         ref={item && item.id === newItemId ? lastRef : undefined}
         maxLength={MAXLENGTH}
@@ -215,7 +214,7 @@ function Form(props) {
   const editingTools = (
     <>
       <button type="submit" className="btn visually-hidden">
-        Save {props.id}
+        Save
       </button>
       <button
         type="button"
@@ -224,7 +223,7 @@ function Form(props) {
       >
         <img src={check} aria-hidden="true" />
         <span className="visually-hidden">
-          {completeLabel} {props.id}
+          {completeLabel}
         </span>
       </button>
       <button
@@ -233,7 +232,7 @@ function Form(props) {
         onClick={() => setConfirmDelete(true)}
       >
         <img src={rubbish} aria-hidden="true" />
-        <span className="visually-hidden">Delete {props.id}</span>
+        <span className="visually-hidden">Delete</span>
       </button>
       <button
         type="button"
@@ -314,9 +313,11 @@ function Form(props) {
               type="button"
               className="btn btn__icon"
               onClick={() => toggleChecklist()}
+              aria-pressed={checklist ? true : false}
+              aria-label="Checklist mode"
+              id="instructions"
             >
               <img src={checkbox} aria-hidden="true" />
-              <span className="visually-hidden">Checklist mode</span>
             </button>
           )}
         </div>

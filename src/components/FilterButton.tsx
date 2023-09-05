@@ -4,13 +4,12 @@ function FilterButton(props) {
   return (
     <button
       type="button"
-      className="btn toggle-btn"
+      className="btn"
       aria-pressed={props.isPressed}
       onClick={() => props.setFilter(props.data)}
+      aria-label={`Show ${props.data} tasks`}
     >
-      <span className="visually-hidden">Show </span>
-      <span>{props.data}</span>
-      <span className="visually-hidden"> tasks</span>
+      {props.data}
     </button>
   );
 }
