@@ -148,7 +148,7 @@ export default function App() {
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }
-  }, [tasks, prevTaskLength]);
+  }, [tasks, prevTaskLength, narrator]);
 
   return (
     <>
@@ -184,15 +184,14 @@ export default function App() {
               deleteTask={() => API.deleteTask(task.id).then(refreshTasks)}
               updateData={updateData}
               error={error}
+              setNarrator={setNarrator}
             />
           ))}
         </ReactSortable>
       </main>
       <div
         role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        tabIndex={-1}
+        title="Last screen reader alert"
         className="visually-hidden"
       >
         {narrator}

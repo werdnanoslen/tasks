@@ -90,8 +90,10 @@ function Form(props) {
         const newItem = { ...item, done: nowDone };
         if (nowDone) {
           updatedItems.push(newItem);
+          props.setNarrator('Checked item moved to bottom of list. Next item now under focus.')
         } else {
           updatedItems.unshift(newItem);
+          props.setNarrator('Checked item moved to top of list. Next item now under focus.')
         }
         setChecklistData(updatedItems);
         break;
@@ -142,8 +144,10 @@ function Form(props) {
     switch (e.key) {
       case ' ':
       case 'Enter':
-        setIsMoving((prevIsMoving) => !prevIsMoving);
-        props.moveTask(props.id, 0, !isMoving);
+        if (document.activeElement?.classList.contains('task')) {
+          setIsMoving((prevIsMoving) => !prevIsMoving);
+          props.moveTask(props.id, 0, !isMoving);
+        }
         break;
       case 'ArrowRight':
       case 'ArrowDown':
@@ -167,6 +171,7 @@ function Form(props) {
         onInput={(e) => handleInput(e, index)}
         onFocus={() => setIsEditing(true)}
         placeholder={inputLabel}
+        aria-label={inputLabel}
         rows={1}
         ref={item && item.id === newItemId ? lastRef : undefined}
         maxLength={MAXLENGTH}
@@ -221,7 +226,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.toggleTaskDone(props.id)}
       >
-        <img src={check} aria-hidden="true" />
+        <img src={check} aria-hidden="true" alt="" />
         <span className="visually-hidden">
           {completeLabel}
         </span>
@@ -231,7 +236,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => setConfirmDelete(true)}
       >
-        <img src={rubbish} aria-hidden="true" />
+        <img src={rubbish} aria-hidden="true" alt="" />
         <span className="visually-hidden">Delete</span>
       </button>
       <button
@@ -239,8 +244,8 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.toggleTaskPinned(props.id)}
       >
-        <img src={props.pinned ? pinned : unpinned} aria-hidden="true" />
-        <span className="visually-hidden">{props.pinned && 'Un-'}Pin task</span>
+        <img src={props.pinned ? pinned : unpinned} aria-hidden="true" alt="" />
+        <span className="visually-hidden">{props.pinned ? 'Un-' : ''}Pin</span>
       </button>
     </>
   );
@@ -284,6 +289,7 @@ function Form(props) {
       tabIndex={isMoving || !props.movement ? 0 : -1}
       draggable={newTask || props.pinned ? false : true}
       role="option"
+      aria-label={`${checklist ? `checklist` : ``} task`}
       aria-describedby={newTask ? 'instructions' : undefined}
       onDragEnd={newTask ? undefined : handleSubmit}
       onKeyDown={(e) => moveTask(e)}
@@ -317,7 +323,7 @@ function Form(props) {
               aria-label="Checklist mode"
               id="instructions"
             >
-              <img src={checkbox} aria-hidden="true" />
+              <img src={checkbox} aria-hidden="true" alt="" />
             </button>
           )}
         </div>
