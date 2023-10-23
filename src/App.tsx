@@ -35,6 +35,7 @@ export default function App() {
     tasks.map((task) => {
       if (id === task.id) {
         API.updateTask({ ...task, done: !task.done }).then(refreshTasks);
+        setNarrator('Task marked done. Next task now focused.')
       }
     });
   }
@@ -55,6 +56,7 @@ export default function App() {
     const movedTask = updatedTasks.splice(fromPosition, 1)[0];
     updatedTasks.splice(toPosition, 0, movedTask);
     API.replaceTasks(updatedTasks).then(refreshTasks);
+    setNarrator(`Task pinned in position ${toPosition}. Next task now focused.`)
   }
 
   function moveTask(id, indexes: number, moving?: Boolean) {
