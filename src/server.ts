@@ -33,6 +33,7 @@ async function getTasks(): Promise<Task[]> {
   tasks.map((task) => {
     try {
       task.data = JSON.parse(task.data);
+      if (typeof(task.data) === 'number') task.data = ""+task.data
     } catch {}
   });
   return tasks;
