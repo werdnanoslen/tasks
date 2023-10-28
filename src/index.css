@@ -152,7 +152,7 @@ form .btn-group {
   margin-bottom: 0.5rem;
 }
 li.task:hover form .btn-group,
-li.task form .btn-group:focus-within {
+li.task:focus-within form .btn-group {
   opacity: 1;
 }
 form .btn-group button {
@@ -202,8 +202,8 @@ form .btn-group button:focus {
   cursor: grab;
   line-height: 1;
 }
-.task li:hover .btn__icon,
-.task li .btn__icon:focus {
+li.task li:hover .btn__icon,
+li.task li:focus-within .btn__icon {
   opacity: 1;
 }
 
