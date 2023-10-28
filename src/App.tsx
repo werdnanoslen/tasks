@@ -128,6 +128,11 @@ export default function App() {
     API.addTask(newTask).then(refreshTasks);
   }
 
+  function deleteTask(id: number) {
+    API.deleteTask(id).then(refreshTasks);
+    setNarrator('Deleted task');
+  }
+
   const filterList = FILTER_TASKS.map((data) => (
     <FilterButton
       key={data}
@@ -171,7 +176,12 @@ export default function App() {
           preventOnFilter={false}
           onChange={dragTask}
         >
-          <Form addTask={addTask} id="new-task" hide={'Done' === filter} />
+          <Form 
+            addTask={addTask} 
+            id="new-task" 
+            hide={'Done' === filter} 
+            setNarrator={setNarrator}
+          />
           {tasks.filter(FILTER_MAP[filter]).map((task) => (
             <Form
               id={task.id}
@@ -183,7 +193,7 @@ export default function App() {
               moveTask={moveTask}
               movement={movement}
               key={task.id}
-              deleteTask={() => API.deleteTask(task.id).then(refreshTasks)}
+              deleteTask={() => deleteTask(task.id)}
               updateData={updateData}
               error={error}
               setNarrator={setNarrator}

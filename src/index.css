@@ -81,7 +81,7 @@ form.isEditing {
   overflow: hidden;
   border: none;
   box-sizing: border-box;
-  line-height: 1;
+  line-height: 1.15;
   padding: 0;
   flex-grow: 1;
 }
@@ -91,6 +91,10 @@ form.isEditing {
 }
 form > .input {
   width: 100%;
+}
+input[type='checkbox'], 
+ul textarea {
+  margin-top: 0.5rem;
 }
 input[type='checkbox'] {
   -webkit-appearance: none;
@@ -141,18 +145,15 @@ form ul,
   padding: 0;
   margin: 0;
 }
-form li + li {
-  margin-top: 0.5rem;
-}
 form .btn-group {
   display: flex;
-  visibility: hidden;
+  opacity: 0;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
 li.task:hover form .btn-group,
-li.task:focus-within form .btn-group {
-  visibility: initial;
+li.task form .btn-group:focus-within {
+  opacity: 1;
 }
 form .btn-group button {
   color: lightblue;
@@ -163,6 +164,11 @@ form .btn-group button {
 form .btn-group button:hover,
 form .btn-group button:focus {
   background-color: #ffffff1b;
+}
+.list-controls {
+  display: flex;
+  gap: 0.2rem;
+  margin-left: -1.05rem;
 }
 .btn__icon {
   width: 2rem;
@@ -175,9 +181,32 @@ form .btn-group button:focus {
 .btn__icon:focus {
   border-radius: 100%;
 }
-.btn__icon img {
+.btn__icon:focus {
+  background-color: #ffffff1b;
+}
+.btn__icon img,
+.btn__icon .ascii-icon {
   padding: 0.5rem;
 }
+.btn__icon .ascii-icon {
+  width: 100%;
+  line-height: 1.15;
+}
+.btn__drag,
+.btn__close {
+  color: lightblue;
+  display: flex;
+  opacity: 0;
+}
+.btn__drag .ascii-icon {
+  cursor: grab;
+  line-height: 1;
+}
+.task li:hover .btn__icon,
+.task li .btn__icon:focus {
+  opacity: 1;
+}
+
 .visually-hidden {
   position: absolute !important;
   height: 1px;
@@ -193,9 +222,6 @@ main > ul,
   flex-wrap: wrap;
   gap: 1rem;
 }
-.task li {
-  align-items: center;
-}
 main > ul {
   padding: 0;
 }
@@ -204,7 +230,10 @@ main > ul {
   height: fit-content;
   max-width: 24rem;
   list-style-type: none;
-  cursor: move;
+  cursor: grab;
+}
+.task li {
+  gap: 1rem;
 }
 li.moving:focus-visible {
   outline: 2px dashed red;
@@ -215,24 +244,4 @@ li.moving:focus-visible {
 #new-task {
   background-color: rgba(173, 216, 230, 0.05);
   border-color: lightblue;
-}
-.list-controls {
-  display: flex;
-  gap: 0.5rem;
-  margin-left: -0.625rem;
-}
-.btn__drag,
-.btn__close {
-  width: auto;
-  height: 1rem;
-  cursor: grab;
-  color: lightblue;
-  display: flex;
-  opacity: 0;
-}
-.btn__close {
-  cursor: pointer;
-}
-.task li:hover .btn__icon {
-  opacity: 1;
 }
