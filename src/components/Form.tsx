@@ -5,6 +5,7 @@ import React, {
   SyntheticEvent,
   useCallback,
 } from 'react';
+import classNames from 'classnames';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
 import { ListItem } from '../models/task';
@@ -38,6 +39,7 @@ function Form(props) {
   const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
+  const draggable = !newTask && !props.pinned;
   const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const delRef = useCallback((e) => (e ? e.focus() : null), []);
@@ -176,7 +178,7 @@ function Form(props) {
       <TextareaAutosize
         id={`edit-${props.id}`}
         name="data"
-        className={`input ${done ? 'done' : ''}`}
+        className={classNames('input', {'done': done})}
         value={item ? item.data : data}
         onKeyDown={(e) => addChecklistItem(e, index)}
         onInput={(e) => handleInput(e, index)}
@@ -298,11 +300,13 @@ function Form(props) {
   return (
     <li
       id={props.id}
-      className={`task ${props.hide ? 'hide' : ''} ${
-        isMoving ? 'moving' : ''
-      } ${props.pinned || newTask ? 'filtered' : ''}`}
+      className={classNames('task', {
+        'hide': props.hide,
+        'moving': isMoving,
+        'filtered': draggable
+      })}
       tabIndex={isMoving || !props.movement ? 0 : -1}
-      draggable={newTask || props.pinned ? false : true}
+      draggable={draggable}
       role="option"
       aria-label={`${checklist ? `checklist` : ``} task`}
       aria-describedby={newTask ? 'instructions' : undefined}
@@ -319,7 +323,7 @@ function Form(props) {
         onSubmit={handleSubmit}
         onBlur={newTask ? handleBlur : handleSubmit}
         id={props.id}
-        className={isEditing ? 'isEditing' : undefined}
+        className={classNames({'isEditing': isEditing})}
       >
         {props.error && <div role="status">{props.error}</div>}
         {checklist ? checklistGroup() : dataArea()}
