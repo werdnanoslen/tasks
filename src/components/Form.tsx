@@ -184,6 +184,7 @@ function Form(props) {
     return (
       <ReactSortable
         tag="ul"
+        handle=".btn__drag"
         list={checklistData}
         setList={(newItems, _, { dragging }) => {
           dragging && setChecklistData(newItems);
