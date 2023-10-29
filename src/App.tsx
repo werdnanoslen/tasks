@@ -35,7 +35,7 @@ export default function App() {
     tasks.map((task) => {
       if (id === task.id) {
         API.updateTask({ ...task, done: !task.done }).then(refreshTasks);
-        setNarrator('Task marked done. Next task now focused.')
+        setNarrator('Task marked done. Next task now focused.');
       }
     });
   }
@@ -56,7 +56,9 @@ export default function App() {
     const movedTask = updatedTasks.splice(fromPosition, 1)[0];
     updatedTasks.splice(toPosition, 0, movedTask);
     API.replaceTasks(updatedTasks).then(refreshTasks);
-    setNarrator(`Task pinned in position ${toPosition}. Next task now focused.`)
+    setNarrator(
+      `Task pinned in position ${toPosition}. Next task now focused.`
+    );
   }
 
   function moveTask(id, indexes: number, moving?: Boolean) {
@@ -176,10 +178,10 @@ export default function App() {
           preventOnFilter={false}
           onChange={dragTask}
         >
-          <Form 
-            addTask={addTask} 
-            id="new-task" 
-            hide={'Done' === filter} 
+          <Form
+            addTask={addTask}
+            id="new-task"
+            hide={'Done' === filter}
             setNarrator={setNarrator}
           />
           {tasks.filter(FILTER_MAP[filter]).map((task) => (

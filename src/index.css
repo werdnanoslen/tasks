@@ -92,7 +92,7 @@ form.isEditing {
 form > .input {
   width: 100%;
 }
-input[type='checkbox'], 
+input[type='checkbox'],
 ul textarea {
   margin-top: 0.5rem;
 }

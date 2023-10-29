@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, SyntheticEvent, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  SyntheticEvent,
+  useCallback,
+} from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
 import { ListItem } from '../models/task';
@@ -34,7 +40,7 @@ function Form(props) {
   const newTask: boolean = props.id === 'new-task';
   const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
-  const delRef = useCallback(e => (e ? e.focus() : null), []);
+  const delRef = useCallback((e) => (e ? e.focus() : null), []);
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
 
@@ -91,10 +97,14 @@ function Form(props) {
         const newItem = { ...item, done: nowDone };
         if (nowDone) {
           updatedItems.push(newItem);
-          props.setNarrator('Checked item moved to bottom of list. Next item now under focus.')
+          props.setNarrator(
+            'Checked item moved to bottom of list. Next item now under focus.'
+          );
         } else {
           updatedItems.unshift(newItem);
-          props.setNarrator('Checked item moved to top of list. Next item now under focus.')
+          props.setNarrator(
+            'Checked item moved to top of list. Next item now under focus.'
+          );
         }
         setChecklistData(updatedItems);
         break;
@@ -195,7 +205,9 @@ function Form(props) {
             <div className="list-controls">
               <button className="btn btn__icon btn__drag">
                 <span className="visually-hidden">Move list item</span>
-                <span className="ascii-icon" aria-hidden="true">{String.fromCharCode(8661)}</span>
+                <span className="ascii-icon" aria-hidden="true">
+                  {String.fromCharCode(8661)}
+                </span>
               </button>
               <input
                 type="checkbox"
@@ -209,7 +221,9 @@ function Form(props) {
               className="btn btn__icon btn__close"
               onClick={(e) => deleteListItem(item.id, e)}
             >
-              <span className="ascii-icon" aria-hidden="true">{String.fromCharCode(10005)}</span>
+              <span className="ascii-icon" aria-hidden="true">
+                {String.fromCharCode(10005)}
+              </span>
               <span className="visually-hidden">Delete list item</span>
             </button>
           </li>
@@ -229,9 +243,7 @@ function Form(props) {
         onClick={() => props.toggleTaskDone(props.id)}
       >
         <img src={check} aria-hidden="true" alt="" />
-        <span className="visually-hidden">
-          {completeLabel}
-        </span>
+        <span className="visually-hidden">{completeLabel}</span>
       </button>
       <button
         type="button"
