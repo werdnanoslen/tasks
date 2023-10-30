@@ -303,7 +303,7 @@ function Form(props) {
       className={classNames('task', {
         'hide': props.hide,
         'moving': isMoving,
-        'filtered': draggable
+        'filtered': !draggable
       })}
       tabIndex={isMoving || !props.movement ? 0 : -1}
       draggable={draggable}
