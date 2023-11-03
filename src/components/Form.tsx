@@ -178,7 +178,7 @@ function Form(props) {
       <TextareaAutosize
         id={`edit-${props.id}`}
         name="data"
-        className={classNames('input', {'done': done})}
+        className={classNames('input', { done: done })}
         value={item ? item.data : data}
         onKeyDown={(e) => addChecklistItem(e, index)}
         onInput={(e) => handleInput(e, index)}
@@ -301,9 +301,9 @@ function Form(props) {
     <li
       id={props.id}
       className={classNames('task', {
-        'hide': props.hide,
-        'moving': isMoving,
-        'filtered': !draggable
+        hide: props.hide,
+        moving: isMoving,
+        filtered: !draggable,
       })}
       tabIndex={isMoving || !props.movement ? 0 : -1}
       draggable={draggable}
@@ -323,7 +323,7 @@ function Form(props) {
         onSubmit={handleSubmit}
         onBlur={newTask ? handleBlur : handleSubmit}
         id={props.id}
-        className={classNames({'isEditing': isEditing})}
+        className={classNames({ isEditing: isEditing })}
       >
         {props.error && <div role="status">{props.error}</div>}
         {checklist ? checklistGroup() : dataArea()}

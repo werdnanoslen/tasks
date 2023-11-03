@@ -159,10 +159,16 @@ export default function App() {
     }
   }, [tasks, prevTaskLength, narrator]);
 
-  const emptyAll = tasks.length === 0
-  const emptyDone = 'Done' === filter && tasks.filter(FILTER_MAP['Done']).length === 0
-  const emptyDoing = 'Doing' === filter && tasks.filter(FILTER_MAP['Doing']).length === 0
-  const emptyMsg = (emptyAll && "No tasks added yet") || (emptyDone && "Nothing is marked done yet") || (emptyDoing && "All done! 🎉") || undefined
+  const emptyAll = tasks.length === 0;
+  const emptyDone =
+    'Done' === filter && tasks.filter(FILTER_MAP['Done']).length === 0;
+  const emptyDoing =
+    'Doing' === filter && tasks.filter(FILTER_MAP['Doing']).length === 0;
+  const emptyMsg =
+    (emptyAll && 'No tasks added yet') ||
+    (emptyDone && 'Nothing is marked done yet') ||
+    (emptyDoing && 'All done! 🎉') ||
+    undefined;
 
   return (
     <>
