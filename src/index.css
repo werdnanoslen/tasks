@@ -6,7 +6,7 @@ html {
 button,
 input,
 textarea {
-  background-color: #333333;
+  background-color: inherit;
   color: #ffffff;
 }
 body {
@@ -258,4 +258,8 @@ li.moving:focus-visible {
   background-color: rgba(173, 216, 230, 0.05);
   border-color: lightblue;
   margin: 0 auto;
+}
+#emptyMsg {
+  text-align: center;
+  margin-top: 3rem;
 }
