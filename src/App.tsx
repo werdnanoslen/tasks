@@ -169,6 +169,12 @@ export default function App() {
         <div className="filters">{filterList}</div>
       </header>
       <main id="main" ref={listHeadingRef}>
+        <Form
+          addTask={addTask}
+          id="new-task"
+          hide={'Done' === filter}
+          setNarrator={setNarrator}
+        />
         <ReactSortable
           tag="ul"
           list={tasks}
@@ -178,12 +184,6 @@ export default function App() {
           preventOnFilter={false}
           onChange={dragTask}
         >
-          <Form
-            addTask={addTask}
-            id="new-task"
-            hide={'Done' === filter}
-            setNarrator={setNarrator}
-          />
           {tasks.filter(FILTER_MAP[filter]).map((task) => (
             <Form
               id={task.id}

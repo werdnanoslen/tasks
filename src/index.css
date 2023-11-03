@@ -10,7 +10,19 @@ textarea {
   color: #ffffff;
 }
 body {
+  margin: 0 auto;
+  max-width: 20rem;
   padding: 0 2rem;
+}
+@media (min-width: 45rem) {
+  body {
+    max-width: 41rem;
+  }
+}
+@media (min-width: 66rem) {
+  body {
+    max-width: 62rem;
+  }
 }
 a#skip-main {
   opacity: 0;
@@ -157,12 +169,11 @@ li.task:focus-within form .btn-group {
 }
 form .btn-group button {
   color: lightblue;
-  background-color: initial;
   border: initial;
   margin-right: 1rem;
 }
-form .btn-group button:hover,
-form .btn-group button:focus {
+button:hover,
+button:focus {
   background-color: #ffffff1b;
 }
 .list-controls {
@@ -219,16 +230,18 @@ li.task li:focus-within .btn__icon {
 main > ul,
 .task li {
   display: flex;
-  flex-wrap: wrap;
   gap: 1rem;
+}
+main > ul {
+  flex-wrap: wrap;
 }
 main > ul {
   padding: 0;
 }
 .task {
-  width: auto;
+  width: 100%;
   height: fit-content;
-  max-width: 24rem;
+  max-width: 20rem;
   list-style-type: none;
   cursor: grab;
 }
@@ -244,4 +257,5 @@ li.moving:focus-visible {
 #new-task {
   background-color: rgba(173, 216, 230, 0.05);
   border-color: lightblue;
+  margin: 0 auto;
 }
