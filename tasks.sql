@@ -26,7 +26,7 @@ CREATE TABLE `Tasks` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-CREATE INDEX idx_position ON tasks (position);
+CREATE INDEX idx_position ON Tasks (position);
 --
 -- Dumping data for table `Tasks`
 --
