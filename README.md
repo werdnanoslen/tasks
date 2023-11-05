@@ -2,7 +2,7 @@
 
 A web app for keeping track of tasks
 
-<img alt="Demo on phone" src="demo-screenshot.png" width="500" />
+<img alt="Demo on phone" src="demo-screenshot.png" />
 
 
 # Running locally
