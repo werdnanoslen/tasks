@@ -33,6 +33,6 @@ CREATE INDEX idx_position ON tasks (position);
 
 LOCK TABLES `Tasks` WRITE;
 /*!40000 ALTER TABLE `Tasks` DISABLE KEYS */;
-INSERT INTO `Tasks` VALUES (1,1,"Eat",false,false),(2,2,"Sleep",false,false),(3,3,"Repeat",false,false),(4,4,'[{"id": 41, "data": "Eat", "done": false}, {"id": 42, "data": "Sleep", "done": false}, {"id": 43, "data": "Repeat", "done": true}]',false,false);
+INSERT INTO `Tasks` VALUES (1,1,"You can drag tasks around, mark them as done, delete, pin to the top of this list, and toggle between regular and checklist types",false,false),(2,2,"This is a regular task",false,false),(3,3,'[{"id":1699045008620,"data":"This is a checklist task","done":false,"chosen":false,"selected":false},{"id":1699045041759,"data":"You can cross sub-tasks out","done":true,"chosen":false,"selected":false}]',false,false);
 /*!40000 ALTER TABLE `Tasks` ENABLE KEYS */;
 UNLOCK TABLES;
