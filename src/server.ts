@@ -3,16 +3,15 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import { Task } from './models/task';
 
-const PORT: number = 8080;
 const APP: Application = express();
 APP.use(cors());
 APP.use(express.json());
 
 const pool = mysql2.createPool({
-  host: process.env.MYSQL_HOST || 'localhost',
-  user: process.env.MYSQL_USER || 'root',
-  password: process.env.MYSQL_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || 'Tasks',
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
 });
 
 function query(sql: string, values?): Promise<any> {
@@ -130,6 +129,10 @@ APP.delete('/:id', async (req, res) => {
   res.json({ result });
 });
 
-APP.listen(PORT, () => {
-  console.log(`Server started on http://localhost:${PORT}${APP.mountpath}`);
+APP.post('/login', async (req, res) => {
+  res.json({ token: process.env.TOKEN });
+});
+
+APP.listen(process.env.PORT, () => {
+  console.log(`Server started on http://localhost:${process.env.PORT}${APP.mountpath}`);
 });

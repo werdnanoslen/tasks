@@ -1,7 +1,7 @@
 //@todo add try/catch blocks
 
 import axios from 'axios';
-import { Task } from './models/task';
+import { Task, Credentials } from './models/task';
 
 const SERVER = 'http://localhost:8080';
 
@@ -34,5 +34,10 @@ export async function replaceTasks(tasks: Task[]): Promise<any> {
 
 export async function deleteTask(id: number): Promise<void> {
   const response = await axios.delete(`${SERVER}/${id}`);
+  return response.data;
+}
+
+export async function loginUser(credentials: Credentials): Promise<any> {
+  const response = await axios.post(`${SERVER}/login`, credentials);
   return response.data;
 }

@@ -20,7 +20,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "mysql.server start && nodemon --trace-warnings ./dist/server.js",
+    "server": "mysql.server start && nodemon --trace-warnings --env-file=.env ./dist/server.js",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
     "format:fix": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\""
   },
@@ -47,6 +47,7 @@
     "file-loader": "^6.2.0",
     "nodemon": "^3.0.1",
     "prettier": "2.7.1",
+    "react-router-dom": "^6.21.1",
     "source-map-loader": "^4.0.1",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",

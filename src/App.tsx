@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ReactSortable } from 'react-sortablejs';
+import Login from './components/Login';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
 import { Task, ListItem } from './models/task';
 import * as API from './api';
+import useToken from './components/useToken';
+
+function setToken(userToken: string) {
+  sessionStorage.setItem('token', JSON.stringify(userToken));
+}
 
 function usePrevious(value) {
   const ref = useRef();
@@ -26,6 +32,11 @@ export default function App() {
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
   const [error, setError] = useState<undefined | string>();
+
+  const { token, setToken } = useToken();
+  if (!token) {
+    return <Login setToken={setToken} />;
+  }
 
   function refreshTasks() {
     API.getTasks().then(setTasks);

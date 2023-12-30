@@ -12,3 +12,8 @@ export type Task = {
   pinned: boolean;
   chosen?: boolean;
 };
+
+export type Credentials = {
+  username: string;
+  password: string;
+};
