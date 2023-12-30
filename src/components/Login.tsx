@@ -5,14 +5,14 @@ import { loginUser } from '../api';
 function Login({ setToken }) {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const token = await loginUser({
       username,
-      password
+      password,
     });
     setToken(token);
-  }
+  };
 
   return (
     <form className="login-wrapper" onSubmit={handleSubmit}>

@@ -1,6 +1,7 @@
 import mysql2 from 'mysql2';
 import cors from 'cors';
 import express, { Application } from 'express';
+import jsonwebtoken from 'jsonwebtoken';
 import { Task } from './models/task';
 
 const APP: Application = express();
@@ -134,5 +135,7 @@ APP.post('/login', async (req, res) => {
 });
 
 APP.listen(process.env.PORT, () => {
-  console.log(`Server started on http://localhost:${process.env.PORT}${APP.mountpath}`);
+  console.log(
+    `Server started on http://localhost:${process.env.PORT}${APP.mountpath}`
+  );
 });
