@@ -23,6 +23,7 @@ CREATE TABLE `Tasks` (
   `data` NVARCHAR(2000000),
   `done` BOOLEAN NOT NULL DEFAULT false,
   `pinned` BOOLEAN NOT NULL DEFAULT false,
+  `username` NVARCHAR(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -33,6 +34,6 @@ CREATE INDEX idx_position ON Tasks (position);
 
 LOCK TABLES `Tasks` WRITE;
 /*!40000 ALTER TABLE `Tasks` DISABLE KEYS */;
-INSERT INTO `Tasks` VALUES (1,1,"You can drag tasks around, mark them as done, delete, pin to the top of this list, and toggle between regular and checklist types",false,false),(2,2,"This is a regular task",false,false),(3,3,'[{"id":1699045008620,"data":"This is a checklist task","done":false,"chosen":false,"selected":false},{"id":1699045041759,"data":"You can cross sub-tasks out","done":true,"chosen":false,"selected":false}]',false,false);
+INSERT INTO `Tasks` VALUES (1,1,"You can drag tasks around, mark them as done, delete, pin to the top of this list, and toggle between regular and checklist types",false,false,"user"),(2,2,"This is a regular task",false,false,"user"),(3,3,'[{"id":1699045008620,"data":"This is a checklist task","done":false,"chosen":false,"selected":false},{"id":1699045041759,"data":"You can cross sub-tasks out","done":true,"chosen":false,"selected":false}]',false,false,"user");
 /*!40000 ALTER TABLE `Tasks` ENABLE KEYS */;
 UNLOCK TABLES;

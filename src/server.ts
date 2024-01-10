@@ -2,7 +2,7 @@ import mysql2 from 'mysql2';
 import cors from 'cors';
 import express, { Application } from 'express';
 import jsonwebtoken from 'jsonwebtoken';
-import { Task } from './models/task';
+import { Task, Credentials } from './models/task';
 
 const APP: Application = express();
 APP.use(cors());
@@ -27,16 +27,29 @@ function query(sql: string, values?): Promise<any> {
   });
 }
 
-async function getTasks(): Promise<Task[]> {
-  const sql: string = 'SELECT * FROM tasks ORDER BY position';
-  const tasks = await query(sql);
-  tasks.map((task) => {
-    try {
-      task.data = JSON.parse(task.data);
-      if (typeof task.data === 'number') task.data = '' + task.data;
-    } catch {}
+async function verify(token): Promise<string> {
+  return jsonwebtoken.verify(
+    token,
+    process.env.TOKEN_SECRET,
+    async (err, decoded) => {
+      if (err) throw err;
+      return decoded.username;
+    }
+  );
+}
+
+async function getTasks(token): Promise<Task[]> {
+  return verify(token).then(async (user) => {
+    const sql: string = 'SELECT * FROM tasks WHERE username = ? ORDER BY position';
+    const tasks = await query(sql, user);
+    tasks.map((task) => {
+      try {
+        task.data = JSON.parse(task.data);
+        if (typeof task.data === 'number') task.data = '' + task.data;
+      } catch {}
+    });
+    return tasks;
   });
-  return tasks;
 }
 
 async function addTask(task: Task): Promise<number> {
@@ -97,8 +110,23 @@ async function replaceTasks(tasks: Task[]): Promise<number> {
 }
 
 APP.get('/', async (req, res) => {
-  const tasks = await getTasks();
-  res.json(tasks);
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[0];
+  try {
+    const tasks = await getTasks(token);
+    res.json(tasks);
+  } catch (err) {
+    if (err.message.includes('invalid signature')) {
+      res.status(500).json(err);
+    } else if (
+      err.name.includes('TokenExpiredError') ||
+      err.message.includes('jwt must be provided')
+    ) {
+      res.status(401).json(err);
+    } else {
+      res.status(500).json(err);
+    }
+  }
 });
 
 APP.post('/', async (req, res) => {
@@ -131,11 +159,17 @@ APP.delete('/:id', async (req, res) => {
 });
 
 APP.post('/login', async (req, res) => {
-  res.json({ token: process.env.TOKEN });
+  const { username, password }: Credentials = req.body;
+  var token = jsonwebtoken.sign(
+    { username: username },
+    process.env.TOKEN_SECRET,
+    { expiresIn: '7d' }
+  );
+  res.json({ token: token });
 });
 
-APP.listen(process.env.PORT, () => {
+APP.listen(process.env.SERVER_PORT, () => {
   console.log(
-    `Server started on http://localhost:${process.env.PORT}${APP.mountpath}`
+    `Server started on http://localhost:${process.env.SERVER_PORT}${APP.mountpath}`
   );
 });

@@ -274,3 +274,13 @@ li.moving:focus-visible {
     margin-bottom: 2rem;
   }
 }
+
+footer {
+  margin-top: 3rem;
+  text-align: center;
+
+  .btn {
+    border: 1px gray solid;
+    color: rgb(157, 157, 157);
+  }
+}

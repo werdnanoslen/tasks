@@ -5,8 +5,12 @@ import { Task, Credentials } from './models/task';
 
 const SERVER = 'http://localhost:8080';
 
-export async function getTasks(): Promise<Task[]> {
-  const response = await axios.get(SERVER);
+const headerize = (token: string) => {
+  return { headers: { Authorization: token } };
+};
+
+export async function getTasks(token): Promise<Task[]> {
+  const response = await axios.get(SERVER, headerize(token));
   return response.data;
 }
 

@@ -20,6 +20,8 @@ function Login({ setToken }) {
       <input
         type="text"
         id="username"
+        required
+        maxLength={20}
         onChange={(e) => setUserName(e.target.value)}
       />
 
@@ -27,6 +29,7 @@ function Login({ setToken }) {
       <input
         type="password"
         id="password"
+        required
         onChange={(e) => setPassword(e.target.value)}
       />
 

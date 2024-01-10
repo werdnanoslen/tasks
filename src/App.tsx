@@ -1,15 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import Login from './components/Login';
+import Account from './components/Account';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
 import { Task, ListItem } from './models/task';
 import * as API from './api';
 import useToken from './components/useToken';
-
-function setToken(userToken: string) {
-  sessionStorage.setItem('token', JSON.stringify(userToken));
-}
 
 function usePrevious(value) {
   const ref = useRef();
@@ -34,12 +31,18 @@ export default function App() {
   const [error, setError] = useState<undefined | string>();
 
   const { token, setToken } = useToken();
-  if (!token) {
-    return <Login setToken={setToken} />;
-  }
 
   function refreshTasks() {
-    API.getTasks().then(setTasks);
+    API.getTasks(token)
+      .then(setTasks)
+      .catch((err) => {
+        if (err.response.status === 401) {
+          setToken('');
+          // TODO add polling to avoid wasted user effort
+        } else {
+          console.error(err.response);
+        }
+      });
   }
 
   function toggleTaskDone(id) {
@@ -158,7 +161,7 @@ export default function App() {
   const listHeadingRef = useRef<HTMLInputElement>(null);
   const prevTaskLength = usePrevious(tasks.length);
 
-  useEffect(refreshTasks, []);
+  useEffect(refreshTasks, [token]);
   useEffect(() => {
     console.table(
       tasks.sort(function (a, b) {
@@ -180,6 +183,10 @@ export default function App() {
     (emptyDone && 'Nothing is marked done yet') ||
     (emptyDoing && 'All done! 🎉') ||
     undefined;
+
+  if (!token) {
+    return <Login setToken={setToken} />;
+  }
 
   return (
     <>
@@ -235,6 +242,7 @@ export default function App() {
       >
         {narrator}
       </div>
+      <Account setToken={setToken} />
     </>
   );
 }
