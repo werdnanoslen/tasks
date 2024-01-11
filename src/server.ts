@@ -40,7 +40,8 @@ async function verify(token): Promise<string> {
 
 async function getTasks(token): Promise<Task[]> {
   return verify(token).then(async (user) => {
-    const sql: string = 'SELECT * FROM tasks WHERE username = ? ORDER BY position';
+    const sql: string =
+      'SELECT * FROM tasks WHERE username = ? ORDER BY position';
     const tasks = await query(sql, user);
     tasks.map((task) => {
       try {
@@ -112,21 +113,22 @@ async function replaceTasks(tasks: Task[]): Promise<number> {
 APP.get('/', async (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[0];
-  try {
-    const tasks = await getTasks(token);
-    res.json(tasks);
-  } catch (err) {
-    if (err.message.includes('invalid signature')) {
-      res.status(500).json(err);
-    } else if (
-      err.name.includes('TokenExpiredError') ||
-      err.message.includes('jwt must be provided')
-    ) {
-      res.status(401).json(err);
-    } else {
-      res.status(500).json(err);
-    }
-  }
+  await getTasks(token)
+    .then((tasks) => {
+      res.json(tasks);
+    })
+    .catch((err) => {
+      if (err.message.includes('invalid signature')) {
+        res.status(500).json(err);
+      } else if (
+        err.name.includes('TokenExpiredError') ||
+        err.message.includes('jwt must be provided')
+      ) {
+        res.status(401).json(err);
+      } else {
+        res.status(500).json(err);
+      }
+    });
 });
 
 APP.post('/', async (req, res) => {

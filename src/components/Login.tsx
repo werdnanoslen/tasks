@@ -7,11 +7,12 @@ function Login({ setToken }) {
   const [password, setPassword] = useState('');
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = await loginUser({
+    await loginUser({
       username,
       password,
-    });
-    setToken(token);
+    })
+      .then((token) => setToken(token))
+      .catch((err) => console.error(err));
   };
 
   return (

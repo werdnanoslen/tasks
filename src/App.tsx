@@ -36,11 +36,11 @@ export default function App() {
     API.getTasks(token)
       .then(setTasks)
       .catch((err) => {
-        if (err.response.status === 401) {
+        if (err.response?.status === 401) {
           setToken('');
           // TODO add polling to avoid wasted user effort
         } else {
-          console.error(err.response);
+          console.error(err.response || err);
         }
       });
   }
