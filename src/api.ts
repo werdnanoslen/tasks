@@ -1,47 +1,59 @@
-//@todo add try/catch blocks
-
 import axios from 'axios';
-import { Task, Credentials } from './models/task';
+import { Task, Credentials } from './models/task.model';
 
-const SERVER = 'http://localhost:8080';
+const client = axios.create({
+  baseURL: `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
+  withCredentials: true,
+});
 
-const headerize = (token: string) => {
-  return { headers: { Authorization: token } };
-};
-
-export async function getTasks(token): Promise<Task[]> {
-  const response = await axios.get(SERVER, headerize(token));
+export async function getTasks(): Promise<Task[]> {
+  const response = await client.get('/');
   return response.data;
 }
 
 export async function addTask(task: Task): Promise<Task> {
-  const response = await axios.post(SERVER, task);
+  const response = await client.post('/', task);
   return response.data;
 }
 
 export async function updateTask(task: Task): Promise<any> {
   const taskCopy: Task = task;
   delete taskCopy.chosen;
-  const response = await axios.put(`${SERVER}/${task.id}`, taskCopy);
+  const response = await client.put(`/${task.id}`, taskCopy);
   return response.data;
 }
 
 export async function moveTask(id: number, newPosition: number): Promise<Task> {
-  const response = await axios.put(`${SERVER}/${id}/move/${newPosition}`);
+  const response = await client.put(`/${id}/move/${newPosition}`);
   return response.data;
 }
 
 export async function replaceTasks(tasks: Task[]): Promise<any> {
-  const response = await axios.put(SERVER, tasks);
+  const response = await client.put('/', tasks);
   return response.data;
 }
 
 export async function deleteTask(id: number): Promise<void> {
-  const response = await axios.delete(`${SERVER}/${id}`);
+  const response = await client.delete(`/${id}`);
+  return response.data;
+}
+
+export async function getAuthStatus(): Promise<any> {
+  const response = await client.get('/users/auth-status');
   return response.data;
 }
 
 export async function loginUser(credentials: Credentials): Promise<any> {
-  const response = await axios.post(`${SERVER}/login`, credentials);
+  const response = await client.post('/users/authenticate', credentials);
+  return response.data;
+}
+
+export async function logoutUser(): Promise<any> {
+  const response = await client.get('/users/logout');
+  return response.data;
+}
+
+export async function registerUser(credentials: Credentials): Promise<any> {
+  const response = await client.post('/users/register', credentials);
   return response.data;
 }

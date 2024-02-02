@@ -1,56 +1,35 @@
-import mysql2 from 'mysql2';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express, { Application } from 'express';
-import jsonwebtoken from 'jsonwebtoken';
-import { Task, Credentials } from './models/task';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import errorHandler from './_middleware/error-handler.js';
+import { Task, Credentials } from './models/task.model.js';
+import router from './users/users.controller.js';
+import { query } from './_helpers/db.js';
+
+dotenv.config();
 
 const APP: Application = express();
+APP.use(bodyParser.urlencoded({ extended: false }));
+APP.use(bodyParser.json());
+APP.use(cookieParser());
 APP.use(cors());
 APP.use(express.json());
 
-const pool = mysql2.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-});
-
-function query(sql: string, values?): Promise<any> {
-  return new Promise((resolve, reject) => {
-    pool.query(sql, values, (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
-
-async function verify(token): Promise<string> {
-  return jsonwebtoken.verify(
-    token,
-    process.env.TOKEN_SECRET,
-    async (err, decoded) => {
-      if (err) throw err;
-      return decoded.username;
-    }
-  );
-}
+APP.use('/users', router);
+APP.use(errorHandler);
 
 async function getTasks(token): Promise<Task[]> {
-  return verify(token).then(async (user) => {
-    const sql: string =
-      'SELECT * FROM tasks WHERE username = ? ORDER BY position';
-    const tasks = await query(sql, user);
-    tasks.map((task) => {
-      try {
-        task.data = JSON.parse(task.data);
-        if (typeof task.data === 'number') task.data = '' + task.data;
-      } catch {}
-    });
-    return tasks;
+  const sql: string = 'SELECT * FROM tasks ORDER BY position';
+  const tasks = await query(sql);
+  tasks.map((task) => {
+    try {
+      task.data = JSON.parse(task.data);
+      if (typeof task.data === 'number') task.data = '' + task.data;
+    } catch {}
   });
+  return tasks;
 }
 
 async function addTask(task: Task): Promise<number> {
@@ -160,18 +139,8 @@ APP.delete('/:id', async (req, res) => {
   res.json({ result });
 });
 
-APP.post('/login', async (req, res) => {
-  const { username, password }: Credentials = req.body;
-  var token = jsonwebtoken.sign(
-    { username: username },
-    process.env.TOKEN_SECRET,
-    { expiresIn: '7d' }
-  );
-  res.json({ token: token });
-});
-
-APP.listen(process.env.SERVER_PORT, () => {
+APP.listen(process.env.REACT_APP_SERVER_PORT, () => {
   console.log(
-    `Server started on http://localhost:${process.env.SERVER_PORT}${APP.mountpath}`
+    `Server started on ${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}${APP.mountpath}`
   );
 });

@@ -1,22 +1,46 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { loginUser } from '../api';
+import { registerUser, loginUser } from '../api';
 
-function Login({ setToken }) {
+function Login({ isAuthed }) {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await loginUser({
+  const [error, setError] = useState('');
+
+  const login = async () => {
+    loginUser({
       username,
       password,
     })
-      .then((token) => setToken(token))
-      .catch((err) => console.error(err));
+      .then(isAuthed)
+      .catch((err) => {
+        setError(err.response.data.message)
+      });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const submitter = e.nativeEvent.submitter.value;
+    if (submitter === 'register') {
+      await registerUser({
+        username,
+        password,
+      })
+        .then(login)
+        .catch((err) => {
+          setError(err.response.data.message);
+        });
+    } else {
+      login();
+    }
   };
 
   return (
     <form className="login-wrapper" onSubmit={handleSubmit}>
+      {error && (
+        <p role="alert" className="alert error">
+          {error}
+        </p>
+      )}
       <label htmlFor="username">Username</label>
       <input
         type="text"
@@ -31,18 +55,19 @@ function Login({ setToken }) {
         type="password"
         id="password"
         required
+        minLength={6}
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button type="submit" className="btn">
-        Submit
+      <button type="submit" className="btn" value="login">
+        Log in
+      </button>
+
+      <button type="submit" className="btn" value="register">
+        Register
       </button>
     </form>
   );
 }
-
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired,
-};
 
 export default Login;

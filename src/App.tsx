@@ -4,9 +4,8 @@ import Login from './components/Login';
 import Account from './components/Account';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
-import { Task, ListItem } from './models/task';
+import { Task, ListItem } from './models/task.model';
 import * as API from './api';
-import useToken from './components/useToken';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -28,16 +27,20 @@ export default function App() {
   const [filter, setFilter] = useState('Doing');
   const [narrator, setNarrator] = useState('');
   const [movement, setMovement] = useState(false);
-  const [error, setError] = useState<undefined | string>();
+  const [error, setError] = useState('');
+  const [authed, setAuthed] = useState(false);
 
-  const { token, setToken } = useToken();
+  async function isAuthed() {
+    const status = await API.getAuthStatus();
+    setAuthed(status.isAuthenticated);
+  }
 
   function refreshTasks() {
-    API.getTasks(token)
+    API.getTasks()
       .then(setTasks)
       .catch((err) => {
         if (err.response?.status === 401) {
-          setToken('');
+          setAuthed(false);
           // TODO add polling to avoid wasted user effort
         } else {
           console.error(err.response || err);
@@ -118,7 +121,7 @@ export default function App() {
           if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
             setError('Task content is too long. No changes have been saved.');
           } else {
-            setError(undefined);
+            setError('');
             refreshTasks();
           }
         });
@@ -161,7 +164,10 @@ export default function App() {
   const listHeadingRef = useRef<HTMLInputElement>(null);
   const prevTaskLength = usePrevious(tasks.length);
 
-  useEffect(refreshTasks, [token]);
+  useEffect(() => {
+    isAuthed();
+    refreshTasks();
+  }, [authed]);
   useEffect(() => {
     console.table(
       tasks.sort(function (a, b) {
@@ -184,9 +190,46 @@ export default function App() {
     (emptyDoing && 'All done! 🎉') ||
     undefined;
 
-  if (!token) {
-    return <Login setToken={setToken} />;
-  }
+  const formSection = (
+    <>
+      <Form
+        addTask={addTask}
+        id="new-task"
+        hide={'Done' === filter}
+        setNarrator={setNarrator}
+      />
+      <p id="emptyMsg" hidden={!emptyMsg}>
+        {emptyMsg}
+      </p>
+      <ReactSortable
+        tag="ul"
+        list={tasks}
+        setList={setTasks}
+        id="TaskList"
+        filter=".filtered, .input"
+        preventOnFilter={false}
+        onChange={dragTask}
+      >
+        {tasks.filter(FILTER_MAP[filter]).map((task) => (
+          <Form
+            id={task.id}
+            data={task.data}
+            done={task.done}
+            toggleTaskDone={toggleTaskDone}
+            pinned={task.pinned}
+            toggleTaskPinned={toggleTaskPinned}
+            moveTask={moveTask}
+            movement={movement}
+            key={task.id}
+            deleteTask={() => deleteTask(task.id)}
+            updateData={updateData}
+            error={error}
+            setNarrator={setNarrator}
+          />
+        ))}
+      </ReactSortable>
+    </>
+  );
 
   return (
     <>
@@ -195,45 +238,15 @@ export default function App() {
           Skip to main content
         </a>
         <h1>Tasks</h1>
-        <div className="filters">{filterList}</div>
+        <div className="filters" hidden={!authed}>
+          {filterList}
+        </div>
       </header>
-      <main id="main" ref={listHeadingRef}>
-        <Form
-          addTask={addTask}
-          id="new-task"
-          hide={'Done' === filter}
-          setNarrator={setNarrator}
-        />
-        <p id="emptyMsg" hidden={!emptyMsg}>
-          {emptyMsg}
-        </p>
-        <ReactSortable
-          tag="ul"
-          list={tasks}
-          setList={setTasks}
-          id="TaskList"
-          filter=".filtered, .input"
-          preventOnFilter={false}
-          onChange={dragTask}
-        >
-          {tasks.filter(FILTER_MAP[filter]).map((task) => (
-            <Form
-              id={task.id}
-              data={task.data}
-              done={task.done}
-              toggleTaskDone={toggleTaskDone}
-              pinned={task.pinned}
-              toggleTaskPinned={toggleTaskPinned}
-              moveTask={moveTask}
-              movement={movement}
-              key={task.id}
-              deleteTask={() => deleteTask(task.id)}
-              updateData={updateData}
-              error={error}
-              setNarrator={setNarrator}
-            />
-          ))}
-        </ReactSortable>
+      <div role="alert" hidden={!error}>
+        {error}
+      </div>
+      <main id="main" ref={listHeadingRef} data-authed={authed}>
+        {authed ? formSection : <Login isAuthed={isAuthed} />}
       </main>
       <div
         role="alert"
@@ -242,7 +255,7 @@ export default function App() {
       >
         {narrator}
       </div>
-      <Account setToken={setToken} />
+      <Account isAuthed={isAuthed} hidden={!authed} />
     </>
   );
 }

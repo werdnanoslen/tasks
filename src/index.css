@@ -270,7 +270,8 @@ li.moving:focus-visible {
   align-items: center;
   border: none;
 
-  input {
+  input,
+  button {
     margin-bottom: 2rem;
   }
 }
@@ -283,4 +284,11 @@ footer {
     border: 1px gray solid;
     color: rgb(157, 157, 157);
   }
+}
+
+.alert {
+  padding: 1rem;
+}
+.error {
+  background: darkred;
 }

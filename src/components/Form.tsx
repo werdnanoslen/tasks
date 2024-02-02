@@ -8,7 +8,7 @@ import React, {
 import classNames from 'classnames';
 import TextareaAutosize from 'react-textarea-autosize';
 import { ReactSortable } from 'react-sortablejs';
-import { ListItem } from '../models/task';
+import { ListItem } from '../models/task.model';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';

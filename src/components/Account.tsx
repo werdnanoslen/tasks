@@ -1,22 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { logoutUser } from '../api';
 
-function Account({ setToken }) {
-  const handleLogout = async (e) => {
-    setToken('');
+function Account({ isAuthed, hidden }) {
+  const logout = async (e) => {
+    await logoutUser()
+      .then(isAuthed)
+      .catch(console.error);
   };
 
   return (
-    <footer>
-      <button type="button" className="btn" onClick={handleLogout}>
+    <footer hidden={hidden}>
+      <button type="button" className="btn" onClick={logout}>
         Log out
       </button>
     </footer>
   );
 }
-
-Account.propTypes = {
-  setToken: PropTypes.func.isRequired,
-};
 
 export default Account;

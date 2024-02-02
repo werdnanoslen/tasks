@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import cookieParser from 'cookie-parser';
 
 export default function useToken() {
   const getToken = () => {
