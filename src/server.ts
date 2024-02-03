@@ -1,4 +1,3 @@
-import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import bodyParser from 'body-parser';
@@ -14,11 +13,20 @@ const APP: Application = express();
 APP.use(bodyParser.urlencoded({ extended: false }));
 APP.use(bodyParser.json());
 APP.use(cookieParser());
-APP.use(
-  cors({
-    origin: `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`,
-  })
-);
+APP.use(function (req, res, next) {
+  var allowedDomains = [
+    `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
+    `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`
+  ];
+  var origin = req.headers.origin;
+  if(origin && allowedDomains.indexOf(origin) > -1){
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+})
 APP.use(express.json());
 
 APP.use('/users', router);
