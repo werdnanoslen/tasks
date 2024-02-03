@@ -14,7 +14,11 @@ const APP: Application = express();
 APP.use(bodyParser.urlencoded({ extended: false }));
 APP.use(bodyParser.json());
 APP.use(cookieParser());
-APP.use(cors());
+APP.use(
+  cors({
+    origin: `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`,
+  })
+);
 APP.use(express.json());
 
 APP.use('/users', router);

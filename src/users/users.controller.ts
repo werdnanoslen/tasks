@@ -35,8 +35,6 @@ function authenticate(req, res, next) {
         .cookie('token', user.token, {
           httpOnly: true,
           maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
-          domain: 'localhost',
-          sameSite: 'Lax',
         })
         .send({
           authenticated: true,
@@ -57,8 +55,6 @@ function logout(req, res, next) {
             .cookie('token', null, {
               httpOnly: true,
               maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
-              domain: 'localhost',
-              sameSite: 'Lax',
             })
             .json({
               authenticated: false,
@@ -97,8 +93,6 @@ function register(req, res, next) {
         .cookie('token', ret, {
           httpOnly: true,
           maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
-          domain: 'localhost',
-          sameSite: 'Lax',
         })
         .json({
           authenticated: true,

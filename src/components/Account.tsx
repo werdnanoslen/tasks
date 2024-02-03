@@ -3,9 +3,7 @@ import { logoutUser } from '../api';
 
 function Account({ isAuthed, hidden }) {
   const logout = async (e) => {
-    await logoutUser()
-      .then(isAuthed)
-      .catch(console.error);
+    await logoutUser().then(isAuthed).catch(console.error);
   };
 
   return (
