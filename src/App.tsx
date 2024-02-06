@@ -31,8 +31,8 @@ export default function App() {
   const [authed, setAuthed] = useState(false);
 
   async function isAuthed() {
-    const status = await API.getAuthStatus();
-    setAuthed(status.isAuthenticated);
+    const status = await API.getLoginStatus();
+    setAuthed(status.isLoggedIn);
   }
 
   function refreshTasks() {
@@ -166,14 +166,15 @@ export default function App() {
 
   useEffect(() => {
     isAuthed();
-    refreshTasks();
+    authed && refreshTasks();
   }, [authed]);
   useEffect(() => {
-    console.table(
-      tasks.sort(function (a, b) {
-        return a.position - b.position;
-      })
-    );
+    authed &&
+      console.table(
+        tasks.sort(function (a, b) {
+          return a.position - b.position;
+        })
+      );
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }

@@ -11,6 +11,7 @@ export type Task = {
   done: boolean;
   pinned: boolean;
   chosen?: boolean;
+  user_id?: number;
 };
 
 export type Credentials = {

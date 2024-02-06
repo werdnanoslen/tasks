@@ -5,6 +5,7 @@ declare global {
       MYSQL_USER: string;
       MYSQL_PASSWORD: string;
       MYSQL_DATABASE: string;
+      NODE_ENV: string;
       PORT: number;
       REACT_APP_BASE_URL: string;
       REACT_APP_SERVER_PORT: number;

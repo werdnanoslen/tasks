@@ -7,10 +7,10 @@ import * as userService from './user.service.js';
 const router = express.Router();
 
 // routes
-router.post('/authenticate', authenticateSchema, authenticate);
-router.get('/auth-status', getAuthStatus);
+router.post('/login', loginSchema, login);
+router.get('/login-status', getLoginStatus);
 router.post('/register', registerSchema, register);
-router.get('/logout', logout);
+router.get('/logout', authorize(), logout);
 router.get('/', authorize(), getAll);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
@@ -19,7 +19,7 @@ router.delete('/:id', authorize(), _delete);
 
 export default router;
 
-function authenticateSchema(req, res, next) {
+function loginSchema(req, res, next) {
   const schema = Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
@@ -27,9 +27,9 @@ function authenticateSchema(req, res, next) {
   validateRequest(req, next, schema);
 }
 
-function authenticate(req, res, next) {
+function login(req, res, next) {
   userService
-    .authenticate(req.body)
+    .login(req.body)
     .then((user) => {
       res
         .cookie('token', user.token, {
@@ -37,8 +37,8 @@ function authenticate(req, res, next) {
           maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
         })
         .send({
-          authenticated: true,
-          message: 'Authentication Successful.',
+          loggedIn: true,
+          message: 'Login Successful.',
         });
     })
     .catch(next);
@@ -46,34 +46,29 @@ function authenticate(req, res, next) {
 
 function logout(req, res, next) {
   userService
-    .getBySession(req.cookies?.token)
-    .then((user) => {
-      userService
-        .update(user.id, { session: null })
-        .then(
-          res
-            .cookie('token', null, {
-              httpOnly: true,
-              maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
-            })
-            .json({
-              authenticated: false,
-              message: 'Logout Successful.',
-            })
-        )
-        .catch(next);
-    })
+    .update(req.user.id, { session: null })
+    .then(
+      res
+        .cookie('token', null, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
+        })
+        .json({
+          loggedIn: false,
+          message: 'Logout Successful.',
+        })
+    )
     .catch(next);
 }
 
-function getAuthStatus(req, res, next) {
+function getLoginStatus(req, res, next) {
   userService
     .getBySession(req.cookies?.token)
     .then(() => {
-      res.json({ isAuthenticated: true });
+      res.json({ isLoggedIn: true });
     })
     .catch(() => {
-      res.json({ isAuthenticated: false });
+      res.json({ isLoggedIn: false });
     });
 }
 

@@ -38,13 +38,13 @@ export async function deleteTask(id: number): Promise<void> {
   return response.data;
 }
 
-export async function getAuthStatus(): Promise<any> {
-  const response = await client.get('/users/auth-status');
+export async function getLoginStatus(): Promise<any> {
+  const response = await client.get('/users/login-status');
   return response.data;
 }
 
 export async function loginUser(credentials: Credentials): Promise<any> {
-  const response = await client.post('/users/authenticate', credentials);
+  const response = await client.post('/users/login', credentials);
   return response.data;
 }
 

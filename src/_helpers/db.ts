@@ -1,14 +1,13 @@
 import mysql2, { PoolOptions } from 'mysql2/promise';
 import { Sequelize } from 'sequelize';
-import model from '../users/user.model.js';
+import { modelUser, modelTask } from '../users/user.model.js';
 
-class DB {
+export default class DB {
   static User: any;
+  static Task: any;
 }
 
-export default DB;
-
-// TODO move into initialize after refactor
+// TODO move into initialize after removing query
 const poolOptions: PoolOptions = {
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
@@ -16,8 +15,6 @@ const poolOptions: PoolOptions = {
   database: process.env.MYSQL_DATABASE,
 };
 const pool = mysql2.createPool(poolOptions);
-
-initialize();
 
 export async function initialize() {
   await pool.query(
@@ -31,7 +28,8 @@ export async function initialize() {
       dialect: 'mysql',
     }
   );
-  DB.User = model(sequelize);
+  DB.User = modelUser(sequelize);
+  DB.Task = modelTask(sequelize);
   await sequelize.sync();
 }
 

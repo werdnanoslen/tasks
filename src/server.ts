@@ -3,9 +3,11 @@ import express, { Application } from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import errorHandler from './_middleware/error-handler.js';
-import { Task, Credentials } from './models/task.model.js';
+import { Task } from './models/task.model.js';
 import router from './users/users.controller.js';
-import { query } from './_helpers/db.js';
+import authorize from './_middleware/authorize.js';
+import db, { initialize, query } from './_helpers/db.js';
+import { create } from './users/user.service.js';
 
 dotenv.config();
 
@@ -13,35 +15,85 @@ const APP: Application = express();
 APP.use(bodyParser.urlencoded({ extended: false }));
 APP.use(bodyParser.json());
 APP.use(cookieParser());
-APP.use(function (req, res, next) {
+APP.use((req, res, next) => {
   var allowedDomains = [
     `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
-    `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`
+    `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`,
   ];
   var origin = req.headers.origin;
-  if(origin && allowedDomains.indexOf(origin) > -1){
+  if (origin && allowedDomains.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With,content-type, Accept'
+  );
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
-})
+});
 APP.use(express.json());
 
 APP.use('/users', router);
 APP.use(errorHandler);
 
-async function getTasks(token): Promise<Task[]> {
-  const sql: string = 'SELECT * FROM tasks ORDER BY position';
-  const tasks = await query(sql);
-  tasks.map((task) => {
-    try {
-      task.data = JSON.parse(task.data);
-      if (typeof task.data === 'number') task.data = '' + task.data;
-    } catch {}
-  });
-  return tasks;
+initialize().then(() => {
+  // Load demo data in dev environment
+  if (process.env.NODE_ENV === 'dev') {
+    create({ username: 'user', password: 'password' }).then(console.log).catch(console.error)
+    // addTask({
+    //   position: 1,
+    //   id: 1,
+    //   data: 'You can drag tasks around, mark them as done, delete, pin to the top of this list, and toggle between regular and checklist types',
+    //   done: false,
+    //   pinned: false,
+    //   user_id: 1,
+    // });
+    // addTask({
+    //   position: 2,
+    //   id: 2,
+    //   data: 'This is a regular task',
+    //   done: false,
+    //   pinned: false,
+    //   user_id: 1,
+    // });
+    // addTask({
+    //   position: 3,
+    //   id: 3,
+    //   data: [
+    //     {
+    //       id: 1699045008620,
+    //       data: 'This is a checklist task',
+    //       done: false,
+    //     },
+    //     {
+    //       id: 1699045041759,
+    //       data: 'You can cross sub-tasks out',
+    //       done: true,
+    //     },
+    //   ],
+    //   done: false,
+    //   pinned: false,
+    //   user_id: 1,
+    // });
+  }
+}).catch(console.error)
+
+async function getTasks(req, res, next) {
+  db.Task.findAll({ where: { user_id: req.user.id } })
+    .then((tasks) => {
+      tasks.map((task) => {
+        try {
+          task.data = JSON.parse(task.data);
+          if (typeof task.data === 'number') task.data = '' + task.data;
+        } catch {}
+      });
+      res.json(tasks);
+    })
+    .catch(next);
 }
 
 async function addTask(task: Task): Promise<number> {
@@ -101,25 +153,8 @@ async function replaceTasks(tasks: Task[]): Promise<number> {
   return affectedRows;
 }
 
-APP.get('/', async (req, res) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[0];
-  await getTasks(token)
-    .then((tasks) => {
-      res.json(tasks);
-    })
-    .catch((err) => {
-      if (err.message.includes('invalid signature')) {
-        res.status(500).json(err);
-      } else if (
-        err.name.includes('TokenExpiredError') ||
-        err.message.includes('jwt must be provided')
-      ) {
-        res.status(401).json(err);
-      } else {
-        res.status(500).json(err);
-      }
-    });
+APP.get('/', authorize(), async (req, res, next) => {
+  await getTasks(req, res, next).then(res.json).catch(next);
 });
 
 APP.post('/', async (req, res) => {

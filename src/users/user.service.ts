@@ -2,13 +2,12 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db from '../_helpers/db.js';
 
-export async function authenticate({ username, password }) {
+export async function login({ username, password }) {
   const user = await db.User.scope('withHash').findOne({ where: { username } });
 
   if (!user || !(await bcrypt.compare(password, user.hash)))
     throw 'Username or password is incorrect';
 
-  // authentication successful
   const token = jwt.sign({ sub: user.id }, process.env.TOKEN_SECRET, {
     expiresIn: '7d',
   });
@@ -33,7 +32,7 @@ export async function getBySession(token) {
 export async function create(params) {
   // validate
   if (await db.User.findOne({ where: { username: params.username } })) {
-    throw 'Username "' + params.username + '" is already taken';
+    throw `Username '${params.username}' is already taken`;
   }
 
   // hash password
@@ -54,7 +53,7 @@ export async function update(id, params) {
     usernameChanged &&
     (await db.User.findOne({ where: { username: params.username } }))
   ) {
-    throw 'Username "' + params.username + '" is already taken';
+    throw `Username '${params.username}' is already taken`;
   }
 
   // hash password if it was entered
