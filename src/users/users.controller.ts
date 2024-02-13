@@ -4,20 +4,19 @@ import validateRequest from '../_middleware/validate-request.js';
 import authorize from '../_middleware/authorize.js';
 import * as userService from './user.service.js';
 
-const router = express.Router();
+const userRouter = express.Router();
 
-// routes
-router.post('/login', loginSchema, login);
-router.get('/login-status', getLoginStatus);
-router.post('/register', registerSchema, register);
-router.get('/logout', authorize(), logout);
-router.get('/', authorize(), getAll);
-router.get('/current', authorize(), getCurrent);
-router.get('/:id', authorize(), getById);
-router.put('/:id', authorize(), updateSchema, update);
-router.delete('/:id', authorize(), _delete);
+userRouter.post('/login', loginSchema, login);
+userRouter.get('/login-status', getLoginStatus);
+userRouter.post('/register', registerSchema, register);
+userRouter.get('/logout', authorize(), logout);
+userRouter.get('/', authorize(), getAll);
+userRouter.get('/current', authorize(), getCurrent);
+userRouter.get('/:id', authorize(), getById);
+userRouter.put('/:id', authorize(), updateSchema, update);
+userRouter.delete('/:id', authorize(), _delete);
 
-export default router;
+export default userRouter;
 
 function loginSchema(req, res, next) {
   const schema = Joi.object({
@@ -99,10 +98,7 @@ function register(req, res, next) {
 }
 
 function getAll(req, res, next) {
-  userService
-    .getAll()
-    .then((users) => res.json(users))
-    .catch(next);
+  userService.getAll().then(res.json).catch(next);
 }
 
 function getCurrent(req, res, next) {

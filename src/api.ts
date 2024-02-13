@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Task, Credentials } from './models/task.model';
+import { Task, Credentials } from './tasks/task.model';
 
 const client = axios.create({
   baseURL: `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
@@ -7,7 +7,7 @@ const client = axios.create({
 });
 
 export async function getTasks(): Promise<Task[]> {
-  const response = await client.get('/');
+  const response = await client.get('/tasks');
   return response.data;
 }
 

@@ -4,7 +4,7 @@ import Login from './components/Login';
 import Account from './components/Account';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
-import { Task, ListItem } from './models/task.model';
+import { Task, ListItem } from './tasks/task.model';
 import * as API from './api';
 
 function usePrevious(value) {
@@ -172,6 +172,8 @@ export default function App() {
     authed &&
       console.table(
         tasks.sort(function (a, b) {
+          a.position ??= 0;
+          b.position ??= 0;
           return a.position - b.position;
         })
       );
@@ -256,6 +258,9 @@ export default function App() {
       >
         {narrator}
       </div>
+      <button className="btn" onClick={refreshTasks}>
+        Refresh
+      </button>
       <Account isAuthed={isAuthed} hidden={!authed} />
     </>
   );

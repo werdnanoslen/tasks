@@ -1,6 +1,7 @@
 import mysql2, { PoolOptions } from 'mysql2/promise';
 import { Sequelize } from 'sequelize';
-import { modelUser, modelTask } from '../users/user.model.js';
+import { modelUser } from '../users/user.model.js';
+import { modelTask } from '../tasks/task.model.js';
 
 export default class DB {
   static User: any;
