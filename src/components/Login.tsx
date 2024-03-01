@@ -13,7 +13,8 @@ function Login({ isAuthed }) {
     })
       .then(isAuthed)
       .catch((err) => {
-        setError(err.response.data.message);
+        const msg = err.response?.data.message ?? err.message;
+        setError(msg);
       });
   };
 

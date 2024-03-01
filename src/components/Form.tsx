@@ -331,8 +331,8 @@ function Form(props) {
           {newTask
             ? addingTools
             : confirmDelete
-            ? confirmDeleteButtons
-            : editingTools}
+              ? confirmDeleteButtons
+              : editingTools}
           {!confirmDelete && (
             <button
               type="button"

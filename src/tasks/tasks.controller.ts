@@ -36,11 +36,18 @@ taskRouter.delete('/:id', async (req, res) => {
 export default taskRouter;
 
 async function getTasks(req, res, next) {
-  taskService.getAll(req.user.id).then((ret) => res.json(ret)).catch(next);
+  taskService
+    .getAll(req.user.id)
+    .then((ret) => res.json(ret))
+    .catch(next);
 }
 
 export async function addTask(req, res, next) {
-  taskService.create(req.body).then(res.json).catch(next);
+  const task = Object.assign(req.body, { user_id: req.user.id });
+  taskService
+    .create(task)
+    .then(res.json)
+    .catch((e) => console.error('contr', e));
 }
 
 async function updateTask(id: string, task: Task): Promise<any> {

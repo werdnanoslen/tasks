@@ -133,7 +133,7 @@ export default function App() {
     const newTask: Task = {
       position: tasks.length + 1,
       id: Date.now(),
-      data: data,
+      data: data ?? '',
       done: false,
       pinned: false,
     };
@@ -258,9 +258,6 @@ export default function App() {
       >
         {narrator}
       </div>
-      <button className="btn" onClick={refreshTasks}>
-        Refresh
-      </button>
       <Account isAuthed={isAuthed} hidden={!authed} />
     </>
   );

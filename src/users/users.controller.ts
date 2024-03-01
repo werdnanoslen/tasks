@@ -33,6 +33,7 @@ function login(req, res, next) {
       res
         .cookie('token', user.token, {
           httpOnly: true,
+          sameSite: 'lax',
           maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
         })
         .send({

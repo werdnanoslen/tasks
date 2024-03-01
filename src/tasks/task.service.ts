@@ -12,8 +12,7 @@ export async function getAll(userID: number): Promise<Task[]> {
   return tasks;
 }
 
-export async function create(params: Task): Promise<number> {
-  const task: Task = params;
+export async function create(task: Task): Promise<number> {
   delete task.chosen;
   if (typeof task.data !== 'string') {
     task.data = JSON.stringify(task.data);

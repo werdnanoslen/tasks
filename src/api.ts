@@ -6,20 +6,22 @@ const client = axios.create({
   withCredentials: true,
 });
 
+// TASK
+
 export async function getTasks(): Promise<Task[]> {
   const response = await client.get('/tasks');
   return response.data;
 }
 
 export async function addTask(task: Task): Promise<Task> {
-  const response = await client.post('/', task);
+  const response = await client.post('/tasks', task);
   return response.data;
 }
 
 export async function updateTask(task: Task): Promise<any> {
   const taskCopy: Task = task;
   delete taskCopy.chosen;
-  const response = await client.put(`/${task.id}`, taskCopy);
+  const response = await client.put(`/tasks/${task.id}`, taskCopy);
   return response.data;
 }
 
@@ -37,6 +39,8 @@ export async function deleteTask(id: number): Promise<void> {
   const response = await client.delete(`/${id}`);
   return response.data;
 }
+
+// USER
 
 export async function getLoginStatus(): Promise<any> {
   const response = await client.get('/users/login-status');
