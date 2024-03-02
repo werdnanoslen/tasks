@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import cookieParser from 'cookie-parser';
 import errorHandler from './_middleware/error-handler.js';
@@ -7,8 +6,6 @@ import userRouter from './users/users.controller.js';
 import taskRouter from './tasks/tasks.controller.js';
 import { create as createUser } from './users/user.service.js';
 import { create as createTask } from './tasks/task.service.js';
-
-dotenv.config();
 
 const APP: Application = express();
 APP.use(express.urlencoded({ extended: false }));
