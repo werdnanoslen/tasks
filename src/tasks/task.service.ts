@@ -52,3 +52,7 @@ async function getTask(id) {
   if (!task) throw 'Task not found';
   return task;
 }
+
+export async function truncateTasks() {
+  await db.Task.truncate();
+}

@@ -10,16 +10,12 @@ taskRouter.get('/', authorize(), getTasks);
 taskRouter.post('/', authorize(), addTask);
 taskRouter.delete('/:id', authorize(), deleteTask);
 taskRouter.put('/:id', authorize(), updateTask);
+taskRouter.put('/', authorize(), replaceTasks);
 
 taskRouter.put('/:id/move/:newPosition', async (req, res) => {
   const id = req.params.id;
   const newPosition = Number(req.params.newPosition);
   const result = await moveTask(id, newPosition);
-  res.json({ result });
-});
-
-taskRouter.put('/', async (req, res) => {
-  const result = await replaceTasks(req.body);
   res.json({ result });
 });
 
@@ -68,12 +64,11 @@ async function moveTask(id: string, newPos: number): Promise<number> {
   return setResult.affectedRows;
 }
 
-async function replaceTasks(tasks: Task[]): Promise<number> {
-  const sql: string = 'TRUNCATE TABLE tasks';
-  await query(sql);
+async function replaceTasks(req, res, next): Promise<number> {
+  await taskService.truncateTasks();
   let affectedRows = 0;
-  for (const task of tasks) {
-    taskService
+  for (const task of req.body) {
+    await taskService
       .create(task)
       .then((ret) => (affectedRows += ret))
       .catch(console.error);
