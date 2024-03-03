@@ -18,6 +18,11 @@ export async function addTask(task: Task): Promise<Task> {
   return response.data;
 }
 
+export async function deleteTask(id: number): Promise<void> {
+  const response = await client.delete(`/tasks/${id}`);
+  return response.data;
+}
+
 export async function updateTask(task: Task): Promise<any> {
   const taskCopy: Task = task;
   delete taskCopy.chosen;
@@ -32,11 +37,6 @@ export async function moveTask(id: number, newPosition: number): Promise<Task> {
 
 export async function replaceTasks(tasks: Task[]): Promise<any> {
   const response = await client.put('/', tasks);
-  return response.data;
-}
-
-export async function deleteTask(id: number): Promise<void> {
-  const response = await client.delete(`/${id}`);
   return response.data;
 }
 

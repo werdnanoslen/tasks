@@ -27,3 +27,17 @@ export async function create(task: Task): Promise<number> {
       if (e.errno !== 1062) console.error;
     });
 }
+
+async function _delete(id) {  
+  const task = await getTask(id);
+  await task.destroy();
+}
+export { _delete as delete };
+
+// helper functions
+
+async function getTask(id) {
+  const task = await db.Task.findByPk(id);
+  if (!task) throw 'Task not found';
+  return task;
+}

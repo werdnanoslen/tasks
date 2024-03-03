@@ -8,6 +8,7 @@ const taskRouter = express.Router();
 
 taskRouter.get('/', authorize(), getTasks);
 taskRouter.post('/', authorize(), addTask);
+taskRouter.delete('/:id', authorize(), deleteTask);
 
 taskRouter.put('/:id', async (req, res) => {
   const id = req.params.id;
@@ -27,12 +28,6 @@ taskRouter.put('/', async (req, res) => {
   res.json({ result });
 });
 
-taskRouter.delete('/:id', async (req, res) => {
-  const id = req.params.id;
-  const result = await deleteTask(id);
-  res.json({ result });
-});
-
 export default taskRouter;
 
 async function getTasks(req, res, next) {
@@ -48,6 +43,13 @@ export async function addTask(req, res, next) {
     .create(task)
     .then(res.json)
     .catch((e) => console.error('contr', e));
+}
+
+async function deleteTask(req, res, next) {
+  taskService
+    .delete(req.params.id)
+    .then((ret) => res.json(ret))
+    .catch(next);
 }
 
 async function updateTask(id: string, task: Task): Promise<any> {
@@ -77,12 +79,6 @@ async function moveTask(id: string, newPos: number): Promise<number> {
   const setSql: string = 'UPDATE tasks SET position = ? WHERE id = ?';
   const setResult = await query(setSql, [newPos, id]);
   return setResult.affectedRows;
-}
-
-async function deleteTask(id: string): Promise<number> {
-  const sql: string = 'DELETE FROM tasks WHERE id = ?';
-  const result = await query(sql, id);
-  return result.affectedRows;
 }
 
 async function replaceTasks(tasks: Task[]): Promise<number> {
