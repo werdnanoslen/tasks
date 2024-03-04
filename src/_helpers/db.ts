@@ -8,16 +8,14 @@ export default class DB {
   static Task: any;
 }
 
-// TODO move into initialize after removing query
-const poolOptions: PoolOptions = {
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-};
-const pool = mysql2.createPool(poolOptions);
-
 export async function initialize() {
+  const poolOptions: PoolOptions = {
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+  };
+  const pool = mysql2.createPool(poolOptions);
   await pool.query(
     `CREATE DATABASE IF NOT EXISTS \`${process.env.MYSQL_DATABASE}\`;`
   );
@@ -32,11 +30,4 @@ export async function initialize() {
   DB.User = modelUser(sequelize);
   DB.Task = modelTask(sequelize);
   await sequelize.sync();
-}
-
-// TODO remove as extra after refactor
-export function query(sql: string, values?): Promise<any> {
-  return new Promise((resolve, reject) => {
-    pool.query(sql, values).catch(reject).then(resolve);
-  });
 }

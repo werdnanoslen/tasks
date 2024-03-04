@@ -31,7 +31,7 @@ export async function updateTask(task: Task): Promise<any> {
 }
 
 export async function moveTask(id: number, newPosition: number): Promise<Task> {
-  const response = await client.put(`/${id}/move/${newPosition}`);
+  const response = await client.put(`/tasks/${id}/move/${newPosition}`);
   return response.data;
 }
 

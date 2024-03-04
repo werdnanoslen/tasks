@@ -1,5 +1,6 @@
 import db from '../_helpers/db.js';
 import { Task } from './task.model.js';
+import { Op } from 'sequelize';
 
 export async function getAll(userID: number): Promise<Task[]> {
   let tasks = await db.Task.findAll({ where: { user_id: userID } });
@@ -28,7 +29,7 @@ export async function create(task: Task): Promise<number> {
     });
 }
 
-async function _delete(id) {  
+async function _delete(id) {
   const task = await getTask(id);
   await task.destroy();
 }
@@ -45,14 +46,34 @@ export async function update(id: number, updatedTask: Task) {
   return task.get();
 }
 
-// helper functions
+export async function move(id: number, newPos: number) {
+  let task = await getTask(id);
 
-async function getTask(id) {
-  const task = await db.Task.findByPk(id);
-  if (!task) throw 'Task not found';
-  return task;
+  // Move all other tasks
+  const oldPos = task.position;
+  const [minPos, maxPos] =
+    oldPos < newPos ? [oldPos, newPos] : [newPos, oldPos];
+  const posOffset = newPos < oldPos ? 1 : -1;
+  let tasks = await db.Task.findAll({
+    where: { position: { [Op.between]: [minPos, maxPos] } },
+  });
+  tasks.forEach((task) => task.increment('position', { by: posOffset }));
+
+  // Move this task
+  await task.update({
+    position: newPos,
+  });
+  return 1;
 }
 
 export async function truncateTasks() {
   await db.Task.truncate();
+}
+
+// helper functions
+
+async function getTask(id: number) {
+  const task = await db.Task.findByPk(id);
+  if (!task) throw 'Task not found';
+  return task;
 }

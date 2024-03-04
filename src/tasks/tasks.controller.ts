@@ -1,7 +1,5 @@
 import express from 'express';
-import { query } from '../_helpers/db.js';
 import authorize from '../_middleware/authorize.js';
-import { Task } from './task.model.js';
 import * as taskService from './task.service.js';
 
 const taskRouter = express.Router();
@@ -11,13 +9,7 @@ taskRouter.post('/', authorize(), addTask);
 taskRouter.delete('/:id', authorize(), deleteTask);
 taskRouter.put('/:id', authorize(), updateTask);
 taskRouter.put('/', authorize(), replaceTasks);
-
-taskRouter.put('/:id/move/:newPosition', async (req, res) => {
-  const id = req.params.id;
-  const newPosition = Number(req.params.newPosition);
-  const result = await moveTask(id, newPosition);
-  res.json({ result });
-});
+taskRouter.put('/:id/move/:newPosition', authorize(), moveTask);
 
 export default taskRouter;
 
@@ -50,21 +42,16 @@ async function updateTask(req, res, next) {
     .catch(next);
 }
 
-async function moveTask(id: string, newPos: number): Promise<number> {
-  const posResult = await query('SELECT position FROM tasks WHERE id = ?', id);
-  const oldPos: number = posResult[0].position;
-  const [minPos, maxPos] =
-    oldPos < newPos ? [oldPos, newPos] : [newPos, oldPos];
-  const posOffset = newPos < oldPos ? 1 : -1;
-  const prepSql: string =
-    'UPDATE tasks SET position = position + ? WHERE position >= ? AND position <= ?;';
-  const prepResult = await query(prepSql, [posOffset, minPos, maxPos]);
-  const setSql: string = 'UPDATE tasks SET position = ? WHERE id = ?';
-  const setResult = await query(setSql, [newPos, id]);
-  return setResult.affectedRows;
+async function moveTask(req, res, next) {
+  const id = req.params.id;
+  const newPos = Number(req.params.newPosition);
+  taskService
+    .move(id, newPos)
+    .then((ret) => res.json(ret))
+    .catch(next);
 }
 
-async function replaceTasks(req, res, next): Promise<number> {
+async function replaceTasks(req, res, next) {
   await taskService.truncateTasks();
   let affectedRows = 0;
   for (const task of req.body) {
@@ -73,5 +60,5 @@ async function replaceTasks(req, res, next): Promise<number> {
       .then((ret) => (affectedRows += ret))
       .catch(console.error);
   }
-  return affectedRows;
+  res.json(affectedRows);
 }

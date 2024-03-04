@@ -148,7 +148,9 @@ export default function App() {
   }
 
   function deleteTask(id: number) {
-    API.deleteTask(id).then(refreshTasks).catch((e) => console.error(e.response.data.message));
+    API.deleteTask(id)
+      .then(refreshTasks)
+      .catch((e) => console.error(e.response.data.message));
     setNarrator('Deleted task');
   }
 
