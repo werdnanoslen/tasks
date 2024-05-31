@@ -204,7 +204,7 @@ function Form(props) {
   function dataArea(item?, index?, done?) {
     return (
       <TextareaAutosize
-        id={`edit-${props.id}`}
+        id={`edit-${item ? item.id : index}`}
         name="data"
         className={classNames('input', { done: done })}
         value={item ? item.data : data}
@@ -231,7 +231,8 @@ function Form(props) {
     }
   }
 
-  function checklistItem(props) {
+  const ChecklistItem = (props: { children: ListItem }) => {
+    const item = props.children;
     const {
       attributes,
       listeners,
@@ -240,29 +241,18 @@ function Form(props) {
       transform,
       transition,
     } = useSortable({
-      id: props.id,
+      id: item.id,
     });
-    const sensors = useSensors(
-      useSensor(PointerSensor, {
-        activationConstraint: {
-          distance: 10,
-        },
-      }),
-      useSensor(KeyboardSensor, {
-        coordinateGetter: sortableKeyboardCoordinates,
-      })
-    );
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
     };
     return (
-      <li key={props.id} ref={setNodeRef}>
+      <li key={item.id} ref={setNodeRef} style={style}>
         <div className="list-controls">
           <button
             className="btn btn__icon btn__drag"
             ref={setActivatorNodeRef}
-            style={style}
             {...attributes}
             {...listeners}
           >
@@ -273,15 +263,15 @@ function Form(props) {
           </button>
           <input
             type="checkbox"
-            checked={props.done}
+            checked={item.done}
             aria-label="done"
-            onChange={() => toggleListItemDone(props.id)}
+            onChange={() => toggleListItemDone(item.id)}
           />
         </div>
-        {dataArea(props, props.id, props.done)}
+        {dataArea(item, item.id, item.done)}
         <button
           className="btn btn__icon btn__close"
-          onClick={(e) => deleteListItem(props.id, e)}
+          onClick={(e) => deleteListItem(item.id, e)}
         >
           <span className="ascii-icon" aria-hidden="true">
             {String.fromCharCode(10005)}
@@ -290,7 +280,7 @@ function Form(props) {
         </button>
       </li>
     );
-  }
+  };
 
   function checklistGroup() {
     return (
@@ -303,7 +293,9 @@ function Form(props) {
           items={checklistData.map((i) => i.id)}
           strategy={verticalListSortingStrategy}
         >
-          {checklistData.map((item) => checklistItem(item))}
+          {checklistData.map((item) => (
+            <ChecklistItem key={item.id}>{item}</ChecklistItem>
+          ))}
         </SortableContext>
       </DndContext>
     );
