@@ -7,7 +7,22 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import TextareaAutosize from 'react-textarea-autosize';
-import { ReactSortable } from 'react-sortablejs';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { ListItem } from '../tasks/task.model';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
@@ -24,6 +39,19 @@ function NewChecklistItem(data?): ListItem {
 }
 
 function Form(props) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: props.id });
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const iChecklist: boolean = props.data && typeof props.data !== 'string';
   const [checklist, setChecklist] = useState(iChecklist);
 
@@ -39,7 +67,7 @@ function Form(props) {
   const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
-  const draggable = !newTask && !props.pinned;
+  // const draggable = !newTask && !props.pinned;
   const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const delRef = useCallback((e) => (e ? e.focus() : null), []);
@@ -192,45 +220,92 @@ function Form(props) {
     );
   }
 
+  function dragChecklistItem(event) {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setChecklistData((items) => {
+        const oldIndex = items.findIndex(({ id }) => id === active.id);
+        const newIndex = items.findIndex(({ id }) => id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
+
+  function checklistItem(props) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      setActivatorNodeRef,
+      transform,
+      transition,
+    } = useSortable({
+      id: props.id,
+    });
+    const sensors = useSensors(
+      useSensor(PointerSensor, {
+        activationConstraint: {
+          distance: 10,
+        },
+      }),
+      useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+      })
+    );
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+    return (
+      <li key={props.id} ref={setNodeRef}>
+        <div className="list-controls">
+          <button
+            className="btn btn__icon btn__drag"
+            ref={setActivatorNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+          >
+            <span className="visually-hidden">Move list item</span>
+            <span className="ascii-icon" aria-hidden="true">
+              {String.fromCharCode(8661)}
+            </span>
+          </button>
+          <input
+            type="checkbox"
+            checked={props.done}
+            aria-label="done"
+            onChange={() => toggleListItemDone(props.id)}
+          />
+        </div>
+        {dataArea(props, props.id, props.done)}
+        <button
+          className="btn btn__icon btn__close"
+          onClick={(e) => deleteListItem(props.id, e)}
+        >
+          <span className="ascii-icon" aria-hidden="true">
+            {String.fromCharCode(10005)}
+          </span>
+          <span className="visually-hidden">Delete list item</span>
+        </button>
+      </li>
+    );
+  }
+
   function checklistGroup() {
     return (
-      <ReactSortable
-        tag="ul"
-        handle=".btn__drag"
-        list={checklistData}
-        setList={(newItems, _, { dragging }) => {
-          dragging && setChecklistData(newItems);
-        }}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={dragChecklistItem}
       >
-        {checklistData.map((item, i) => (
-          <li key={i}>
-            <div className="list-controls">
-              <button className="btn btn__icon btn__drag">
-                <span className="visually-hidden">Move list item</span>
-                <span className="ascii-icon" aria-hidden="true">
-                  {String.fromCharCode(8661)}
-                </span>
-              </button>
-              <input
-                type="checkbox"
-                checked={item.done}
-                aria-label="done"
-                onChange={() => toggleListItemDone(item.id)}
-              />
-            </div>
-            {dataArea(item, i, item.done)}
-            <button
-              className="btn btn__icon btn__close"
-              onClick={(e) => deleteListItem(item.id, e)}
-            >
-              <span className="ascii-icon" aria-hidden="true">
-                {String.fromCharCode(10005)}
-              </span>
-              <span className="visually-hidden">Delete list item</span>
-            </button>
-          </li>
-        ))}
-      </ReactSortable>
+        <SortableContext
+          items={checklistData.map((i) => i.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {checklistData.map((item) => checklistItem(item))}
+        </SortableContext>
+      </DndContext>
     );
   }
 
@@ -292,6 +367,11 @@ function Form(props) {
     </button>
   );
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
     if (!newTask) handleSubmit();
@@ -300,16 +380,17 @@ function Form(props) {
   return (
     <li
       id={props.id}
-      className={classNames('task', {
-        hide: props.hide,
-        moving: isMoving,
-        filtered: !draggable,
-      })}
-      tabIndex={isMoving || !props.movement ? 0 : -1}
-      draggable={draggable}
-      role="option"
+      className={classNames(
+        'task',
+        CSS.Transform.toString(transform),
+        transition,
+        {
+          hide: props.hide,
+          moving: isMoving,
+        }
+      )}
+      // draggable={draggable}
       aria-label={`${checklist ? `checklist` : ``} task`}
-      aria-describedby={newTask ? 'instructions' : undefined}
       onDragEnd={newTask ? undefined : handleSubmit}
       onKeyDown={(e) => moveTask(e)}
       onBlur={(e) => {
@@ -318,6 +399,10 @@ function Form(props) {
           props.moveTask(props.id, 0, false);
         }
       }}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
     >
       <form
         onSubmit={handleSubmit}

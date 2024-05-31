@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@dnd-kit/sortable": "^8.0.0",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
     "classnames": "^2.5.1",

@@ -3,7 +3,10 @@ import { Task } from './task.model.js';
 import { Op } from 'sequelize';
 
 export async function getAll(userID: number): Promise<Task[]> {
-  let tasks = await db.Task.findAll({ where: { user_id: userID } });
+  let tasks = await db.Task.findAll({
+    where: { user_id: userID },
+    order: [['position', 'ASC']],
+  });
   tasks.map((task) => {
     try {
       task.data = JSON.parse(task.data);

@@ -42,9 +42,9 @@ initialize()
     if (process.env.NODE_ENV === 'dev') {
       await createUser({ username: 'user', password: 'password' }).catch(
         console.error
-      )
-      const newUserId = (await getAll())[0].id
-      
+      );
+      const newUserId: number = (await getAll())[0].id || 1;
+
       await createTask({
         id: 1,
         data: 'You can drag tasks around, mark them as done, delete, pin to the top of this list, and toggle between regular and checklist types',

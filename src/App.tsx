@@ -1,5 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ReactSortable } from 'react-sortablejs';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import Login from './components/Login';
 import Account from './components/Account';
 import Form from './components/Form';
@@ -29,6 +42,17 @@ export default function App() {
   const [movement, setMovement] = useState(false);
   const [error, setError] = useState('');
   const [authed, setAuthed] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 100,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   async function isAuthed() {
     const status = await API.getLoginStatus();
@@ -109,9 +133,15 @@ export default function App() {
   }
 
   function dragTask(event) {
-    const { item, newIndex } = event;
-    item.position = Math.max(newIndex, 1);
-    API.moveTask(item.id, item.position).then(refreshTasks);
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setTasks((items) => {
+        const oldIndex = items.findIndex(({ id }) => id === active.id);
+        const newIndex = items.findIndex(({ id }) => id === over.id);
+        API.moveTask(active.id, newIndex + 1).then(refreshTasks);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   }
 
   function updateData(id, newData) {
@@ -171,14 +201,7 @@ export default function App() {
     authed && refreshTasks();
   }, [authed]);
   useEffect(() => {
-    authed &&
-      console.table(
-        tasks.sort(function (a, b) {
-          a.position ??= 0;
-          b.position ??= 0;
-          return a.position - b.position;
-        })
-      );
+    authed && console.table(tasks);
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }
@@ -206,33 +229,33 @@ export default function App() {
       <p id="emptyMsg" hidden={!emptyMsg}>
         {emptyMsg}
       </p>
-      <ReactSortable
-        tag="ul"
-        list={tasks}
-        setList={setTasks}
-        id="TaskList"
-        filter=".filtered, .input"
-        preventOnFilter={false}
-        onChange={dragTask}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={dragTask}
       >
-        {tasks.filter(FILTER_MAP[filter]).map((task) => (
-          <Form
-            id={task.id}
-            data={task.data}
-            done={task.done}
-            toggleTaskDone={toggleTaskDone}
-            pinned={task.pinned}
-            toggleTaskPinned={toggleTaskPinned}
-            moveTask={moveTask}
-            movement={movement}
-            key={task.id}
-            deleteTask={() => deleteTask(task.id)}
-            updateData={updateData}
-            error={error}
-            setNarrator={setNarrator}
-          />
-        ))}
-      </ReactSortable>
+        <SortableContext items={tasks.map((t) => t.id)}>
+          <ul>
+            {tasks.filter(FILTER_MAP[filter]).map((task) => (
+              <Form
+                id={task.id}
+                data={task.data}
+                done={task.done}
+                toggleTaskDone={toggleTaskDone}
+                pinned={task.pinned}
+                toggleTaskPinned={toggleTaskPinned}
+                moveTask={moveTask}
+                movement={movement}
+                key={task.id}
+                deleteTask={() => deleteTask(task.id)}
+                updateData={updateData}
+                error={error}
+                setNarrator={setNarrator}
+              />
+            ))}
+          </ul>
+        </SortableContext>
+      </DndContext>
     </>
   );
 
