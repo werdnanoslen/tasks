@@ -38,6 +38,11 @@ async function _delete(id) {
 }
 export { _delete as delete };
 
+async function _deleteAll() {
+  await db.Task.destroy({ truncate: true });
+}
+export { _deleteAll as deleteAll };
+
 export async function update(id: number, updatedTask: Task) {
   delete updatedTask.chosen;
   if (typeof updatedTask.data !== 'string') {

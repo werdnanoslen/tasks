@@ -74,6 +74,11 @@ async function _delete(id) {
 }
 export { _delete as delete };
 
+async function _deleteAll() {
+  await db.User.destroy({ truncate: true });
+}
+export { _deleteAll as deleteAll };
+
 // helper functions
 
 async function getUser(id) {

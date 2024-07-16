@@ -4,8 +4,8 @@ import errorHandler from './_middleware/error-handler.js';
 import { initialize } from './_helpers/db.js';
 import userRouter from './users/users.controller.js';
 import taskRouter from './tasks/tasks.controller.js';
-import { create as createUser, getAll } from './users/user.service.js';
-import { create as createTask } from './tasks/task.service.js';
+import { create as createUser, deleteAll as deleteAllUsers, getAll } from './users/user.service.js';
+import { create as createTask, deleteAll as deleteAllTasks } from './tasks/task.service.js';
 
 const APP: Application = express();
 APP.use(express.urlencoded({ extended: false }));
@@ -39,7 +39,10 @@ APP.use(errorHandler);
 initialize()
   .then(async () => {
     // Load demo data in dev environment
-    if (process.env.NODE_ENV === 'dev') {
+    if (process.env.NODE_ENV === 'dev' && process.argv.includes('demo')) {
+      await deleteAllUsers();
+      await deleteAllTasks();
+
       await createUser({ username: 'user', password: 'password' }).catch(
         console.error
       );
