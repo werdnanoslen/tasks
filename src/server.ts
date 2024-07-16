@@ -4,8 +4,15 @@ import errorHandler from './_middleware/error-handler.js';
 import { initialize } from './_helpers/db.js';
 import userRouter from './users/users.controller.js';
 import taskRouter from './tasks/tasks.controller.js';
-import { create as createUser, deleteAll as deleteAllUsers, getAll } from './users/user.service.js';
-import { create as createTask, deleteAll as deleteAllTasks } from './tasks/task.service.js';
+import {
+  create as createUser,
+  deleteAll as deleteAllUsers,
+  getAll,
+} from './users/user.service.js';
+import {
+  create as createTask,
+  deleteAll as deleteAllTasks,
+} from './tasks/task.service.js';
 
 const APP: Application = express();
 APP.use(express.urlencoded({ extended: false }));
@@ -46,32 +53,32 @@ initialize()
       await createUser({ username: 'user', password: 'password' }).catch(
         console.error
       );
-      const newUserId: number = (await getAll())[0].id || 1;
+      const newUserId: string = (await getAll())[0].id || 1;
 
       await createTask({
-        id: 1,
+        id: '1',
         data: 'You can drag tasks around, mark them as done, delete, pin to the top of this list, and toggle between regular and checklist types',
         done: false,
         pinned: false,
         user_id: newUserId,
       });
       await createTask({
-        id: 2,
+        id: '2',
         data: 'This is a regular task',
         done: false,
         pinned: false,
         user_id: newUserId,
       });
       await createTask({
-        id: 3,
+        id: '3',
         data: [
           {
-            id: 1699045008620,
+            id: '3a',
             data: 'This is a checklist task',
             done: false,
           },
           {
-            id: 1699045041759,
+            id: '3b',
             data: 'You can cross sub-tasks out',
             done: true,
           },

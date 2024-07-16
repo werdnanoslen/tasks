@@ -32,7 +32,7 @@ import unpinned from '../images/unpinned.svg';
 
 function NewChecklistItem(data?): ListItem {
   return {
-    id: Date.now(),
+    id: self.crypto.randomUUID(),
     data: data ? data : '',
     done: false,
   };
@@ -63,7 +63,7 @@ function Form(props) {
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [newItemId, setNewItemId] = useState(0);
+  const [newItemId, setNewItemId] = useState('');
   const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
@@ -106,7 +106,7 @@ function Form(props) {
     }
   }
 
-  async function deleteListItem(id: number, e: React.MouseEvent) {
+  async function deleteListItem(id: string, e: React.MouseEvent) {
     const remainingItems = checklistData.filter((item) => id !== item.id);
     if (remainingItems.length === 0) {
       setChecklistData(iChecklistData);
@@ -117,7 +117,7 @@ function Form(props) {
     }
   }
 
-  function toggleListItemDone(id: number) {
+  function toggleListItemDone(id: string) {
     let updatedItems = [...checklistData];
     for (let i = 0; i < checklistData.length; i++) {
       const item = checklistData[i];

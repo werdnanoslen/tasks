@@ -2,7 +2,7 @@ import db from '../_helpers/db.js';
 import { Task } from './task.model.js';
 import { Op } from 'sequelize';
 
-export async function getAll(userID: number): Promise<Task[]> {
+export async function getAll(userID: string): Promise<Task[]> {
   let tasks = await db.Task.findAll({
     where: { user_id: userID },
     order: [['position', 'ASC']],
@@ -43,7 +43,7 @@ async function _deleteAll() {
 }
 export { _deleteAll as deleteAll };
 
-export async function update(id: number, updatedTask: Task) {
+export async function update(id: string, updatedTask: Task) {
   delete updatedTask.chosen;
   if (typeof updatedTask.data !== 'string') {
     updatedTask.data = JSON.stringify(updatedTask.data);
@@ -54,7 +54,7 @@ export async function update(id: number, updatedTask: Task) {
   return task.get();
 }
 
-export async function move(id: number, newPos: number) {
+export async function move(id: string, newPos: number) {
   let task = await getTask(id);
 
   // Move all other tasks
@@ -80,7 +80,7 @@ export async function truncateTasks() {
 
 // helper functions
 
-async function getTask(id: number) {
+async function getTask(id: string) {
   const task = await db.Task.findByPk(id);
   if (!task) throw 'Task not found';
   return task;

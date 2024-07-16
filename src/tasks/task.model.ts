@@ -1,19 +1,19 @@
 import { DataTypes } from 'sequelize';
 
 export type ListItem = {
-  id: number;
+  id: string;
   data: string;
   done: boolean;
 };
 
 export type Task = {
   position?: number;
-  id: number;
+  id: string;
   data: string | ListItem[];
   done: boolean;
   pinned: boolean;
   chosen?: boolean;
-  user_id?: number;
+  user_id?: string;
 };
 
 export type Credentials = {

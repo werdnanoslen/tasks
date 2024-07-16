@@ -162,7 +162,7 @@ export default function App() {
   function addTask(data: string | ListItem[]) {
     const newTask: Task = {
       position: tasks.length + 1,
-      id: Date.now(),
+      id: self.crypto.randomUUID(),
       data: data ?? '',
       done: false,
       pinned: false,
@@ -177,7 +177,7 @@ export default function App() {
     API.addTask(newTask).then(refreshTasks);
   }
 
-  function deleteTask(id: number) {
+  function deleteTask(id: string) {
     API.deleteTask(id)
       .then(refreshTasks)
       .catch((e) => console.error(e.response.data.message));
