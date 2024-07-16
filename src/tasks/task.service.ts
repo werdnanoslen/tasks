@@ -2,7 +2,7 @@ import db from '../_helpers/db.js';
 import { Task } from './task.model.js';
 import { Op } from 'sequelize';
 
-export async function getAll(userID: string): Promise<Task[]> {
+export async function getAll(userID: number): Promise<Task[]> {
   let tasks = await db.Task.findAll({
     where: { user_id: userID },
     order: [['position', 'ASC']],

@@ -41,7 +41,7 @@ export async function create(params) {
   }
 
   // save user
-  await db.User.create(params);
+  return await db.User.create(params);
 }
 
 export async function update(id, params) {

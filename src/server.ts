@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import errorHandler from './_middleware/error-handler.js';
 import { initialize } from './_helpers/db.js';
@@ -50,42 +51,41 @@ initialize()
       await deleteAllUsers();
       await deleteAllTasks();
 
-      await createUser({ username: 'user', password: 'password' }).catch(
+      const user = await createUser({ username: 'user', password: 'password' }).catch(
         console.error
       );
-      const newUserId: string = (await getAll())[0].id || 1;
 
       await createTask({
-        id: '1',
+        id: crypto.randomUUID(),
         data: 'You can drag tasks around, mark them as done, delete, pin to the top of this list, and toggle between regular and checklist types',
         done: false,
         pinned: false,
-        user_id: newUserId,
+        user_id: user.id,
       });
       await createTask({
-        id: '2',
+        id: crypto.randomUUID(),
         data: 'This is a regular task',
         done: false,
         pinned: false,
-        user_id: newUserId,
+        user_id: user.id,
       });
       await createTask({
-        id: '3',
+        id: crypto.randomUUID(),
         data: [
           {
-            id: '3a',
+            id: crypto.randomUUID(),
             data: 'This is a checklist task',
             done: false,
           },
           {
-            id: '3b',
+            id: crypto.randomUUID(),
             data: 'You can cross sub-tasks out',
             done: true,
           },
         ],
         done: false,
         pinned: false,
-        user_id: newUserId,
+        user_id: user.id,
       });
     }
   })

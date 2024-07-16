@@ -23,7 +23,7 @@ export type Credentials = {
 
 export function modelTask(sequelize) {
   const taskAttributes = {
-    id: { type: DataTypes.TEXT, allowNull: false, primaryKey: true },
+    id: { type: DataTypes.STRING(36), allowNull: false, primaryKey: true },
     position: { type: DataTypes.SMALLINT, allowNull: false }, //key idx_position
     data: { type: DataTypes.TEXT, allowNull: false },
     done: { type: DataTypes.TINYINT, allowNull: false, default: 0 },
