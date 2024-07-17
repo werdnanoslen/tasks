@@ -11,7 +11,6 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import Login from './components/Login';
 import Account from './components/Account';
@@ -65,7 +64,6 @@ export default function App() {
       .catch((err) => {
         if (err.response?.status === 401) {
           setAuthed(false);
-          // TODO add polling to avoid wasted user effort
         } else {
           console.error(err.response || err);
         }
@@ -80,36 +78,6 @@ export default function App() {
   function toggleTaskPinned(id, pinned) {
     API.updateTask(id, { pinned: !pinned }).then(refreshTasks);
     setNarrator(`Task pinned. Next task now focused.`);
-  }
-
-  function moveTask(id, indexes: number, moving?: Boolean) {
-    let updatedTasks: Task[] = [...tasks];
-    const fromPosition: number = tasks.findIndex((task) => id === task.id);
-    if (moving !== undefined) {
-      if (moving) {
-        setNarrator(
-          `Grabbed task at position ${
-            fromPosition + 1
-          }. Use arrows to change position, space to drop.`
-        );
-        setMovement(true);
-      } else {
-        setNarrator(`Dropped task at position ${fromPosition + 1}.`);
-        setMovement(false);
-      }
-      return;
-    }
-    const toPosition: number = fromPosition + indexes;
-    if (toPosition < 0 || toPosition > updatedTasks.length) return;
-    const task = tasks[fromPosition];
-    updatedTasks.splice(fromPosition, 1)[0];
-    updatedTasks.splice(toPosition, 0, task);
-    API.replaceTasks(updatedTasks).then(refreshTasks);
-    setNarrator(
-      `Moved to position ${
-        toPosition + 1
-      }. Use arrows to change position, space to drop.`
-    );
   }
 
   function dragTask(event) {
@@ -202,7 +170,6 @@ export default function App() {
       toggleTaskDone={() => toggleTaskDone(task.id, task.done)}
       pinned={task.pinned}
       toggleTaskPinned={() => toggleTaskPinned(task.id, task.pinned)}
-      moveTask={moveTask}
       movement={movement}
       key={task.id}
       deleteTask={() => deleteTask(task.id)}

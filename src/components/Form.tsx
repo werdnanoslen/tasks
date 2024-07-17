@@ -67,7 +67,6 @@ function Form(props) {
   const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
-  // const draggable = !newTask && !props.pinned;
   const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const delRef = useCallback((e) => (e ? e.focus() : null), []);
@@ -381,7 +380,6 @@ function Form(props) {
           moving: isMoving,
         }
       )}
-      // draggable={draggable}
       aria-label={`${checklist ? `checklist` : ``} task`}
       onDragEnd={newTask ? undefined : handleSubmit}
       onKeyDown={(e) => moveTask(e)}
