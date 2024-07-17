@@ -12,7 +12,6 @@ export type Task = {
   data: string | ListItem[];
   done: boolean;
   pinned: boolean;
-  chosen?: boolean;
   user_id?: string;
 };
 

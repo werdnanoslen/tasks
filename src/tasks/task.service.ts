@@ -17,7 +17,6 @@ export async function getAll(userID: number): Promise<Task[]> {
 }
 
 export async function create(task: Task): Promise<number> {
-  delete task.chosen;
   if (typeof task.data !== 'string') {
     task.data = JSON.stringify(task.data);
   }
