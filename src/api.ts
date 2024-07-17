@@ -23,10 +23,8 @@ export async function deleteTask(id: string): Promise<void> {
   return response.data;
 }
 
-export async function updateTask(task: Task): Promise<any> {
-  const taskCopy: Task = task;
-  delete taskCopy.chosen;
-  const response = await client.put(`/tasks/${task.id}`, taskCopy);
+export async function updateTask(id: string, fields: Object): Promise<any> {
+  const response = await client.put(`/tasks/${id}`, fields);
   return response.data;
 }
 

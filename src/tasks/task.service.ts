@@ -43,13 +43,12 @@ async function _deleteAll() {
 }
 export { _deleteAll as deleteAll };
 
-export async function update(id: string, updatedTask: Task) {
-  delete updatedTask.chosen;
-  if (typeof updatedTask.data !== 'string') {
-    updatedTask.data = JSON.stringify(updatedTask.data);
+export async function update(id: string, fields: any) {
+  if (fields.data && fields.data !== 'string') {
+    fields.data = JSON.stringify(fields.data);
   }
   const task = await getTask(id);
-  Object.assign(task, updatedTask);
+  await task.update(fields);
   await task.save();
   return task.get();
 }

@@ -29,8 +29,8 @@ function usePrevious(value) {
 }
 
 const FILTER_MAP = {
-  Doing: (task) => !task.done,
-  Done: (task) => task.done,
+  Doing: (task: Task) => !task.done,
+  Done: (task: Task) => task.done,
 };
 
 const FILTER_TASKS = Object.keys(FILTER_MAP);
@@ -72,34 +72,14 @@ export default function App() {
       });
   }
 
-  function toggleTaskDone(id) {
-    tasks.map((task) => {
-      if (id === task.id) {
-        API.updateTask({ ...task, done: !task.done }).then(refreshTasks);
-        setNarrator('Task marked done. Next task now focused.');
-      }
-    });
+  function toggleTaskDone(id, done) {
+    API.updateTask(id, { done: !done }).then(refreshTasks);
+    setNarrator('Task marked done. Next task now focused.');
   }
 
-  function toggleTaskPinned(id) {
-    let updatedTasks = [...tasks];
-    let fromPosition = 0;
-    let toPosition = 0;
-    updatedTasks.forEach((task, i) => {
-      delete updatedTasks[i].chosen;
-      if (id === task.id) {
-        fromPosition = i;
-        updatedTasks[i].pinned = !task.pinned;
-      } else if (task.pinned) {
-        ++toPosition;
-      }
-    });
-    const movedTask = updatedTasks.splice(fromPosition, 1)[0];
-    updatedTasks.splice(toPosition, 0, movedTask);
-    API.replaceTasks(updatedTasks).then(refreshTasks);
-    setNarrator(
-      `Task pinned in position ${toPosition}. Next task now focused.`
-    );
+  function toggleTaskPinned(id, pinned) {
+    API.updateTask(id, { pinned: !pinned }).then(refreshTasks);
+    setNarrator(`Task pinned. Next task now focused.`);
   }
 
   function moveTask(id, indexes: number, moving?: Boolean) {
@@ -145,16 +125,12 @@ export default function App() {
   }
 
   function updateData(id, newData) {
-    tasks.map((task) => {
-      if (id === task.id) {
-        API.updateTask({ ...task, data: newData }).then((ret) => {
-          if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
-            setError('Task content is too long. No changes have been saved.');
-          } else {
-            setError('');
-            refreshTasks();
-          }
-        });
+    API.updateTask(id, { data: newData }).then((ret) => {
+      if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
+        setError('Task content is too long. No changes have been saved.');
+      } else {
+        setError('');
+        refreshTasks();
       }
     });
   }
@@ -218,7 +194,24 @@ export default function App() {
     (emptyDoing && 'All done! 🎉') ||
     undefined;
 
-  const formSection = (
+  const formSection = (task: Task) => (
+    <Form
+      id={task.id}
+      data={task.data}
+      done={task.done}
+      toggleTaskDone={() => toggleTaskDone(task.id, task.done)}
+      pinned={task.pinned}
+      toggleTaskPinned={() => toggleTaskPinned(task.id, task.pinned)}
+      moveTask={moveTask}
+      movement={movement}
+      key={task.id}
+      deleteTask={() => deleteTask(task.id)}
+      updateData={() => updateData(task.id, task.data)}
+      error={error}
+      setNarrator={setNarrator}
+    />
+  );
+  const allForms = (
     <>
       <Form
         addTask={addTask}
@@ -236,23 +229,24 @@ export default function App() {
       >
         <SortableContext items={tasks.map((t) => t.id)}>
           <ul>
-            {tasks.filter(FILTER_MAP[filter]).map((task) => (
-              <Form
-                id={task.id}
-                data={task.data}
-                done={task.done}
-                toggleTaskDone={toggleTaskDone}
-                pinned={task.pinned}
-                toggleTaskPinned={toggleTaskPinned}
-                moveTask={moveTask}
-                movement={movement}
-                key={task.id}
-                deleteTask={() => deleteTask(task.id)}
-                updateData={updateData}
-                error={error}
-                setNarrator={setNarrator}
-              />
-            ))}
+            {tasks
+              .filter(FILTER_MAP[filter])
+              .filter((t) => t.pinned)
+              .map(formSection)}
+          </ul>
+        </SortableContext>
+      </DndContext>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={dragTask}
+      >
+        <SortableContext items={tasks.map((t) => t.id)}>
+          <ul>
+            {tasks
+              .filter(FILTER_MAP[filter])
+              .filter((t) => !t.pinned)
+              .map(formSection)}
           </ul>
         </SortableContext>
       </DndContext>
@@ -274,7 +268,7 @@ export default function App() {
         {error}
       </div>
       <main id="main" ref={listHeadingRef} data-authed={authed}>
-        {authed ? formSection : <Login isAuthed={isAuthed} />}
+        {authed ? allForms : <Login isAuthed={isAuthed} />}
       </main>
       <div
         role="alert"

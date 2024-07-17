@@ -51,9 +51,10 @@ initialize()
       await deleteAllUsers();
       await deleteAllTasks();
 
-      const user = await createUser({ username: 'user', password: 'password' }).catch(
-        console.error
-      );
+      const user = await createUser({
+        username: 'user',
+        password: 'password',
+      }).catch(console.error);
 
       await createTask({
         id: crypto.randomUUID(),
