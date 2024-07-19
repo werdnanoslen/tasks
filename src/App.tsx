@@ -18,6 +18,7 @@ import Form from './components/Form';
 import FilterButton from './components/FilterButton';
 import { Task, ListItem } from './tasks/task.model';
 import * as API from './api';
+import { Upload } from './uploads/upload.model';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -38,7 +39,6 @@ export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState('Doing');
   const [narrator, setNarrator] = useState('');
-  const [movement, setMovement] = useState(false);
   const [error, setError] = useState('');
   const [authed, setAuthed] = useState(false);
 
@@ -92,36 +92,51 @@ export default function App() {
     }
   }
 
-  function updateData(id, newData) {
-    API.updateTask(id, { data: newData }).then((ret) => {
-      if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
-        setError('Task content is too long. No changes have been saved.');
-      } else {
-        setError('');
-        refreshTasks();
-      }
-    });
+  function updateData(id: string, newData?: string | ListItem[], image?: File) {
+    let updates: Partial<Task> = { ...(newData && { data: newData }) };
+    if (image) {
+      const imageForm = new FormData();
+      imageForm.append('upload', image);
+      API.addUpload(imageForm)
+        .then((imagePath) => {
+          updates.image = imagePath;
+          API.updateTask(id, updates).then((ret) => {
+            if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
+              setError('Task content is too long. No changes have been saved.');
+            } else {
+              setError('');
+              refreshTasks();
+            }
+          });
+        })
+        .catch(console.error);
+    }
   }
 
-  function addTask(data: string | ListItem[]) {
-    const newTask: Task = {
+  function addTask(data: string | ListItem[], image?: File) {
+    let newTask: Task = {
       position: tasks.length + 1,
       id: self.crypto.randomUUID(),
       data: data ?? '',
       done: false,
       pinned: false,
     };
-    let updatedTasks: Task[] = [...tasks];
-    for (var i = 0; i <= tasks.length; i++) {
-      if (i === tasks.length || !tasks[i].pinned) {
-        updatedTasks.splice(i, 0, newTask);
-        break;
-      }
+    if (image) {
+      const imageForm = new FormData();
+      imageForm.append('upload', image);
+      API.addUpload(imageForm)
+        .then((imagePath) => {
+          newTask.image = imagePath;
+          API.addTask(newTask).then(refreshTasks).catch(console.error);
+        })
+        .catch(console.error);
+    } else {
+      API.addTask(newTask).then(refreshTasks);
     }
-    API.addTask(newTask).then(refreshTasks);
   }
 
   function deleteTask(id: string) {
+    //TODO replace input with full task, deleteUpload if contains one, then deleteTask
     API.deleteTask(id)
       .then(refreshTasks)
       .catch((e) => console.error(e.response.data.message));
@@ -164,16 +179,16 @@ export default function App() {
 
   const formSection = (task: Task) => (
     <Form
-      id={task.id}
-      data={task.data}
-      done={task.done}
-      toggleTaskDone={() => toggleTaskDone(task.id, task.done)}
-      pinned={task.pinned}
-      toggleTaskPinned={() => toggleTaskPinned(task.id, task.pinned)}
-      movement={movement}
       key={task.id}
-      deleteTask={() => deleteTask(task.id)}
-      updateData={() => updateData(task.id, task.data)}
+      id={task.id}
+      image={task.image}
+      data={task.data}
+      updateData={updateData}
+      done={task.done}
+      toggleTaskDone={toggleTaskDone} //TODO unable to toggle back to doing
+      pinned={task.pinned}
+      toggleTaskPinned={toggleTaskPinned}
+      deleteTask={deleteTask}
       error={error}
       setNarrator={setNarrator}
     />

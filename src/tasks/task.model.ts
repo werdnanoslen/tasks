@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import { Upload } from '../uploads/upload.model';
 
 export type ListItem = {
   id: string;
@@ -13,8 +14,10 @@ export type Task = {
   done: boolean;
   pinned: boolean;
   user_id?: string;
+  image?: string;
 };
 
+//TODO why is this here?
 export type Credentials = {
   username: string;
   password: string;
@@ -28,6 +31,7 @@ export function modelTask(sequelize) {
     done: { type: DataTypes.TINYINT, allowNull: false, default: 0 },
     pinned: { type: DataTypes.TINYINT, allowNull: false, default: 0 },
     user_id: { type: DataTypes.INTEGER, allowNull: false },
+    image: { type: DataTypes.TEXT, allowNull: true },
   };
 
   return sequelize.define('Task', taskAttributes);

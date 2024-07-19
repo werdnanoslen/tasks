@@ -2,10 +2,12 @@ import mysql2, { PoolOptions } from 'mysql2/promise';
 import { Sequelize } from 'sequelize';
 import { modelUser } from '../users/user.model.js';
 import { modelTask } from '../tasks/task.model.js';
+import { modelUpload } from '../uploads/upload.model.js';
 
 export default class DB {
   static User: any;
   static Task: any;
+  static Upload: any;
 }
 
 export async function initialize() {
@@ -29,5 +31,6 @@ export async function initialize() {
   );
   DB.User = modelUser(sequelize);
   DB.Task = modelTask(sequelize);
+  DB.Upload = modelUpload(sequelize);
   await sequelize.sync();
 }

@@ -42,7 +42,7 @@ async function _deleteAll() {
 }
 export { _deleteAll as deleteAll };
 
-export async function update(id: string, fields: any) {
+export async function update(id: string, fields: Partial<Task>) {
   if (fields.data && fields.data !== 'string') {
     fields.data = JSON.stringify(fields.data);
   }

@@ -21,11 +21,11 @@ async function getTasks(req, res, next) {
 }
 
 export async function addTask(req, res, next) {
-  const task = Object.assign(req.body, { user_id: req.user.id });
+  let task = Object.assign(req.body, { user_id: req.user.id });
   taskService
     .create(task)
-    .then(res.json)
-    .catch((e) => console.error('contr', e));
+    .then((ret) => res.json(ret))
+    .catch(next);
 }
 
 async function deleteTask(req, res, next) {

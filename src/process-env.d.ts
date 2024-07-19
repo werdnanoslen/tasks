@@ -10,6 +10,8 @@ declare global {
       REACT_APP_BASE_URL: string;
       REACT_APP_SERVER_PORT: number;
       TOKEN_SECRET: jwt.Secret;
+      UPLOAD_PATH: string;
+      UPLOAD_WEBROOT: string;
     }
   }
 }

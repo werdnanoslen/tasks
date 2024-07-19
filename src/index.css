@@ -261,6 +261,20 @@ li.moving:focus-visible {
   text-align: center;
   margin-top: 3rem;
 }
+.task-image {
+  margin: -1.25rem;
+  margin-bottom: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
+.add-image {
+  display: none;
+}
+.add-image-icon {
+  cursor: pointer;
+}
 
 .login-wrapper {
   display: flex;

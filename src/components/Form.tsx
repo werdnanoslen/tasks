@@ -29,6 +29,8 @@ import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
 import pinned from '../images/pinned.svg';
 import unpinned from '../images/unpinned.svg';
+import noimageIcon from '../images/noimage.svg';
+import imageIcon from '../images/image.svg';
 
 function NewChecklistItem(data?): ListItem {
   return {
@@ -56,7 +58,8 @@ function Form(props) {
   const [checklist, setChecklist] = useState(iChecklist);
 
   const [data, setData] = useState(iChecklist ? '' : props.data);
-
+  const [imagePreview, setImagePreview] = useState<File | undefined>();
+  const [image, setImage] = useState<string | undefined>(props.image);
   const iChecklistData: ListItem[] = iChecklist
     ? props.data
     : [NewChecklistItem()];
@@ -77,11 +80,13 @@ function Form(props) {
     if (e) e.preventDefault();
     const newData = checklist ? checklistData : data;
     if (newTask) {
-      props.addTask(newData);
+      props.addTask(newData, imagePreview);
       setData('');
       setChecklistData([NewChecklistItem()]);
+      setImagePreview(undefined);
+      setImage(undefined);
     } else {
-      props.updateData(props.id, newData);
+      props.updateData(props.id, newData, imagePreview);
     }
     setIsEditing(false);
   }
@@ -247,6 +252,7 @@ function Form(props) {
       transition,
     };
     return (
+      //TODO controls aren't working!
       <li key={item.id} ref={setNodeRef} style={style}>
         <div className="list-controls">
           <button
@@ -300,6 +306,25 @@ function Form(props) {
     );
   }
 
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const newImage = e.target.files ? e.target.files[0] : undefined;
+    if (!newTask) {
+      props.updateData(props.id, null, newImage);
+    } else {
+      setImagePreview(newImage);
+      const reader = new FileReader();
+      reader.onload = () => setImage(reader.result as string);
+      if (newImage) reader.readAsDataURL(newImage);
+    }
+  }
+
+  const previewImage = () => {
+    const src = image ?? noimageIcon;
+    const alt =
+      image || imagePreview ? 'TODO' : 'This image cannot be displayed';
+    return <img src={src} alt={alt} className="task-image" />; //TODO not showing up until after reload on updateTask
+  };
+
   const editingTools = (
     <>
       <button type="submit" className="btn visually-hidden">
@@ -310,7 +335,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.toggleTaskDone(props.id)}
       >
-        <img src={check} aria-hidden="true" alt="" />
+        <img src={check} alt="" />
         <span className="visually-hidden">{completeLabel}</span>
       </button>
       <button
@@ -318,7 +343,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => setConfirmDelete(true)}
       >
-        <img src={rubbish} aria-hidden="true" alt="" />
+        <img src={rubbish} alt="" />
         <span className="visually-hidden">Delete</span>
       </button>
       <button
@@ -326,7 +351,7 @@ function Form(props) {
         className="btn btn__icon"
         onClick={() => props.toggleTaskPinned(props.id)}
       >
-        <img src={props.pinned ? pinned : unpinned} aria-hidden="true" alt="" />
+        <img src={props.pinned ? pinned : unpinned} alt="" />
         <span className="visually-hidden">{props.pinned ? 'Un-' : ''}Pin</span>
       </button>
     </>
@@ -399,8 +424,10 @@ function Form(props) {
         onBlur={newTask ? handleBlur : handleSubmit}
         id={props.id}
         className={classNames({ isEditing: isEditing })}
+        encType="multipart/form-data"
       >
         {props.error && <div role="status">{props.error}</div>}
+        {(image || imagePreview) && previewImage()}
         {checklist ? checklistGroup() : dataArea()}
         <div className="btn-group">
           {newTask
@@ -409,16 +436,34 @@ function Form(props) {
               ? confirmDeleteButtons
               : editingTools}
           {!confirmDelete && (
-            <button
-              type="button"
-              className="btn btn__icon"
-              onClick={() => toggleChecklist()}
-              aria-pressed={checklist ? true : false}
-              aria-label="Checklist mode"
-              id="instructions"
-            >
-              <img src={checkbox} aria-hidden="true" alt="" />
-            </button>
+            <>
+              <button
+                type="button"
+                className="btn btn__icon"
+                onClick={() => toggleChecklist()}
+                aria-pressed={checklist ? true : false}
+                aria-label="Checklist mode"
+              >
+                <img src={checkbox} alt="" />
+              </button>
+              <button
+                type="button"
+                className="btn btn__icon"
+                aria-label="Add image"
+              >
+                <label htmlFor={`add-image-${props.id}`}>
+                  <img src={imageIcon} alt="" className="add-image-icon" />
+                </label>
+                <input
+                  id={`add-image-${props.id}`}
+                  className="add-image"
+                  type="file"
+                  accept="image/*"
+                  name="upload"
+                  onChange={handleImageChange}
+                />
+              </button>
+            </>
           )}
         </div>
       </form>
