@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { Task, Credentials } from './tasks/task.model';
+import { Task } from './tasks/task.model';
+import { Credentials } from './users/user.model';
 
 const client = axios.create({
   baseURL: `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,

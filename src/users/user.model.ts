@@ -1,5 +1,10 @@
 import { DataTypes } from 'sequelize';
 
+export type Credentials = {
+  username: string;
+  password: string;
+};
+
 export function modelUser(sequelize) {
   const userAttributes = {
     username: { type: DataTypes.STRING, allowNull: false },

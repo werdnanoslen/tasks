@@ -1,5 +1,4 @@
 import { DataTypes } from 'sequelize';
-import { Upload } from '../uploads/upload.model';
 
 export type ListItem = {
   id: string;
@@ -15,12 +14,6 @@ export type Task = {
   pinned: boolean;
   user_id?: string;
   image?: string;
-};
-
-//TODO why is this here?
-export type Credentials = {
-  username: string;
-  password: string;
 };
 
 export function modelTask(sequelize) {
