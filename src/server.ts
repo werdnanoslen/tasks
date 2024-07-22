@@ -68,15 +68,7 @@ initialize()
         pinned: false,
         user_id: user.id,
       });
-      // TODO add image task
-      // await createTask({
-      //   id: crypto.randomUUID(),
-      //   data: 'You can upload images too',
-      //   done: false,
-      //   pinned: false,
-      //   user_id: user.id,
-      //   image: uploadId
-      // });
+
       await createTask({
         id: crypto.randomUUID(),
         data: [
@@ -94,6 +86,15 @@ initialize()
         done: false,
         pinned: false,
         user_id: user.id,
+      });
+
+      await createTask({
+        id: crypto.randomUUID(),
+        data: 'You can upload images too',
+        done: false,
+        pinned: false,
+        user_id: user.id,
+        image: 'storage/demo-image.svg',
       });
     }
   })

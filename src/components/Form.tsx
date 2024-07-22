@@ -205,6 +205,7 @@ function Form(props) {
     }
   }
 
+  // TODO if just url, show preview and turn into link
   function dataArea(item?, index?, done?) {
     return (
       <TextareaAutosize
