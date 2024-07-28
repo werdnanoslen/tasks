@@ -319,7 +319,7 @@ function Form(props) {
       <button
         type="button"
         className="btn btn__icon"
-        onClick={() => props.toggleTaskDone(props.id)}
+        onClick={() => props.toggleTaskDone(props.id, props.done)}
       >
         <img src={check} alt="" />
         <span className="visually-hidden">{completeLabel}</span>
@@ -335,7 +335,7 @@ function Form(props) {
       <button
         type="button"
         className="btn btn__icon"
-        onClick={() => props.toggleTaskPinned(props.id)}
+        onClick={() => props.toggleTaskPinned(props.id, props.pinned)}
       >
         <img src={props.pinned ? pinned : unpinned} alt="" />
         <span className="visually-hidden">{props.pinned ? 'Un-' : ''}Pin</span>

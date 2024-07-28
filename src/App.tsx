@@ -70,6 +70,8 @@ export default function App() {
   }
 
   function toggleTaskDone(id, done) {
+    console.log(done);
+
     API.updateTask(id, { done: !done }).then(refreshTasks);
     setNarrator('Task marked done. Next task now focused.');
   }
@@ -184,7 +186,7 @@ export default function App() {
       data={task.data}
       updateData={updateData}
       done={task.done}
-      toggleTaskDone={toggleTaskDone} //TODO unable to toggle back to doing
+      toggleTaskDone={toggleTaskDone}
       pinned={task.pinned}
       toggleTaskPinned={toggleTaskPinned}
       deleteTask={deleteTask}
