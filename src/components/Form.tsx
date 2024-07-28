@@ -184,28 +184,6 @@ function Form(props) {
     !newTask && props.updateData(props.id, newData);
   }
 
-  function moveTask(e) {
-    //TODO remove?
-    if (newTask) return;
-    switch (e.key) {
-      case ' ':
-      case 'Enter':
-        if (document.activeElement?.classList.contains('task')) {
-          setIsMoving((prevIsMoving) => !prevIsMoving);
-          props.moveTask(props.id, 0, !isMoving);
-        }
-        break;
-      case 'ArrowRight':
-      case 'ArrowDown':
-        if (isMoving) props.moveTask(props.id, 1);
-        break;
-      case 'ArrowUp':
-      case 'ArrowLeft':
-        if (isMoving) props.moveTask(props.id, -1);
-        break;
-    }
-  }
-
   // TODO if just url, show preview and turn into link
   function dataArea(item?, index?, done?) {
     return (
@@ -415,13 +393,6 @@ function Form(props) {
       )}
       aria-label={`${checklist ? `checklist` : ``} task`}
       onDragEnd={newTask ? undefined : handleSubmit}
-      onKeyDown={(e) => moveTask(e)}
-      onBlur={(e) => {
-        if (isMoving) {
-          setIsMoving(false);
-          props.moveTask(props.id, 0, false);
-        }
-      }}
       ref={setNodeRef}
       style={style}
       {...attributes}
