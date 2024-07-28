@@ -29,7 +29,6 @@ import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
 import pinned from '../images/pinned.svg';
 import unpinned from '../images/unpinned.svg';
-import noimageIcon from '../images/noimage.svg';
 import imageIcon from '../images/image.svg';
 
 function NewChecklistItem(data?): ListItem {
@@ -289,26 +288,22 @@ function Form(props) {
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newImage = e.target.files ? e.target.files[0] : undefined;
-    if (!newTask) {
-      props.updateData(props.id, null, newImage);
-    } else {
-      setImagePreview(newImage);
-      const reader = new FileReader();
-      reader.onload = () => setImage(reader.result as string);
-      if (newImage) reader.readAsDataURL(newImage);
-    }
+    setImagePreview(newImage);
+    const reader = new FileReader();
+    reader.onload = () => setImage(reader.result as string);
+    if (newImage) reader.readAsDataURL(newImage);
+    if (!newTask) props.updateData(props.id, null, newImage);
   }
 
   const previewImage = () => {
-    const src = image ?? noimageIcon;
     return (
       <img
-        src={src}
+        src={image}
         alt="Uploaded image"
         aria-describedby={`edit-${props.id}`}
         className="task-image"
       />
-    ); //TODO not showing up until after reload on updateTask
+    );
   };
 
   const editingTools = (
@@ -377,7 +372,7 @@ function Form(props) {
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
     if (!newTask) handleSubmit();
-  }, [checklistData]);
+  }, [checklistData, image]);
 
   return (
     <li
