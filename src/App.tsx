@@ -70,15 +70,13 @@ export default function App() {
   }
 
   function toggleTaskDone(id, done) {
-    console.log(done);
-
     API.updateTask(id, { done: !done }).then(refreshTasks);
-    setNarrator('Task marked done. Next task now focused.');
+    setNarrator(`Task marked ${done ? 'un' : ''}done. Next task now focused.`);
   }
 
   function toggleTaskPinned(id, pinned) {
     API.updateTask(id, { pinned: !pinned }).then(refreshTasks);
-    setNarrator(`Task pinned. Next task now focused.`);
+    setNarrator(`Task ${pinned ? 'un' : ''}pinned. Next task now focused.`);
   }
 
   function dragTask(event) {
