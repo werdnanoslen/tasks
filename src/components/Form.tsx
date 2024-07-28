@@ -232,7 +232,6 @@ function Form(props) {
       transition,
     };
     return (
-      //TODO controls aren't working!
       <li key={item.id} ref={setNodeRef} style={style}>
         <div className="list-controls">
           <button
@@ -372,7 +371,7 @@ function Form(props) {
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
     if (!newTask) handleSubmit();
-  }, [checklistData, image]);
+  }, [checklistData]);
 
   return (
     <li
@@ -402,7 +401,7 @@ function Form(props) {
       >
         {props.error && <div role="status">{props.error}</div>}
         {(image || imagePreview) && previewImage()}
-        {checklist ? checklistGroup() : dataArea(props)}
+        {checklist ? checklistGroup() : dataArea()}
         <div className="btn-group">
           {newTask
             ? addingTools
