@@ -111,6 +111,15 @@ export default function App() {
           });
         })
         .catch(console.error);
+    } else {
+      API.updateTask(id, updates).then((ret) => {
+        if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
+          setError('Task content is too long. No changes have been saved.');
+        } else {
+          setError('');
+          refreshTasks();
+        }
+      });
     }
   }
 
