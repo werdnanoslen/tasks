@@ -33,6 +33,11 @@ export async function create(task: Task): Promise<number> {
 
 async function _delete(id) {
   const task = await getTask(id);
+  if (task.image) {
+    const filename: string = task.image.split(
+      `${process.env.UPLOAD_WEBROOT}/`
+    )[1];
+  }
   await task.destroy();
 }
 export { _delete as delete };

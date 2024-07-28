@@ -5,7 +5,6 @@ import errorHandler from './_middleware/error-handler.js';
 import { initialize } from './_helpers/db.js';
 import userRouter from './users/users.controller.js';
 import taskRouter from './tasks/tasks.controller.js';
-import uploadRouter from './uploads/uploads.controller.js';
 import {
   create as createUser,
   deleteAll as deleteAllUsers,
@@ -14,7 +13,6 @@ import {
   create as createTask,
   deleteAll as deleteAllTasks,
 } from './tasks/task.service.js';
-import { deleteAll as deleteAllUploads } from './uploads/upload.service.js';
 
 const APP: Application = express();
 APP.use(express.urlencoded({ extended: false }));
@@ -45,7 +43,6 @@ APP.use(express.static(process.env.UPLOAD_PATH));
 
 APP.use('/users', userRouter);
 APP.use('/tasks', taskRouter);
-APP.use('/uploads', uploadRouter);
 APP.use(errorHandler);
 
 initialize()
@@ -53,7 +50,6 @@ initialize()
     // Load demo data in dev environment
     if (process.env.NODE_ENV === 'dev' && process.argv.includes('demo')) {
       await deleteAllUsers();
-      await deleteAllUploads();
       await deleteAllTasks();
 
       const user = await createUser({
@@ -94,7 +90,7 @@ initialize()
         done: false,
         pinned: false,
         user_id: user.id,
-        image: 'storage/demo-image.svg',
+        image: `${process.env.UPLOAD_WEBROOT}/demo-image.svg`,
       });
     }
   })

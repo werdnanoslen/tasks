@@ -1,14 +1,15 @@
 import express from 'express';
 import authorize from '../_middleware/authorize.js';
 import * as taskService from './task.service.js';
+import upload from '../_middleware/upload.js';
 
 const taskRouter = express.Router();
 
 taskRouter.get('/', authorize(), getTasks);
 taskRouter.post('/', authorize(), addTask);
+taskRouter.post('/image/', authorize(), upload.single('upload'), addImage);
 taskRouter.delete('/:id', authorize(), deleteTask);
 taskRouter.put('/:id', authorize(), updateTask);
-taskRouter.put('/', authorize(), replaceTasks);
 taskRouter.put('/:id/move/:newPosition', authorize(), moveTask);
 
 export default taskRouter;
@@ -26,6 +27,10 @@ export async function addTask(req, res, next) {
     .create(task)
     .then((ret) => res.json(ret))
     .catch(next);
+}
+
+async function addImage(req, res, next) {
+  res.json(`${process.env.UPLOAD_WEBROOT}/${req.file.filename}`);
 }
 
 async function deleteTask(req, res, next) {
@@ -49,16 +54,4 @@ async function moveTask(req, res, next) {
     .move(id, newPos)
     .then((ret) => res.json(ret))
     .catch(next);
-}
-
-async function replaceTasks(req, res, next) {
-  await taskService.truncateTasks();
-  let affectedRows = 0;
-  for (const task of req.body) {
-    await taskService
-      .create(task)
-      .then((ret) => (affectedRows += ret))
-      .catch(console.error);
-  }
-  res.json(affectedRows);
 }

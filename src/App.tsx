@@ -18,7 +18,6 @@ import Form from './components/Form';
 import FilterButton from './components/FilterButton';
 import { Task, ListItem } from './tasks/task.model';
 import * as API from './api';
-import { Upload } from './uploads/upload.model';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -97,7 +96,7 @@ export default function App() {
     if (image) {
       const imageForm = new FormData();
       imageForm.append('upload', image);
-      API.addUpload(imageForm)
+      API.addImage(imageForm)
         .then((imagePath) => {
           updates.image = imagePath;
           API.updateTask(id, updates).then((ret) => {
@@ -124,7 +123,7 @@ export default function App() {
     if (image) {
       const imageForm = new FormData();
       imageForm.append('upload', image);
-      API.addUpload(imageForm)
+      API.addImage(imageForm)
         .then((imagePath) => {
           newTask.image = imagePath;
           API.addTask(newTask).then(refreshTasks).catch(console.error);

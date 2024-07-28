@@ -185,6 +185,7 @@ function Form(props) {
   }
 
   function moveTask(e) {
+    //TODO remove?
     if (newTask) return;
     switch (e.key) {
       case ' ':
@@ -237,6 +238,7 @@ function Form(props) {
   }
 
   const ChecklistItem = (props: { children: ListItem }) => {
+    //TODO can't edit checklist items now!
     const item = props.children;
     const {
       attributes,
@@ -321,9 +323,14 @@ function Form(props) {
 
   const previewImage = () => {
     const src = image ?? noimageIcon;
-    const alt =
-      image || imagePreview ? 'TODO' : 'This image cannot be displayed';
-    return <img src={src} alt={alt} className="task-image" />; //TODO not showing up until after reload on updateTask
+    return (
+      <img
+        src={src}
+        alt="Uploaded image"
+        aria-describedby={`edit-${props.id}`}
+        className="task-image"
+      />
+    ); //TODO not showing up until after reload on updateTask
   };
 
   const editingTools = (
@@ -429,7 +436,7 @@ function Form(props) {
       >
         {props.error && <div role="status">{props.error}</div>}
         {(image || imagePreview) && previewImage()}
-        {checklist ? checklistGroup() : dataArea()}
+        {checklist ? checklistGroup() : dataArea(props)}
         <div className="btn-group">
           {newTask
             ? addingTools
