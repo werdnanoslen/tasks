@@ -19,9 +19,9 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
+  useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ListItem } from '../tasks/task.model';
 import checkbox from '../images/checkbox.svg';
@@ -109,7 +109,7 @@ function Form(props) {
     }
   }
 
-  async function deleteListItem(id: string, e: React.MouseEvent) {
+  async function deleteListItem(id: string) {
     const remainingItems = checklistData.filter((item) => id !== item.id);
     if (remainingItems.length === 0) {
       setChecklistData(iChecklistData);
@@ -214,9 +214,8 @@ function Form(props) {
     }
   }
 
-  const ChecklistItem = (props: { children: ListItem }) => {
+  const ChecklistItem = (item: ListItem) => {
     //TODO can't edit checklist items now!
-    const item = props.children;
     const {
       attributes,
       listeners,
@@ -255,7 +254,7 @@ function Form(props) {
         {dataArea(item, item.id, item.done)}
         <button
           className="btn btn__icon btn__close"
-          onClick={(e) => deleteListItem(item.id, e)}
+          onClick={() => deleteListItem(item.id)}
         >
           <span className="ascii-icon" aria-hidden="true">
             {String.fromCharCode(10005)}
@@ -277,9 +276,7 @@ function Form(props) {
           items={checklistData.map((i) => i.id)}
           strategy={verticalListSortingStrategy}
         >
-          {checklistData.map((item) => (
-            <ChecklistItem key={item.id}>{item}</ChecklistItem>
-          ))}
+          {checklistData.map(ChecklistItem)}
         </SortableContext>
       </DndContext>
     );
@@ -371,7 +368,7 @@ function Form(props) {
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
     if (!newTask) handleSubmit();
-  }, [checklistData]);
+  }, [checklistData, lastRef, newTask]);
 
   return (
     <li
