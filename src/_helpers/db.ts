@@ -14,6 +14,7 @@ export async function initialize() {
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
+    socketPath: '/tmp/mysql.sock'
   };
   const pool = mysql2.createPool(poolOptions);
   await pool.query(

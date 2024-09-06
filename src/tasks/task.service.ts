@@ -1,5 +1,5 @@
 import db from '../_helpers/db.js';
-import { Task } from './task.model.js';
+import { ListItem, Task } from './task.model.js';
 import { Op } from 'sequelize';
 
 export async function getAll(userID: number): Promise<Task[]> {
@@ -27,18 +27,24 @@ export async function create(task: Task): Promise<number> {
       return ret;
     })
     .catch((e) => {
-      if (e.errno !== 1062) console.error;
+      if (e.errno !== 1062) console.error(e);
     });
 }
 
-async function _delete(id) {
-  const task = await getTask(id);
-  if (task.image) {
-    const filename: string = task.image.split(
-      `${process.env.UPLOAD_WEBROOT}/`
-    )[1];
+async function _delete(taskId, itemId?) {
+  const task = await getTask(taskId);
+  // if (task.image) {
+  //   const filename: string = task.image.split(
+  //     `${process.env.UPLOAD_WEBROOT}/`
+  //   )[1];
+  // }
+  if (itemId) {
+    const items: ListItem[] = JSON.parse(task.data);    
+    const filteredItems = items.filter((i) => i.id !== itemId);
+    await update(taskId, { data: filteredItems });
+  } else {
+    await task.destroy();
   }
-  await task.destroy();
 }
 export { _delete as delete };
 
@@ -49,7 +55,7 @@ export { _deleteAll as deleteAll };
 
 export async function update(id: string, fields: Partial<Task>) {
   if (fields.data && fields.data !== 'string') {
-    fields.data = JSON.stringify(fields.data);
+    fields.data = JSON.stringify(fields.data);    
   }
   const task = await getTask(id);
   await task.update(fields);
@@ -85,6 +91,6 @@ export async function truncateTasks() {
 
 async function getTask(id: string) {
   const task = await db.Task.findByPk(id);
-  if (!task) throw 'Task not found';
+  if (!task) throw Error('Task not found');
   return task;
 }

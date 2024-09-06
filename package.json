@@ -18,7 +18,7 @@
     "react-dom": "^18.2.0",
     "react-sortablejs": "^6.1.4",
     "react-textarea-autosize": "^8.5.3",
-    "sequelize": "^6.37.1"
+    "sequelize": "^6.37.3"
   },
   "scripts": {
     "start": "react-scripts start",

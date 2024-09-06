@@ -124,7 +124,7 @@ export default function App() {
   function addTask(data: string | ListItem[], image?: File) {
     let newTask: Task = {
       position: tasks.length + 1,
-      id: self.crypto.randomUUID(),
+      id: crypto.randomUUID(),
       data: data ?? '',
       done: false,
       pinned: false,
@@ -141,6 +141,13 @@ export default function App() {
     } else {
       API.addTask(newTask).then(refreshTasks);
     }
+  }
+
+  function deleteListItem(taskId: string, itemId: string) {
+    API.deleteListItem(taskId, itemId)
+      .then(refreshTasks)
+      .catch((e) => console.error(e.response.data.message));
+    setNarrator('Deleted list item');
   }
 
   function deleteTask(id: string) {
@@ -172,7 +179,7 @@ export default function App() {
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }
-  }, [tasks, prevTaskLength, narrator]);
+  }, [tasks, prevTaskLength, narrator, authed]);
 
   const emptyAll = tasks.length === 0;
   const emptyDone =
@@ -196,6 +203,7 @@ export default function App() {
       toggleTaskDone={toggleTaskDone}
       pinned={task.pinned}
       toggleTaskPinned={toggleTaskPinned}
+      deleteListItem={deleteListItem}
       deleteTask={deleteTask}
       error={error}
       setNarrator={setNarrator}

@@ -83,7 +83,7 @@ form {
   padding: 1.25rem;
   padding-bottom: 0;
 }
-form.isEditing {
+form:focus-within {
   border: 1px lightblue outset;
   outline: 1px lightblue solid;
 }
@@ -147,7 +147,7 @@ input[type='checkbox']:disabled {
   cursor: not-allowed;
 }
 input[type='checkbox']:checked,
-.done {
+li.done textarea {
   color: rgb(157, 157, 157);
   text-decoration: line-through;
 }
