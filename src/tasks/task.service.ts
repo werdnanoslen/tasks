@@ -39,7 +39,7 @@ async function _delete(taskId, itemId?) {
   //   )[1];
   // }
   if (itemId) {
-    const items: ListItem[] = JSON.parse(task.data);    
+    const items: ListItem[] = JSON.parse(task.data);
     const filteredItems = items.filter((i) => i.id !== itemId);
     await update(taskId, { data: filteredItems });
   } else {
@@ -55,7 +55,7 @@ export { _deleteAll as deleteAll };
 
 export async function update(id: string, fields: Partial<Task>) {
   if (fields.data && fields.data !== 'string') {
-    fields.data = JSON.stringify(fields.data);    
+    fields.data = JSON.stringify(fields.data);
   }
   const task = await getTask(id);
   await task.update(fields);

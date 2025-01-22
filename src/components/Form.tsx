@@ -87,7 +87,7 @@ function Form(props) {
   }
 
   async function deleteListItem(id: string) {
-    await props.deleteListItem(props.id, id)
+    await props.deleteListItem(props.id, id);
   }
 
   function toggleListItemDone(id: string) {
@@ -192,6 +192,7 @@ function Form(props) {
               toggleListItemDone={toggleListItemDone}
               data={item.data}
               done={item.done}
+              key={item.id}
             >
               <DataArea
                 data={item.data}

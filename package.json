@@ -25,7 +25,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "mysql.server start && nodemon --trace-warnings --require dotenv/config ./dist/server.js",
+    "server": "tsc -w & nodemon --trace-warnings --require dotenv/config ./dist/server.js",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
     "format:fix": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\""
   },
