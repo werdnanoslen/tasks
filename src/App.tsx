@@ -124,7 +124,7 @@ export default function App() {
   function addTask(data: string | ListItem[], image?: File) {
     let newTask: Task = {
       position: tasks.length + 1,
-      id: self.crypto.randomUUID(),
+      id: crypto.randomUUID(),
       data: data ?? '',
       done: false,
       pinned: false,
@@ -172,7 +172,7 @@ export default function App() {
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }
-  }, [tasks, prevTaskLength, narrator]);
+  }, [tasks, prevTaskLength, narrator, authed]);
 
   const emptyAll = tasks.length === 0;
   const emptyDone =

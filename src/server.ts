@@ -90,7 +90,7 @@ initialize()
         done: false,
         pinned: false,
         user_id: user.id,
-        image: `${process.env.UPLOAD_WEBROOT}/demo-image.svg`,
+        image: `/public/demo-screenshot.png`,
       });
     }
   })

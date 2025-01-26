@@ -27,7 +27,7 @@ export async function create(task: Task): Promise<number> {
       return ret;
     })
     .catch((e) => {
-      if (e.errno !== 1062) console.error;
+      if (e.errno !== 1062) console.error(e);
     });
 }
 
@@ -85,6 +85,6 @@ export async function truncateTasks() {
 
 async function getTask(id: string) {
   const task = await db.Task.findByPk(id);
-  if (!task) throw 'Task not found';
+  if (!task) throw Error('Task not found');
   return task;
 }
