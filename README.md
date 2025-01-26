@@ -1,8 +1,6 @@
-# Tasks
-
 A web app for keeping track of tasks
 
-<img alt="Demo on phone" src="demo-screenshot.png" width="500px"/>
+<img alt="Demo on phone" src="public/demo-screenshot.png" width="500px"/>
 
 
 # Setup
