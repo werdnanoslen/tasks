@@ -29,6 +29,14 @@ export async function deleteTask(id: string): Promise<void> {
   return response.data;
 }
 
+export async function deleteListItem(
+  taskId: string,
+  itemId: string
+): Promise<void> {
+  const response = await client.delete(`/tasks/${taskId}/${itemId}`);
+  return response.data;
+}
+
 export async function updateTask(
   id: string,
   fields: Partial<Task>

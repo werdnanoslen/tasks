@@ -18,14 +18,7 @@ import Form from './components/Form';
 import FilterButton from './components/FilterButton';
 import { Task, ListItem } from './tasks/task.model';
 import * as API from './api';
-
-function usePrevious(value) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
+import usePrevious from './hooks';
 
 const FILTER_MAP = {
   Doing: (task: Task) => !task.done,
@@ -151,6 +144,13 @@ export default function App() {
     setNarrator('Deleted task');
   }
 
+  function deleteListItem(taskId: string, itemId: string) {
+    API.deleteListItem(taskId, itemId)
+      .then(refreshTasks)
+      .catch((e) => console.error(e.response.data.message));
+    setNarrator('Deleted list item');
+  }
+
   const filterList = FILTER_TASKS.map((data) => (
     <FilterButton
       key={data}
@@ -187,7 +187,7 @@ export default function App() {
 
   const formSection = (task: Task) => (
     <Form
-      key={task.id}
+      key={task.data}
       id={task.id}
       image={task.image}
       data={task.data}
@@ -196,6 +196,7 @@ export default function App() {
       toggleTaskDone={toggleTaskDone}
       pinned={task.pinned}
       toggleTaskPinned={toggleTaskPinned}
+      deleteListItem={deleteListItem}
       deleteTask={deleteTask}
       error={error}
       setNarrator={setNarrator}

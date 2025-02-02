@@ -23,6 +23,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import usePrevious from '../hooks';
 import { ListItem } from '../tasks/task.model';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
@@ -33,7 +34,7 @@ import imageIcon from '../images/image.svg';
 
 function NewChecklistItem(data?): ListItem {
   return {
-    id: self.crypto.randomUUID(),
+    id: crypto.randomUUID(),
     data: data ? data : '',
     done: false,
   };
@@ -63,10 +64,11 @@ function Form(props) {
     ? props.data
     : [NewChecklistItem()];
   const [checklistData, setChecklistData] = useState(iChecklistData);
+  const [hasChanges, setHasChanges] = useState(false);
+  const firstRender = useRef(true);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newItemId, setNewItemId] = useState('');
-  const [isMoving, setIsMoving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
   const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
@@ -75,7 +77,7 @@ function Form(props) {
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
 
-  function handleSubmit(e?: SyntheticEvent) {
+  const handleSubmit = useCallback((e?: SyntheticEvent) => {
     if (e) e.preventDefault();
     const newData = checklist ? checklistData : data;
     if (newTask) {
@@ -84,14 +86,15 @@ function Form(props) {
       setChecklistData([NewChecklistItem()]);
       setImagePreview(undefined);
       setImage(undefined);
-    } else {
+    } else if (hasChanges) {
       props.updateData(props.id, newData, imagePreview);
     }
     setIsEditing(false);
-  }
+  }, [checklist, checklistData, data, newTask, imagePreview, hasChanges, props]);
 
   function handleBlur(e: React.FocusEvent) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
+      // TODO if no change, return
       checklist ? setChecklistData(iChecklistData) : setData(props.data);
       setChecklist(iChecklist);
       setIsEditing(false);
@@ -110,14 +113,7 @@ function Form(props) {
   }
 
   async function deleteListItem(id: string) {
-    const remainingItems = checklistData.filter((item) => id !== item.id);
-    if (remainingItems.length === 0) {
-      setChecklistData(iChecklistData);
-      setChecklist(false);
-      setData('');
-    } else {
-      setChecklistData(remainingItems);
-    }
+    await props.deleteListItem(props.id, id);
   }
 
   function toggleListItemDone(id: string) {
@@ -125,7 +121,7 @@ function Form(props) {
     for (let i = 0; i < checklistData.length; i++) {
       const item = checklistData[i];
       if (id === item.id) {
-        updatedItems.splice(i, 1)[0];
+        updatedItems.splice(i, 1);
         const nowDone = !item.done;
         const newItem = { ...item, done: nowDone };
         if (nowDone) {
@@ -295,7 +291,7 @@ function Form(props) {
     return (
       <img
         src={image}
-        alt="Uploaded image"
+        alt="Upload"
         aria-describedby={`edit-${props.id}`}
         className="task-image"
       />
@@ -365,10 +361,33 @@ function Form(props) {
     transition,
   };
 
+  const prevChecklistData = usePrevious(checklistData);
+  const prevData = usePrevious(data);
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+    } else {
+      if (checklist && prevChecklistData !== checklistData) {
+        console.log('checklistData changed', prevChecklistData, checklistData);
+        setHasChanges(true);
+      } else if (!checklist && prevData !== data) {
+        console.log('data changed', prevData, data);
+        setHasChanges(true);
+      } else {
+        console.log('no changes');
+        setHasChanges(false)
+      }
+    }
+  }, [checklist, checklistData, prevChecklistData, data, prevData]);
+
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
     if (!newTask) handleSubmit();
-  }, [checklistData, lastRef, newTask]);
+    if (checklistData.length === 0) {
+      setChecklist(false);
+      setData('');
+    }
+  }, [checklistData, handleSubmit, newTask]);
 
   return (
     <li
@@ -379,7 +398,6 @@ function Form(props) {
         transition,
         {
           hide: props.hide,
-          moving: isMoving,
         }
       )}
       aria-label={`${checklist ? `checklist` : ``} task`}

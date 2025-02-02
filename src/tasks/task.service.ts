@@ -1,5 +1,5 @@
 import db from '../_helpers/db.js';
-import { Task } from './task.model.js';
+import { ListItem, Task } from './task.model.js';
 import { Op } from 'sequelize';
 
 export async function getAll(userID: number): Promise<Task[]> {
@@ -12,6 +12,7 @@ export async function getAll(userID: number): Promise<Task[]> {
       task.data = JSON.parse(task.data);
     } catch {}
     if (typeof task.data === 'number') task.data = '' + task.data;
+    return task;
   });
   return tasks;
 }
@@ -31,14 +32,20 @@ export async function create(task: Task): Promise<number> {
     });
 }
 
-async function _delete(id) {
-  const task = await getTask(id);
-  if (task.image) {
-    const filename: string = task.image.split(
-      `${process.env.UPLOAD_WEBROOT}/`
-    )[1];
+async function _delete(taskId, itemId?) {
+  const task = await getTask(taskId);
+  // if (task.image) { //TODO
+  //   const filename: string = task.image.split(
+  //     `${process.env.UPLOAD_WEBROOT}/`
+  //   )[1];
+  // }
+  if (itemId) { // delete list item
+    const items: ListItem[] = JSON.parse(task.data);
+    const filteredItems = items.filter((i) => i.id !== itemId);
+    await update(taskId, { data: filteredItems });
+  } else { // delete whole task
+    await task.destroy();
   }
-  await task.destroy();
 }
 export { _delete as delete };
 

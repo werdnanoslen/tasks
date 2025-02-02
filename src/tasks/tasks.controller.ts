@@ -9,6 +9,7 @@ taskRouter.get('/', authorize(), getTasks);
 taskRouter.post('/', authorize(), addTask);
 taskRouter.post('/image/', authorize(), upload.single('upload'), addImage);
 taskRouter.delete('/:id', authorize(), deleteTask);
+taskRouter.delete('/:taskId/:itemId', authorize(), deleteListItem);
 taskRouter.put('/:id', authorize(), updateTask);
 taskRouter.put('/:id/move/:newPosition', authorize(), moveTask);
 
@@ -36,6 +37,13 @@ async function addImage(req, res, next) {
 async function deleteTask(req, res, next) {
   taskService
     .delete(req.params.id)
+    .then((ret) => res.json(ret))
+    .catch(next);
+}
+
+async function deleteListItem(req, res, next) {
+  taskService
+    .delete(req.params.taskId, req.params.itemId)
     .then((ret) => res.json(ret))
     .catch(next);
 }

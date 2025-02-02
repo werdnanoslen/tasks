@@ -75,7 +75,32 @@ initialize()
           },
           {
             id: crypto.randomUUID(),
-            data: 'You can cross sub-tasks out',
+            data: '1',
+            done: true,
+          },
+          {
+            id: crypto.randomUUID(),
+            data: '2',
+            done: true,
+          },
+          {
+            id: crypto.randomUUID(),
+            data: '3',
+            done: true,
+          },
+          {
+            id: crypto.randomUUID(),
+            data: '4',
+            done: true,
+          },
+          {
+            id: crypto.randomUUID(),
+            data: '5',
+            done: true,
+          },
+          {
+            id: crypto.randomUUID(),
+            data: '6',
             done: true,
           },
         ],
