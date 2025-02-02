@@ -25,6 +25,7 @@ export async function initialize() {
     poolOptions.password,
     {
       dialect: 'mysql',
+      logging: false,
     }
   );
   DB.User = modelUser(sequelize);
