@@ -64,8 +64,6 @@ function Form(props) {
     ? props.data
     : [NewChecklistItem()];
   const [checklistData, setChecklistData] = useState(iChecklistData);
-  const [hasChanges, setHasChanges] = useState(false);
-  const firstRender = useRef(true);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newItemId, setNewItemId] = useState('');
@@ -77,20 +75,24 @@ function Form(props) {
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
 
-  const handleSubmit = useCallback((e?: SyntheticEvent) => {
+  const prevChecklistData = usePrevious(checklistData);
+  const prevData = usePrevious(data);
+
+  function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
-    const newData = checklist ? checklistData : data;
+    const prevStuff = checklist ? prevChecklistData : prevData;
+    const newStuff = checklist ? checklistData : data;
     if (newTask) {
-      props.addTask(newData, imagePreview);
+      props.addTask(newStuff, imagePreview);
       setData('');
       setChecklistData([NewChecklistItem()]);
       setImagePreview(undefined);
       setImage(undefined);
-    } else if (hasChanges) {
-      props.updateData(props.id, newData, imagePreview);
+    } else if (prevStuff !== newStuff) {
+      props.updateData(props.id, newStuff, imagePreview);
     }
     setIsEditing(false);
-  }, [checklist, checklistData, data, newTask, imagePreview, hasChanges, props]);
+  }
 
   function handleBlur(e: React.FocusEvent) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
@@ -150,7 +152,6 @@ function Form(props) {
     } else {
       setData(input);
     }
-    if (!newTask) handleSubmit();
   }
 
   function toggleChecklist() {
@@ -210,8 +211,7 @@ function Form(props) {
     }
   }
 
-  const ChecklistItem = (item: ListItem) => {
-    //TODO can't edit checklist items now!
+  const ChecklistItem = (item: ListItem, index: number) => {
     const {
       attributes,
       listeners,
@@ -247,7 +247,7 @@ function Form(props) {
             onChange={() => toggleListItemDone(item.id)}
           />
         </div>
-        {dataArea(item, item.id, item.done)}
+        {dataArea(item, index, item.done)}
         <button
           className="btn btn__icon btn__close"
           onClick={() => deleteListItem(item.id)}
@@ -272,7 +272,7 @@ function Form(props) {
           items={checklistData.map((i) => i.id)}
           strategy={verticalListSortingStrategy}
         >
-          {checklistData.map(ChecklistItem)}
+          {checklistData.map((item, i) => ChecklistItem(item, i))}
         </SortableContext>
       </DndContext>
     );
@@ -361,33 +361,13 @@ function Form(props) {
     transition,
   };
 
-  const prevChecklistData = usePrevious(checklistData);
-  const prevData = usePrevious(data);
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-    } else {
-      if (checklist && prevChecklistData !== checklistData) {
-        console.log('checklistData changed', prevChecklistData, checklistData);
-        setHasChanges(true);
-      } else if (!checklist && prevData !== data) {
-        console.log('data changed', prevData, data);
-        setHasChanges(true);
-      } else {
-        console.log('no changes');
-        setHasChanges(false)
-      }
-    }
-  }, [checklist, checklistData, prevChecklistData, data, prevData]);
-
   useEffect(() => {
     if (lastRef.current) lastRef.current.focus();
-    if (!newTask) handleSubmit();
     if (checklistData.length === 0) {
       setChecklist(false);
       setData('');
     }
-  }, [checklistData, handleSubmit, newTask]);
+  }, [checklistData]);
 
   return (
     <li
