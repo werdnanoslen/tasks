@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from 'react';
 import classNames from 'classnames';
-import TextareaAutosize from 'react-textarea-autosize';
 import {
   DndContext,
   closestCenter,
@@ -25,6 +24,8 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import usePrevious from '../hooks';
 import { ListItem } from '../tasks/task.model';
+import ChecklistItem from './ChecklistItem';
+import DataArea from './DataArea';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
@@ -69,7 +70,6 @@ function Form(props) {
   const [newItemId, setNewItemId] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
-  const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const lastRef = useRef<HTMLTextAreaElement>(null);
   const delRef = useCallback((e) => (e ? e.focus() : null), []);
   const completeLabel = props.done ? 'Restore' : 'Complete';
@@ -143,9 +143,9 @@ function Form(props) {
     }
   }
 
-  function handleInput(e, i: number) {
+  function handleInput(e, i?: number) {
     const input = e.target.value;
-    if (checklist) {
+    if (i) {
       let checklistDataCopy = [...checklistData];
       checklistDataCopy[i] = { ...checklistDataCopy[i], data: input };
       setChecklistData(checklistDataCopy);
@@ -180,26 +180,6 @@ function Form(props) {
     !newTask && props.updateData(props.id, newData);
   }
 
-  // TODO if just url, show preview and turn into link
-  function dataArea(item?, index?, done?) {
-    return (
-      <TextareaAutosize
-        id={`edit-${item ? item.id : index}`}
-        name="data"
-        className={classNames('input', { done: done })}
-        value={item ? item.data : data}
-        onKeyDown={(e) => addChecklistItem(e, index)}
-        onInput={(e) => handleInput(e, index)}
-        onFocus={() => setIsEditing(true)}
-        placeholder={inputLabel}
-        aria-label={inputLabel}
-        rows={1}
-        ref={item && item.id === newItemId ? lastRef : undefined}
-        maxLength={MAXLENGTH}
-      />
-    );
-  }
-
   function dragChecklistItem(event) {
     const { active, over } = event;
     if (active.id !== over.id) {
@@ -208,58 +188,9 @@ function Form(props) {
         const newIndex = items.findIndex(({ id }) => id === over.id);
         return arrayMove(items, oldIndex, newIndex);
       });
+      handleSubmit();
     }
   }
-
-  const ChecklistItem = (item: ListItem, index: number) => {
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      setActivatorNodeRef,
-      transform,
-      transition,
-    } = useSortable({
-      id: item.id,
-    });
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
-    return (
-      <li key={item.id} ref={setNodeRef} style={style}>
-        <div className="list-controls">
-          <button
-            className="btn btn__icon btn__drag"
-            ref={setActivatorNodeRef}
-            {...attributes}
-            {...listeners}
-          >
-            <span className="visually-hidden">Move list item</span>
-            <span className="ascii-icon" aria-hidden="true">
-              {String.fromCharCode(8661)}
-            </span>
-          </button>
-          <input
-            type="checkbox"
-            checked={item.done}
-            aria-label="done"
-            onChange={() => toggleListItemDone(item.id)}
-          />
-        </div>
-        {dataArea(item, index, item.done)}
-        <button
-          className="btn btn__icon btn__close"
-          onClick={() => deleteListItem(item.id)}
-        >
-          <span className="ascii-icon" aria-hidden="true">
-            {String.fromCharCode(10005)}
-          </span>
-          <span className="visually-hidden">Delete list item</span>
-        </button>
-      </li>
-    );
-  };
 
   function checklistGroup() {
     return (
@@ -272,7 +203,27 @@ function Form(props) {
           items={checklistData.map((i) => i.id)}
           strategy={verticalListSortingStrategy}
         >
-          {checklistData.map((item, i) => ChecklistItem(item, i))}
+          {checklistData.map((item, i) => (
+            <ChecklistItem
+              item={item}
+              deleteListItem={deleteListItem}
+              toggleListItemDone={toggleListItemDone}
+              key={item.id}
+            >
+              <DataArea
+                addChecklistItem={addChecklistItem}
+                handleInput={handleInput}
+                setIsEditing={setIsEditing}
+                item={item}
+                index={i}
+                done={item.done}
+                data={item.data}
+                newTask={newTask}
+                newItemId={newItemId}
+                lastRef={lastRef}
+              />
+            </ChecklistItem>
+          ))}
         </SortableContext>
       </DndContext>
     );
@@ -396,7 +347,19 @@ function Form(props) {
       >
         {props.error && <div role="status">{props.error}</div>}
         {(image || imagePreview) && previewImage()}
-        {checklist ? checklistGroup() : dataArea()}
+        {checklist ? checklistGroup() : 
+          <DataArea 
+            addChecklistItem={addChecklistItem}
+            handleInput={handleInput}
+            setIsEditing={setIsEditing}
+            item={props.item}
+            done={props.done}
+            data={props.data}
+            newTask={newTask}
+            newItemId={newItemId}
+            lastRef={lastRef}
+          />
+        }
         <div className="btn-group">
           {newTask
             ? addingTools
