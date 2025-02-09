@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  SyntheticEvent,
-  useCallback,
-} from 'react';
+import React, { useState, useEffect, SyntheticEvent, useCallback } from 'react';
 import classNames from 'classnames';
 import {
   DndContext,
@@ -67,10 +61,8 @@ function Form(props) {
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [newItemId, setNewItemId] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
-  const newItemRef = useRef<HTMLTextAreaElement>(null);
   const delRef = useCallback((e) => (e ? e.focus() : null), []);
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
@@ -109,7 +101,7 @@ function Form(props) {
         e.preventDefault();
         const newList = checklistData.slice();
         const newItem = NewChecklistItem();
-        setNewItemId(newItem.id);
+        props.setNewItemId(newItem.id);
         newList.splice(i + 1, 0, newItem);
         setChecklistData(newList);
       } else if (e.key === 'Backspace') {
@@ -229,7 +221,7 @@ function Form(props) {
                 done={item.done}
                 data={item.data}
                 newTask={newTask}
-                newItemRef={item.id === newItemId ? newItemRef : undefined}
+                focusThis={props.newItemId === item.id}
               />
             </ChecklistItem>
           ))}
@@ -330,7 +322,6 @@ function Form(props) {
   };
 
   useEffect(() => {
-    newItemRef?.current?.focus();
     if (checklistData.length === 0) {
       setChecklist(false);
       setData('');

@@ -33,6 +33,7 @@ export default function App() {
   const [narrator, setNarrator] = useState('');
   const [error, setError] = useState('');
   const [authed, setAuthed] = useState(false);
+  const [newItemId, setNewItemId] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -200,6 +201,8 @@ export default function App() {
       deleteTask={deleteTask}
       error={error}
       setNarrator={setNarrator}
+      newItemId={newItemId}
+      setNewItemId={setNewItemId}
     />
   );
   const allForms = (

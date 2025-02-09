@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 
 interface DataAreaProps {
@@ -17,7 +17,7 @@ interface DataAreaProps {
   done?: boolean;
   data?: string;
   newTask?: boolean;
-  newItemRef?: React.RefObject<HTMLTextAreaElement>;
+  focusThis?: boolean;
 }
 // TODO if just url, show preview and turn into link
 function DataArea({
@@ -29,10 +29,11 @@ function DataArea({
   done,
   data,
   newTask,
-  newItemRef,
+  focusThis,
 }: DataAreaProps) {
   const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const MAXLENGTH = 1000;
+  const newItemRef = useRef<HTMLTextAreaElement>(null);
 
   if ((undefined === updateChecklistItem) !== (undefined === index)) {
     console.error(
@@ -41,6 +42,10 @@ function DataArea({
     );
   }
   const isAList = updateChecklistItem && undefined !== index;
+
+  useEffect(() => {
+    newItemRef.current?.focus();
+  }, []);
 
   return (
     <TextareaAutosize
@@ -54,7 +59,7 @@ function DataArea({
       placeholder={inputLabel}
       aria-label={inputLabel}
       rows={1}
-      ref={newItemRef}
+      ref={focusThis ? newItemRef : null}
       autoFocus={newItemRef ? true : false}
       maxLength={MAXLENGTH}
     />
