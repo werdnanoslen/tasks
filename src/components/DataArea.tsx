@@ -9,7 +9,7 @@ interface DataAreaProps {
     index?: number
   ) => void;
   setIsEditing: (isEditing: boolean) => void;
-  addChecklistItem?: (
+  updateChecklistItem?: (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
     index: number
   ) => void;
@@ -24,7 +24,7 @@ function DataArea({
   id,
   handleInput,
   setIsEditing,
-  addChecklistItem,
+  updateChecklistItem,
   index,
   done,
   data,
@@ -34,13 +34,13 @@ function DataArea({
   const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
   const MAXLENGTH = 1000;
 
-  if ((undefined === addChecklistItem) !== (undefined === index)) {
+  if ((undefined === updateChecklistItem) !== (undefined === index)) {
     console.error(
-      'addChecklistItem and index must all be defined or undefined, id:',
+      'updateChecklistItem and index must all be defined or undefined, id:',
       id
     );
   }
-  const isAList = addChecklistItem && undefined !== index;
+  const isAList = updateChecklistItem && undefined !== index;
 
   return (
     <TextareaAutosize
@@ -48,7 +48,7 @@ function DataArea({
       name="data"
       className={classNames('input', { done: done })}
       value={data}
-      onKeyDown={(e) => isAList && addChecklistItem(e, index)}
+      onKeyDown={(e) => isAList && updateChecklistItem(e, index)}
       onInput={(e) => handleInput(e, index)}
       onFocus={() => setIsEditing(true)}
       placeholder={inputLabel}

@@ -103,14 +103,24 @@ function Form(props) {
     }
   }
 
-  function addChecklistItem(e: React.KeyboardEvent, i: number) {
-    if (checklist && e.key === 'Enter') {
-      e.preventDefault();
-      const newList = checklistData.slice();
-      const newItem = NewChecklistItem();
-      setNewItemId(newItem.id);
-      newList.splice(i + 1, 0, newItem);
-      setChecklistData(newList);
+  function updateChecklistItem(e: React.KeyboardEvent, i: number) {
+    if (checklist) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const newList = checklistData.slice();
+        const newItem = NewChecklistItem();
+        setNewItemId(newItem.id);
+        newList.splice(i + 1, 0, newItem);
+        setChecklistData(newList);
+      } else if (e.key === 'Backspace') {
+        const item = checklistData[i];
+        if (item.data.length === 0) {
+          e.preventDefault();
+          const newList = checklistData.slice();
+          newList.splice(i, 1);
+          setChecklistData(newList);
+        }
+      }
     }
   }
 
@@ -211,7 +221,7 @@ function Form(props) {
               key={item.id}
             >
               <DataArea
-                addChecklistItem={addChecklistItem}
+                updateChecklistItem={updateChecklistItem}
                 handleInput={handleInput}
                 setIsEditing={setIsEditing}
                 id={item.id}
