@@ -70,7 +70,7 @@ function Form(props) {
   const [newItemId, setNewItemId] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const newTask: boolean = props.id === 'new-task';
-  const lastRef = useRef<HTMLTextAreaElement>(null);
+  const newItemRef = useRef<HTMLTextAreaElement>(null);
   const delRef = useCallback((e) => (e ? e.focus() : null), []);
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
@@ -143,9 +143,9 @@ function Form(props) {
     }
   }
 
-  function handleInput(e, i?: number) {
-    const input = e.target.value;
-    if (i) {
+  function handleInput(e: React.FormEvent<HTMLTextAreaElement>, i?: number) {
+    const input = (e.target as HTMLTextAreaElement).value;
+    if (i !== undefined) {
       let checklistDataCopy = [...checklistData];
       checklistDataCopy[i] = { ...checklistDataCopy[i], data: input };
       setChecklistData(checklistDataCopy);
@@ -214,13 +214,12 @@ function Form(props) {
                 addChecklistItem={addChecklistItem}
                 handleInput={handleInput}
                 setIsEditing={setIsEditing}
-                item={item}
+                id={item.id}
                 index={i}
                 done={item.done}
                 data={item.data}
                 newTask={newTask}
-                newItemId={newItemId}
-                lastRef={lastRef}
+                newItemRef={item.id === newItemId ? newItemRef : undefined}
               />
             </ChecklistItem>
           ))}
@@ -313,7 +312,7 @@ function Form(props) {
   };
 
   useEffect(() => {
-    if (lastRef.current) lastRef.current.focus();
+    newItemRef?.current?.focus();
     if (checklistData.length === 0) {
       setChecklist(false);
       setData('');
@@ -341,25 +340,24 @@ function Form(props) {
       <form
         onSubmit={handleSubmit}
         onBlur={newTask ? handleBlur : handleSubmit}
-        id={props.id}
+        id={`form-${props.id}`}
         className={classNames({ isEditing: isEditing })}
         encType="multipart/form-data"
       >
         {props.error && <div role="status">{props.error}</div>}
         {(image || imagePreview) && previewImage()}
-        {checklist ? checklistGroup() : 
-          <DataArea 
-            addChecklistItem={addChecklistItem}
+        {checklist ? (
+          checklistGroup()
+        ) : (
+          <DataArea
             handleInput={handleInput}
             setIsEditing={setIsEditing}
-            item={props.item}
+            id={props.id}
             done={props.done}
-            data={props.data}
+            data={data}
             newTask={newTask}
-            newItemId={newItemId}
-            lastRef={lastRef}
           />
-        }
+        )}
         <div className="btn-group">
           {newTask
             ? addingTools

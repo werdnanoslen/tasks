@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ListItem } from "../tasks/task.model";
+import { ListItem } from '../tasks/task.model';
 
 interface ChecklistItemProps {
   children: any; //TODO should be dataareas
@@ -63,5 +63,5 @@ function ChecklistItem({
       </button>
     </li>
   );
-};
+}
 export default ChecklistItem;

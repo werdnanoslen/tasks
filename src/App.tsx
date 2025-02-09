@@ -187,7 +187,7 @@ export default function App() {
 
   const formSection = (task: Task) => (
     <Form
-      key={task.data}
+      key={task.id + task.data} // TODO use just task.id, seems required to make deleteItem work
       id={task.id}
       image={task.image}
       data={task.data}

@@ -39,11 +39,13 @@ async function _delete(taskId, itemId?) {
   //     `${process.env.UPLOAD_WEBROOT}/`
   //   )[1];
   // }
-  if (itemId) { // delete list item
+  if (itemId) {
+    // delete list item
     const items: ListItem[] = JSON.parse(task.data);
     const filteredItems = items.filter((i) => i.id !== itemId);
     await update(taskId, { data: filteredItems });
-  } else { // delete whole task
+  } else {
+    // delete whole task
     await task.destroy();
   }
 }
