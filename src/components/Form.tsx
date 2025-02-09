@@ -255,6 +255,14 @@ function Form(props) {
       </button>
       <button
         type="button"
+        className="btn visually-hidden"
+        {...attributes}
+        {...listeners}
+      >
+        Move
+      </button>
+      <button
+        type="button"
         className="btn btn__icon"
         onClick={() => props.toggleTaskDone(props.id, props.done)}
       >
@@ -334,8 +342,6 @@ function Form(props) {
       onDragEnd={newTask ? undefined : handleSubmit}
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
     >
       <form
         onSubmit={handleSubmit}
