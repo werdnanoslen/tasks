@@ -43,6 +43,13 @@ function DataArea({
   }
   const isAList = updateChecklistItem && undefined !== index;
 
+  function keydown(e) {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.stopPropagation();
+    }
+    if (isAList) updateChecklistItem(e, index);
+  }
+
   useEffect(() => {
     newItemRef.current?.focus();
   }, []);
@@ -53,7 +60,7 @@ function DataArea({
       name="data"
       className={classNames('input', { done: done })}
       value={data}
-      onKeyDown={(e) => isAList && updateChecklistItem(e, index)}
+      onKeyDown={keydown}
       onInput={(e) => handleInput(e, index)}
       onFocus={() => setIsEditing(true)}
       placeholder={inputLabel}

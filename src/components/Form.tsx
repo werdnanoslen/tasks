@@ -258,7 +258,6 @@ function Form(props) {
       <button
         type="button"
         className="btn visually-hidden"
-        {...attributes}
         {...listeners}
       >
         Move
@@ -343,6 +342,8 @@ function Form(props) {
       onDragEnd={newTask ? undefined : handleSubmit}
       ref={setNodeRef}
       style={style}
+      {...attributes}
+      {...listeners}
     >
       <form
         onSubmit={handleSubmit}
