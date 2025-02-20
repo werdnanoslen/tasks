@@ -162,7 +162,7 @@ export default function App() {
   ));
 
   const listHeadingRef = useRef<HTMLInputElement>(null);
-  const prevTaskLength = usePrevious(tasks.length);
+  const prevTaskLength = usePrevious<number>(tasks.length);
 
   useEffect(() => {
     isAuthed();

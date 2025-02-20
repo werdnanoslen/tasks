@@ -67,8 +67,8 @@ function Form(props) {
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
 
-  const prevChecklistData = usePrevious(checklistData);
-  const prevData = usePrevious(data);
+  const prevChecklistData = usePrevious<ListItem[]>(checklistData);
+  const prevData = usePrevious<any>(data);
 
   function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
