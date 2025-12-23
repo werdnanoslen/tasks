@@ -145,11 +145,14 @@ export default function App() {
     setNarrator('Deleted task');
   }
 
-  function deleteListItem(taskId: string, itemId: string) {
-    API.deleteListItem(taskId, itemId)
-      .then(refreshTasks)
-      .catch((e) => console.error(e.response.data.message));
-    setNarrator('Deleted list item');
+  async function deleteListItem(taskId: string, itemId: string): Promise<void> {
+    try {
+      await API.deleteListItem(taskId, itemId);
+      refreshTasks();
+      setNarrator('Deleted list item');
+    } catch (e: any) {
+      console.error(e.response?.data?.message || e);
+    }
   }
 
   const filterList = FILTER_TASKS.map((data) => (

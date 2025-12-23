@@ -35,7 +35,26 @@ function NewChecklistItem(data?): ListItem {
   };
 }
 
-function Form(props) {
+type FormProps = {
+  id: string;
+  data?: any;
+  image?: string;
+  done?: boolean;
+  pinned?: boolean;
+  hide?: boolean;
+  error?: string;
+  newItemId?: string;
+  setNarrator: (msg: string) => void;
+  addTask?: (data: any, image?: File) => void;
+  updateData?: (id: string, data: any, image?: File) => void;
+  deleteTask?: (id: string) => void;
+  toggleTaskDone?: (id: string, done: boolean) => void;
+  toggleTaskPinned?: (id: string, pinned: boolean) => void;
+  setNewItemId?: (id: string) => void;
+  deleteListItem?: (taskId: string, itemId: string) => Promise<void>;
+};
+
+const Form = React.memo(function Form(props: FormProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id });
   const sensors = useSensors(
@@ -71,13 +90,17 @@ function Form(props) {
     const prevStuff = checklist ? prevChecklistData : prevData;
     const newStuff = checklist ? checklistData : data;
     if (newTask) {
-      props.addTask(newStuff, imagePreview);
+      if (props.addTask) {
+        props.addTask(newStuff, imagePreview);
+      }
       setData('');
       setChecklistData([NewChecklistItem()]);
       setImagePreview(undefined);
       setImage(undefined);
     } else if (prevStuff !== newStuff) {
-      props.updateData(props.id, newStuff, imagePreview);
+      if (props.updateData) {
+        props.updateData(props.id, newStuff, imagePreview);
+      }
     }
     setIsEditing(false);
   }
@@ -97,7 +120,9 @@ function Form(props) {
         e.preventDefault();
         const newList = checklistData.slice();
         const newItem = NewChecklistItem();
-        props.setNewItemId(newItem.id);
+        if (props.setNewItemId) {
+          props.setNewItemId(newItem.id);
+        }
         newList.splice(i + 1, 0, newItem);
         setChecklistData(newList);
       } else if (e.key === 'Backspace') {
@@ -113,7 +138,9 @@ function Form(props) {
   }
 
   async function deleteListItem(id: string) {
-    await props.deleteListItem(props.id, id);
+    if (props.deleteListItem) {
+      await props.deleteListItem(props.id, id);
+    }
   }
 
   function toggleListItemDone(id: string) {
@@ -175,7 +202,9 @@ function Form(props) {
       }
       setChecklistData(newData);
     }
-    !newTask && props.updateData(props.id, newData);
+    if (!newTask && props.updateData) {
+      props.updateData(props.id, newData);
+    }
   }
 
   function dragChecklistItem(event) {
@@ -186,7 +215,7 @@ function Form(props) {
         const newIndex = items.findIndex(({ id }) => id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
         // Persist new order immediately
-        if (!newTask) props.updateData(props.id, newItems);
+        if (!newTask && props.updateData) props.updateData(props.id, newItems);
         return newItems;
       });
     }
@@ -234,7 +263,7 @@ function Form(props) {
     const reader = new FileReader();
     reader.onload = () => setImage(reader.result as string);
     if (newImage) reader.readAsDataURL(newImage);
-    if (!newTask) props.updateData(props.id, null, newImage);
+    if (!newTask && props.updateData) props.updateData(props.id, null, newImage);
   }
 
   const previewImage = () => {
@@ -263,7 +292,11 @@ function Form(props) {
       <button
         type="button"
         className="btn btn__icon"
-        onClick={() => props.toggleTaskDone(props.id, props.done)}
+        onClick={() => {
+          if (props.toggleTaskDone && props.done) {
+            props.toggleTaskDone(props.id, props.done)
+          }
+        }}
       >
         <img src={check} alt="" />
         <span className="visually-hidden">{completeLabel}</span>
@@ -279,7 +312,11 @@ function Form(props) {
       <button
         type="button"
         className="btn btn__icon"
-        onClick={() => props.toggleTaskPinned(props.id, props.pinned)}
+        onClick={() => {
+          if (props.toggleTaskPinned && props.pinned) {
+            props.toggleTaskPinned(props.id, props.pinned);
+          }
+        }}
       >
         <img src={props.pinned ? pinned : unpinned} alt="" />
         <span className="visually-hidden">{props.pinned ? 'Un-' : ''}Pin</span>
@@ -293,7 +330,12 @@ function Form(props) {
         type="button"
         className="btn"
         ref={delRef}
-        onClick={() => props.deleteTask(props.id) && setConfirmDelete(false)}
+        onClick={() => {
+          if (props.deleteTask) {
+            props.deleteTask(props.id);
+          }
+          setConfirmDelete(false);
+        }}
       >
         Confirm delete
       </button>
@@ -404,6 +446,6 @@ function Form(props) {
       </form>
     </li>
   );
-}
+})
 
 export default Form;

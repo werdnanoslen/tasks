@@ -10,7 +10,7 @@ interface ChecklistItemProps {
   toggleListItemDone: (id: string) => void;
 }
 
-function ChecklistItem({
+const ChecklistItem = React.memo(function ChecklistItem({
   children,
   item,
   deleteListItem,
@@ -63,5 +63,5 @@ function ChecklistItem({
       </button>
     </li>
   );
-}
+});
 export default ChecklistItem;
