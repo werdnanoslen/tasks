@@ -33,7 +33,7 @@ function ChecklistItem({
   return (
     <li key={item.id} ref={setNodeRef} style={style}>
       <div className="list-controls">
-        <button
+        <span
           className="btn btn__icon btn__drag"
           ref={setActivatorNodeRef}
           {...attributes}
@@ -41,9 +41,9 @@ function ChecklistItem({
         >
           <span className="visually-hidden">Move list item</span>
           <span className="ascii-icon" aria-hidden="true">
-            {String.fromCharCode(8661)}
+            {String.fromCharCode(0x205E) + String.fromCharCode(0x205E)}
           </span>
-        </button>
+        </span>
         <input
           type="checkbox"
           checked={item.done}

@@ -68,21 +68,23 @@ export async function update(id: string, fields: Partial<Task>) {
 
 export async function move(id: string, newPos: number) {
   let task = await getTask(id);
-
-  // Move all other tasks
-  const oldPos = task.position;
-  const [minPos, maxPos] =
-    oldPos < newPos ? [oldPos, newPos] : [newPos, oldPos];
-  const posOffset = newPos < oldPos ? 1 : -1;
-  let tasks = await db.Task.findAll({
-    where: { position: { [Op.between]: [minPos, maxPos] } },
+  const userId = task.user_id;
+  // Get all tasks for the user, ordered by position
+  let allTasks = await db.Task.findAll({
+    where: { user_id: userId },
+    order: [['position', 'ASC']],
   });
-  tasks.forEach((task) => task.increment('position', { by: posOffset }));
-
-  // Move this task
-  await task.update({
-    position: newPos,
-  });
+  // Remove the moved task from the array
+  const oldIndex = allTasks.findIndex((t) => t.id === id);
+  if (oldIndex === -1) throw Error('Task not found in user list');
+  const [movedTask] = allTasks.splice(oldIndex, 1);
+  // Insert at new position (1-based to 0-based)
+  let insertIndex = Math.max(0, Math.min(newPos - 1, allTasks.length));
+  allTasks.splice(insertIndex, 0, movedTask);
+  // Re-sequence all positions
+  await Promise.all(
+    allTasks.map((t, idx) => t.update({ position: idx + 1 }))
+  );
   return 1;
 }
 

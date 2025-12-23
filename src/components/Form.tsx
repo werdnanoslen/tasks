@@ -39,11 +39,7 @@ function Form(props) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id });
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
+    useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -188,9 +184,11 @@ function Form(props) {
       setChecklistData((items) => {
         const oldIndex = items.findIndex(({ id }) => id === active.id);
         const newIndex = items.findIndex(({ id }) => id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        // Persist new order immediately
+        if (!newTask) props.updateData(props.id, newItems);
+        return newItems;
       });
-      handleSubmit();
     }
   }
 

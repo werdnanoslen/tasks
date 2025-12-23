@@ -187,6 +187,7 @@ button:focus {
   padding: initial;
   border: initial;
   background-color: initial;
+  text-align: center;
 }
 .btn__icon:hover,
 .btn__icon:focus {
@@ -209,12 +210,21 @@ button:focus {
   display: flex;
   opacity: 0;
 }
-.btn__drag .ascii-icon {
+.btn__drag {
+  touch-action: none;
   cursor: grab;
+  &[aria-pressed='true'] {
+    cursor: grabbing;
+  }
+}
+.btn__drag .ascii-icon {
   line-height: 1;
 }
 li.task li:hover .btn__icon,
 li.task li:focus-within .btn__icon {
+  opacity: 1;
+}
+li.task:focus-within li > .list-controls > .btn__drag {
   opacity: 1;
 }
 
@@ -244,6 +254,11 @@ main > ul {
   max-width: 20rem;
   list-style-type: none;
   cursor: grab;
+  touch-action: none;
+  
+  &[aria-pressed='true'] {
+    cursor: grabbing;
+  }
 }
 .task li {
   gap: 1rem;
