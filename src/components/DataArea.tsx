@@ -31,9 +31,11 @@ function DataArea({
   newTask,
   focusThis,
 }: DataAreaProps) {
-  const inputLabel = newTask ? 'Type to add a task' : 'Edit task';
+  const placeholderLabel = newTask ? 'Type to add a task' : undefined;
+  const ariaLabel = newTask ? 'Type to add a task' : 'Edit task';
   const MAXLENGTH = 1000;
   const newItemRef = useRef<HTMLTextAreaElement>(null);
+  const shouldAutoFocus = !!(newTask || focusThis);
 
   if ((undefined === updateChecklistItem) !== (undefined === index)) {
     console.error(
@@ -51,8 +53,10 @@ function DataArea({
   }
 
   useEffect(() => {
-    newItemRef.current?.focus();
-  }, []);
+    if (shouldAutoFocus) {
+      newItemRef.current?.focus();
+    }
+  }, [shouldAutoFocus]);
 
   return (
     <TextareaAutosize
@@ -63,11 +67,11 @@ function DataArea({
       onKeyDown={keydown}
       onInput={(e) => handleInput(e, index)}
       onFocus={() => setIsEditing(true)}
-      placeholder={inputLabel}
-      aria-label={inputLabel}
+      placeholder={placeholderLabel}
+      aria-label={ariaLabel}
       rows={1}
-      ref={focusThis ? newItemRef : null}
-      autoFocus={newItemRef ? true : false}
+      ref={shouldAutoFocus ? newItemRef : null}
+      autoFocus={shouldAutoFocus}
       maxLength={MAXLENGTH}
     />
   );

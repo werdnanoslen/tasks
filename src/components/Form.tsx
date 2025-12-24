@@ -107,9 +107,7 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function handleBlur(e: React.FocusEvent) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      // TODO if no change, return
-      checklist ? setChecklistData(iChecklistData) : setData(props.data);
-      setChecklist(iChecklist);
+      // Preserve input on blur for new task; just exit editing mode
       setIsEditing(false);
     }
   }
@@ -138,7 +136,9 @@ const Form = React.memo(function Form(props: FormProps) {
   }
 
   async function deleteListItem(id: string) {
-    if (props.deleteListItem) {
+    if (newTask) {
+      setChecklistData((prev) => prev.filter((item) => item.id !== id));
+    } else if (props.deleteListItem) {
       await props.deleteListItem(props.id, id);
     }
   }
@@ -312,10 +312,11 @@ const Form = React.memo(function Form(props: FormProps) {
       <button
         type="button"
         className="btn btn__icon"
-        onClick={() => {
-          if (props.toggleTaskPinned && props.pinned) {
-            props.toggleTaskPinned(props.id, props.pinned);
+        onClick={(e) => {
+          if (props.toggleTaskPinned) {
+            props.toggleTaskPinned(props.id, props.pinned ?? false);
           }
+          (e.currentTarget as HTMLButtonElement).focus();
         }}
       >
         <img src={props.pinned ? pinned : unpinned} alt="" />

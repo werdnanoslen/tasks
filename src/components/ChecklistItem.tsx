@@ -53,6 +53,7 @@ const ChecklistItem = React.memo(function ChecklistItem({
       </div>
       {children}
       <button
+        type="button"
         className="btn btn__icon btn__close"
         onClick={() => deleteListItem(item.id)}
       >
