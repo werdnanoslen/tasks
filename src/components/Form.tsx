@@ -1,5 +1,6 @@
 import React, { useState, useEffect, SyntheticEvent, useCallback } from 'react';
 import classNames from 'classnames';
+import * as API from '../api';
 import {
   DndContext,
   closestCenter,
@@ -84,6 +85,30 @@ const Form = React.memo(function Form(props: FormProps) {
 
   const prevChecklistData = usePrevious<ListItem[]>(checklistData);
   const prevData = usePrevious<any>(data);
+
+  // Extract URLs from checklist data for link previews
+  const [linkMetadataList, setLinkMetadataList] = useState<{ title: string; favicon: string; url: string }[]>([]);
+  
+  useEffect(() => {
+    if (checklist && !newTask) {
+      const urlRegex = /https?:\/\/[^\s]+/gi;
+      const allText = checklistData.map(item => item.data).join(' ');
+      const urls = allText.match(urlRegex) || [];
+      
+      if (urls.length > 0) {
+        Promise.all(
+          urls.map(url => API.getLinkMetadata(url).catch(() => null))
+        ).then(results => {
+          const validResults = results.filter(r => r !== null) as { title: string; favicon: string; url: string }[];
+          setLinkMetadataList(validResults);
+        });
+      } else {
+        setLinkMetadataList([]);
+      }
+    } else {
+      setLinkMetadataList([]);
+    }
+  }, [checklist, checklistData, newTask]);
 
   function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
@@ -223,37 +248,55 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function checklistGroup() {
     return (
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={dragChecklistItem}
-      >
-        <SortableContext
-          items={checklistData.map((i) => i.id)}
-          strategy={verticalListSortingStrategy}
+      <>
+        {linkMetadataList.map((linkMetadata, index) => (
+          <a 
+            key={linkMetadata.url + index}
+            href={linkMetadata.url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="link-button"
+            title={linkMetadata.title}
+          >
+            {linkMetadata.favicon && (
+              <img src={linkMetadata.favicon} alt="" className="link-favicon" onError={(e) => e.currentTarget.style.display = 'none'} />
+            )}
+            <span className="link-title">{linkMetadata.title}</span>
+          </a>
+        ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={dragChecklistItem}
         >
-          {checklistData.map((item, i) => (
-            <ChecklistItem
-              item={item}
-              deleteListItem={deleteListItem}
-              toggleListItemDone={toggleListItemDone}
-              key={item.id}
-            >
-              <DataArea
-                updateChecklistItem={updateChecklistItem}
-                handleInput={handleInput}
-                setIsEditing={setIsEditing}
-                id={item.id}
-                index={i}
-                done={item.done}
-                data={item.data}
-                newTask={newTask}
-                focusThis={props.newItemId === item.id}
-              />
-            </ChecklistItem>
-          ))}
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={checklistData.map((i) => i.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {checklistData.map((item, i) => (
+              <ChecklistItem
+                item={item}
+                deleteListItem={deleteListItem}
+                toggleListItemDone={toggleListItemDone}
+                key={item.id}
+              >
+                <DataArea
+                  updateChecklistItem={updateChecklistItem}
+                  handleInput={handleInput}
+                  setIsEditing={setIsEditing}
+                  id={item.id}
+                  index={i}
+                  done={item.done}
+                  data={item.data}
+                  newTask={newTask}
+                  focusThis={props.newItemId === item.id}
+                  showLinkPreview={false}
+                />
+              </ChecklistItem>
+            ))}
+          </SortableContext>
+        </DndContext>
+      </>
     );
   }
 

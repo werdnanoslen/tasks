@@ -8,6 +8,7 @@ const taskRouter = express.Router();
 taskRouter.get('/', authorize(), getTasks);
 taskRouter.post('/', authorize(), addTask);
 taskRouter.post('/image/', authorize(), upload.single('upload'), addImage);
+taskRouter.post('/link-metadata', authorize(), getLinkMetadata);
 taskRouter.delete('/:id', authorize(), deleteTask);
 taskRouter.delete('/:taskId/:itemId', authorize(), deleteListItem);
 taskRouter.put('/:id', authorize(), updateTask);
@@ -62,4 +63,56 @@ async function moveTask(req, res, next) {
     .move(id, newPos)
     .then((ret) => res.json(ret))
     .catch(next);
+}
+
+async function getLinkMetadata(req, res, next) {
+  const { url } = req.body;
+  if (!url || !/^https?:\/\//i.test(url)) {
+    return res.status(400).json({ error: 'Invalid URL' });
+  }
+
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+      redirect: 'follow',
+    });
+    const html = await response.text();
+    
+    const ogTitle = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/i)?.[1];
+    let title = ogTitle || html.match(/<title>([^<]+)<\/title>/i)?.[1] || url;
+    
+    // Decode HTML entities
+    title = title
+      .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+      .replace(/&#x([0-9a-f]+);/gi, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+    
+    // Try to find favicon - prefer dark mode version
+    const urlObj = new URL(url);
+    const origin = urlObj.origin;
+    
+    // First check for dark mode favicon
+    let favicon = html.match(/<link[^>]*rel="icon"[^>]*media="[^"]*dark[^"]*"[^>]*href="([^"]+)"/i)?.[1];
+    
+    // Fallback to standard favicon
+    if (!favicon) {
+      favicon = html.match(/<link[^>]*rel="icon"[^>]*href="([^"]+)"/i)?.[1] || 
+                html.match(/<link[^>]*rel="shortcut icon"[^>]*href="([^"]+)"/i)?.[1];
+    }
+    
+    if (favicon && !favicon.startsWith('http')) {
+      favicon = favicon.startsWith('/') ? `${origin}${favicon}` : `${origin}/${favicon}`;
+    }
+    if (!favicon) {
+      favicon = `${origin}/favicon.ico`;
+    }
+
+    res.json({ title, favicon, url });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch metadata' });
+  }
 }

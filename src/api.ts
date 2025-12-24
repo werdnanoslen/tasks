@@ -50,6 +50,11 @@ export async function moveTask(id: string, newPosition: number): Promise<Task> {
   return response.data;
 }
 
+export async function getLinkMetadata(url: string): Promise<{ title: string; favicon: string; url: string }> {
+  const response = await client.post('/tasks/link-metadata', { url });
+  return response.data;
+}
+
 // USER
 
 export async function getLoginStatus(): Promise<any> {
