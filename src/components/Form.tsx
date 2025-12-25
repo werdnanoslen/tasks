@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SyntheticEvent, useCallback, useRef } from 'react';
+import React, { useState, useEffect, SyntheticEvent, useCallback, useRef, useMemo } from 'react';
 import classNames from 'classnames';
 import * as API from '../api';
 import {
@@ -17,7 +17,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import usePrevious from '../hooks';
 import { ListItem } from '../tasks/task.model';
 import ChecklistItem from './ChecklistItem';
 import DataArea from './DataArea';
@@ -71,9 +70,10 @@ const Form = React.memo(function Form(props: FormProps) {
   const [data, setData] = useState(iChecklist ? '' : props.data);
   const [imagePreview, setImagePreview] = useState<File | undefined>();
   const [image, setImage] = useState<string | undefined>(props.image);
-  const iChecklistData: ListItem[] = iChecklist
-    ? props.data
-    : [NewChecklistItem()];
+  const iChecklistData: ListItem[] = useMemo(
+    () => (iChecklist ? props.data : [NewChecklistItem()]),
+    [iChecklist, props.data]
+  );
   const [checklistData, setChecklistData] = useState(iChecklistData);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -338,14 +338,36 @@ const Form = React.memo(function Form(props: FormProps) {
     if (!newTask && props.updateData) props.updateData(props.id, null, newImage);
   }
 
+  function removeImage() {
+    setImage(undefined);
+    setImagePreview(undefined);
+    if (!newTask && props.updateData) {
+      // Pass undefined for both data and image to signal image deletion
+      props.updateData(props.id, undefined, undefined);
+    }
+  }
+
   const previewImage = () => {
+    const imgSrc = image || undefined;
     return (
-      <img
-        src={image}
-        alt="Upload"
-        aria-describedby={`edit-${props.id}`}
-        className="task-image"
-      />
+      <div className="task-image-container">
+        <img
+          src={imgSrc}
+          alt="Upload"
+          aria-describedby={`edit-${props.id}`}
+          className="task-image"
+        />
+        <button
+          type="button"
+          className="btn btn__icon btn__close"
+          onClick={removeImage}
+        >
+          <span className="ascii-icon" aria-hidden="true">
+            {String.fromCharCode(10005)}
+          </span>
+          <span className="visually-hidden">Remove image</span>
+        </button>
+      </div>
     );
   };
 

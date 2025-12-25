@@ -103,6 +103,13 @@ export default function App() {
           });
         })
         .catch(console.error);
+    } else if (image === undefined && newData === undefined) {
+      // Explicitly delete the image when both are undefined
+      updates.image = '';
+      API.updateTask(id, updates).then((ret) => {
+        setError('');
+        refreshTasks();
+      });
     } else {
       API.updateTask(id, updates).then((ret) => {
         if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {

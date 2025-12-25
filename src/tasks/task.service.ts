@@ -1,6 +1,8 @@
 import db from '../_helpers/db.js';
 import { ListItem, Task } from './task.model.js';
 import { Op } from 'sequelize';
+import fs from 'fs';
+import path from 'path';
 
 export async function getAll(userID: number): Promise<Task[]> {
   let tasks = await db.Task.findAll({
@@ -38,6 +40,12 @@ async function _delete(taskId, itemId?) {
     const filename: string = task.image.split(
       `${process.env.UPLOAD_WEBROOT}/`
     )[1];
+    if (filename) {
+      const filePath = path.join(process.cwd(), 'public', 'storage', filename);
+      fs.unlink(filePath, (err) => {
+        if (err) console.error('Error deleting image file:', err);
+      });
+    }
   }
   if (itemId) {
     // delete list item
@@ -61,6 +69,20 @@ export async function update(id: string, fields: Partial<Task>) {
     fields.data = JSON.stringify(fields.data);
   }
   const task = await getTask(id);
+  
+  // If image field is being set to empty string, delete the old image file
+  if (fields.image === '' && task.image) {
+    const filename: string = task.image.split(
+      `${process.env.UPLOAD_WEBROOT}/`
+    )[1];
+    if (filename) {
+      const filePath = path.join(process.cwd(), 'public', 'storage', filename);
+      fs.unlink(filePath, (err) => {
+        if (err) console.error('Error deleting image file:', err);
+      });
+    }
+  }
+  
   await task.update(fields);
   await task.save();
   return task.get();

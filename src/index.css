@@ -274,13 +274,32 @@ li.moving:focus-visible {
   text-align: center;
   margin-top: 3rem;
 }
-.task-image {
+.task-image-container {
+  position: relative;
   margin: -1.25rem;
   margin-bottom: 0.5rem;
+}
+.task-image {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
   width: -webkit-fill-available;
   width: -moz-available;
+  display: block;
+}
+.task-image-container .btn__close {
+  opacity: 0;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 100%;
+}
+.task-image-container:hover .btn__close {
+  opacity: 1;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 1);
+  }
 }
 .add-image {
   display: none;
