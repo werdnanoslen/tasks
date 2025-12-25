@@ -138,7 +138,6 @@ export default function App() {
   }
 
   function deleteTask(id: string) {
-    //TODO replace input with full task, deleteUpload if contains one, then deleteTask
     API.deleteTask(id)
       .then(refreshTasks)
       .catch((e) => console.error(e.response.data.message));
@@ -191,7 +190,7 @@ export default function App() {
 
   const formSection = (task: Task) => (
     <Form
-      key={task.id + task.data} // TODO use just task.id, seems required to make deleteItem work
+      key={task.id}
       id={task.id}
       image={task.image}
       data={task.data}

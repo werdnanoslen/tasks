@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { ListItem } from '../tasks/task.model';
 
 interface ChecklistItemProps {
-  children: any; //TODO should be dataareas
+  children: React.ReactNode;
   item: ListItem;
   deleteListItem: (id: string) => void;
   toggleListItemDone: (id: string) => void;

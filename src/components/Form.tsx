@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SyntheticEvent, useCallback } from 'react';
+import React, { useState, useEffect, SyntheticEvent, useCallback, useRef } from 'react';
 import classNames from 'classnames';
 import * as API from '../api';
 import {
@@ -83,8 +83,16 @@ const Form = React.memo(function Form(props: FormProps) {
   const completeLabel = props.done ? 'Restore' : 'Complete';
   const MAXLENGTH = 1000;
 
-  const prevChecklistData = usePrevious<ListItem[]>(checklistData);
-  const prevData = usePrevious<any>(data);
+  const lastSavedChecklistData = useRef<ListItem[]>(iChecklistData);
+  const lastSavedData = useRef<any>(iChecklist ? '' : props.data);
+  
+  // Sync lastSaved refs when props change (e.g., after external update)
+  useEffect(() => {
+    if (!isEditing) {
+      lastSavedChecklistData.current = iChecklistData;
+      lastSavedData.current = iChecklist ? '' : props.data;
+    }
+  }, [props.data, iChecklist, iChecklistData, isEditing]);
 
   // Extract URLs from checklist data for link previews
   const [linkMetadataList, setLinkMetadataList] = useState<{ title: string; favicon: string; url: string }[]>([]);
@@ -112,7 +120,7 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
-    const prevStuff = checklist ? prevChecklistData : prevData;
+    const lastSaved = checklist ? lastSavedChecklistData.current : lastSavedData.current;
     const newStuff = checklist ? checklistData : data;
     if (newTask) {
       if (props.addTask) {
@@ -122,9 +130,22 @@ const Form = React.memo(function Form(props: FormProps) {
       setChecklistData([NewChecklistItem()]);
       setImagePreview(undefined);
       setImage(undefined);
-    } else if (prevStuff !== newStuff) {
-      if (props.updateData) {
+      lastSavedData.current = '';
+      lastSavedChecklistData.current = [NewChecklistItem()];
+    } else {
+      // For arrays (checklists), compare JSON strings; for strings, compare directly
+      const hasChanged = checklist 
+        ? JSON.stringify(lastSaved) !== JSON.stringify(newStuff)
+        : lastSaved !== newStuff;
+      
+      if (hasChanged && props.updateData) {
         props.updateData(props.id, newStuff, imagePreview);
+        // Update last saved state after successful save
+        if (checklist) {
+          lastSavedChecklistData.current = JSON.parse(JSON.stringify(checklistData));
+        } else {
+          lastSavedData.current = data;
+        }
       }
     }
     setIsEditing(false);
@@ -132,8 +153,13 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function handleBlur(e: React.FocusEvent) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      // Preserve input on blur for new task; just exit editing mode
-      setIsEditing(false);
+      if (newTask) {
+        // Preserve input on blur for new task; just exit editing mode
+        setIsEditing(false);
+      } else {
+        // For existing tasks, save changes on blur
+        handleSubmit();
+      }
     }
   }
 
@@ -164,6 +190,8 @@ const Form = React.memo(function Form(props: FormProps) {
     if (newTask) {
       setChecklistData((prev) => prev.filter((item) => item.id !== id));
     } else if (props.deleteListItem) {
+      // Optimistically update local state before API call
+      setChecklistData((prev) => prev.filter((item) => item.id !== id));
       await props.deleteListItem(props.id, id);
     }
   }
@@ -284,6 +312,7 @@ const Form = React.memo(function Form(props: FormProps) {
                   updateChecklistItem={updateChecklistItem}
                   handleInput={handleInput}
                   setIsEditing={setIsEditing}
+                  handleBlur={handleSubmit}
                   id={item.id}
                   index={i}
                   done={item.done}
@@ -336,8 +365,8 @@ const Form = React.memo(function Form(props: FormProps) {
         type="button"
         className="btn btn__icon"
         onClick={() => {
-          if (props.toggleTaskDone && props.done) {
-            props.toggleTaskDone(props.id, props.done)
+          if (props.toggleTaskDone) {
+            props.toggleTaskDone(props.id, props.done ?? false);
           }
         }}
       >

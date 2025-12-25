@@ -10,6 +10,7 @@ interface DataAreaProps {
     index?: number
   ) => void;
   setIsEditing: (isEditing: boolean) => void;
+  handleBlur?: () => void;
   updateChecklistItem?: (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
     index: number
@@ -26,6 +27,7 @@ function DataArea({
   id,
   handleInput,
   setIsEditing,
+  handleBlur,
   updateChecklistItem,
   index,
   done,
@@ -107,6 +109,7 @@ function DataArea({
         onKeyDown={keydown}
         onInput={(e) => handleInput(e, index)}
         onFocus={() => setIsEditing(true)}
+        onBlur={() => handleBlur && handleBlur()}
         placeholder={placeholderLabel}
         aria-label={ariaLabel}
         rows={1}

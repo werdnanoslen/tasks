@@ -34,11 +34,11 @@ export async function create(task: Task): Promise<number> {
 
 async function _delete(taskId, itemId?) {
   const task = await getTask(taskId);
-  // if (task.image) { //TODO
-  //   const filename: string = task.image.split(
-  //     `${process.env.UPLOAD_WEBROOT}/`
-  //   )[1];
-  // }
+  if (task.image) {
+    const filename: string = task.image.split(
+      `${process.env.UPLOAD_WEBROOT}/`
+    )[1];
+  }
   if (itemId) {
     // delete list item
     const items: ListItem[] = JSON.parse(task.data);
