@@ -40,7 +40,8 @@ async function _delete(taskId, itemId?) {
     const filename: string = task.image.split(
       `${process.env.UPLOAD_WEBROOT}/`
     )[1];
-    if (filename) {
+    // Prevent path traversal attacks
+    if (filename && !filename.includes('..') && !filename.includes('/') && !filename.includes('\\')) {
       const filePath = path.join(process.cwd(), 'public', 'storage', filename);
       fs.unlink(filePath, (err) => {
         if (err) console.error('Error deleting image file:', err);
@@ -75,7 +76,8 @@ export async function update(id: string, fields: Partial<Task>) {
     const filename: string = task.image.split(
       `${process.env.UPLOAD_WEBROOT}/`
     )[1];
-    if (filename) {
+    // Prevent path traversal attacks
+    if (filename && !filename.includes('..') && !filename.includes('/') && !filename.includes('\\')) {
       const filePath = path.join(process.cwd(), 'public', 'storage', filename);
       fs.unlink(filePath, (err) => {
         if (err) console.error('Error deleting image file:', err);

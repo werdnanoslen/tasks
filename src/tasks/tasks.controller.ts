@@ -1,4 +1,6 @@
 import express from 'express';
+import Joi from 'joi';
+import validateRequest from '../_middleware/validate-request.js';
 import authorize from '../_middleware/authorize.js';
 import * as taskService from './task.service.js';
 import upload from '../_middleware/upload.js';
@@ -6,15 +8,50 @@ import upload from '../_middleware/upload.js';
 const taskRouter = express.Router();
 
 taskRouter.get('/', authorize(), getTasks);
-taskRouter.post('/', authorize(), addTask);
+taskRouter.post('/', authorize(), addTaskSchema, addTask);
 taskRouter.post('/image/', authorize(), upload.single('upload'), addImage);
 taskRouter.post('/link-metadata', authorize(), getLinkMetadata);
 taskRouter.delete('/:id', authorize(), deleteTask);
 taskRouter.delete('/:taskId/:itemId', authorize(), deleteListItem);
-taskRouter.put('/:id', authorize(), updateTask);
+taskRouter.put('/:id', authorize(), updateTaskSchema, updateTask);
 taskRouter.put('/:id/move/:newPosition', authorize(), moveTask);
 
 export default taskRouter;
+
+function addTaskSchema(req, res, next) {
+  const schema = Joi.object({
+    data: Joi.alternatives().try(
+      Joi.string().max(10000),
+      Joi.array().items(Joi.object({
+        id: Joi.string().required(),
+        data: Joi.string().max(1000).allow(''),
+        done: Joi.boolean()
+      }))
+    ).required(),
+    position: Joi.number().integer(),
+    done: Joi.boolean(),
+    pinned: Joi.boolean(),
+    image: Joi.string().allow('', null)
+  });
+  validateRequest(req, next, schema);
+}
+
+function updateTaskSchema(req, res, next) {
+  const schema = Joi.object({
+    data: Joi.alternatives().try(
+      Joi.string().max(10000),
+      Joi.array().items(Joi.object({
+        id: Joi.string().required(),
+        data: Joi.string().max(1000).allow(''),
+        done: Joi.boolean()
+      }))
+    ),
+    done: Joi.boolean(),
+    pinned: Joi.boolean(),
+    image: Joi.string().allow('', null)
+  });
+  validateRequest(req, next, schema);
+}
 
 async function getTasks(req, res, next) {
   taskService
@@ -50,8 +87,17 @@ async function deleteListItem(req, res, next) {
 }
 
 async function updateTask(req, res, next) {
+  // Whitelist allowed fields to prevent mass assignment
+  const allowedFields = ['data', 'done', 'pinned', 'image'];
+  const updates = {};
+  allowedFields.forEach(field => {
+    if (field in req.body) {
+      updates[field] = req.body[field];
+    }
+  });
+  
   taskService
-    .update(req.params.id, req.body)
+    .update(req.params.id, updates)
     .then((ret) => res.json(ret))
     .catch(next);
 }
@@ -72,10 +118,46 @@ async function getLinkMetadata(req, res, next) {
   }
 
   try {
+    const urlObj = new URL(url);
+    
+    // SSRF protection: block private/internal IP ranges and localhost
+    const hostname = urlObj.hostname.toLowerCase();
+    const blockedPatterns = [
+      /^localhost$/i,
+      /^127\./,
+      /^10\./,
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./,
+      /^192\.168\./,
+      /^169\.254\./,
+      /^::1$/,
+      /^fc00:/,
+      /^fe80:/,
+      /^metadata\.google\.internal$/i,
+      /169\.254\.169\.254/,
+    ];
+    
+    if (blockedPatterns.some(pattern => pattern.test(hostname))) {
+      return res.status(400).json({ error: 'Invalid URL: Cannot access private or internal resources' });
+    }
+    
+    // Only allow http and https protocols
+    if (!['http:', 'https:'].includes(urlObj.protocol)) {
+      return res.status(400).json({ error: 'Invalid URL: Only http and https protocols are allowed' });
+    }
+
     const response = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
       redirect: 'follow',
+      signal: AbortSignal.timeout(5000), // 5 second timeout
     });
+    
+    // Limit response size to prevent DoS
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const contentLength = response.headers.get('content-length');
+    if (contentLength && parseInt(contentLength) > maxSize) {
+      return res.status(400).json({ error: 'Response too large' });
+    }
+    
     const html = await response.text();
     
     const ogTitle = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/i)?.[1];
@@ -92,7 +174,6 @@ async function getLinkMetadata(req, res, next) {
       .replace(/&amp;/g, '&');
     
     // Try to find favicon - prefer dark mode version
-    const urlObj = new URL(url);
     const origin = urlObj.origin;
     
     // First check for dark mode favicon
