@@ -27,5 +27,13 @@ export function modelTask(sequelize) {
     image: { type: DataTypes.TEXT, allowNull: true },
   };
 
-  return sequelize.define('Task', taskAttributes);
+  const Task = sequelize.define('Task', taskAttributes);
+  
+  // Add indexes for better query performance
+  Task.addIndex = async function() {
+    await sequelize.query('CREATE INDEX IF NOT EXISTS idx_user_position ON Tasks(user_id, position)');
+    await sequelize.query('CREATE INDEX IF NOT EXISTS idx_user_done ON Tasks(user_id, done)');
+  };
+  
+  return Task;
 }

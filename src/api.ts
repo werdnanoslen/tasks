@@ -50,8 +50,28 @@ export async function moveTask(id: string, newPosition: number): Promise<Task> {
   return response.data;
 }
 
+// Cache for link metadata to avoid duplicate requests
+const linkMetadataCache = new Map<string, { data: { title: string; favicon: string; url: string }, timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export async function getLinkMetadata(url: string): Promise<{ title: string; favicon: string; url: string }> {
+  // Check cache first
+  const cached = linkMetadataCache.get(url);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.data;
+  }
+  
   const response = await client.post('/tasks/link-metadata', { url });
+  
+  // Store in cache
+  linkMetadataCache.set(url, { data: response.data, timestamp: Date.now() });
+  
+  // Clean up old cache entries (keep max 100)
+  if (linkMetadataCache.size > 100) {
+    const firstKey = linkMetadataCache.keys().next().value;
+    linkMetadataCache.delete(firstKey);
+  }
+  
   return response.data;
 }
 

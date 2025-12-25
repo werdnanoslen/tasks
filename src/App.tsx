@@ -64,12 +64,30 @@ export default function App() {
   }
 
   function toggleTaskDone(id, done) {
-    API.updateTask(id, { done: !done }).then(refreshTasks);
+    // Optimistic update
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === id ? { ...task, done: !done } : task
+      )
+    );
+    API.updateTask(id, { done: !done }).catch((err) => {
+      console.error(err);
+      refreshTasks(); // Revert on error
+    });
     setNarrator(`Task marked ${done ? 'un' : ''}done. Next task now focused.`);
   }
 
   function toggleTaskPinned(id, pinned) {
-    API.updateTask(id, { pinned: !pinned }).then(refreshTasks);
+    // Optimistic update
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === id ? { ...task, pinned: !pinned } : task
+      )
+    );
+    API.updateTask(id, { pinned: !pinned }).catch((err) => {
+      console.error(err);
+      refreshTasks(); // Revert on error
+    });
     setNarrator(`Task ${pinned ? 'un' : ''}pinned. Next task now focused.`);
   }
 

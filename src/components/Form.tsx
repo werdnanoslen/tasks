@@ -104,12 +104,17 @@ const Form = React.memo(function Form(props: FormProps) {
       const urls = allText.match(urlRegex) || [];
       
       if (urls.length > 0) {
-        Promise.all(
-          urls.map(url => API.getLinkMetadata(url).catch(() => null))
-        ).then(results => {
-          const validResults = results.filter(r => r !== null) as { title: string; favicon: string; url: string }[];
-          setLinkMetadataList(validResults);
-        });
+        // Debounce link metadata fetching
+        const timeoutId = setTimeout(() => {
+          Promise.all(
+            urls.map(url => API.getLinkMetadata(url).catch(() => null))
+          ).then(results => {
+            const validResults = results.filter(r => r !== null) as { title: string; favicon: string; url: string }[];
+            setLinkMetadataList(validResults);
+          });
+        }, 500); // 500ms debounce
+        
+        return () => clearTimeout(timeoutId);
       } else {
         setLinkMetadataList([]);
       }

@@ -50,14 +50,19 @@ function DataArea({
 
   useEffect(() => {
     if (urls.length > 0 && !newTask && showLinkPreview) {
-      Promise.all(
-        urls.map(url => 
-          API.getLinkMetadata(url).catch(() => null)
-        )
-      ).then(results => {
-        const validResults = results.filter(r => r !== null) as { title: string; favicon: string; url: string }[];
-        setLinkMetadataList(validResults);
-      });
+      // Debounce link metadata fetching
+      const timeoutId = setTimeout(() => {
+        Promise.all(
+          urls.map(url => 
+            API.getLinkMetadata(url).catch(() => null)
+          )
+        ).then(results => {
+          const validResults = results.filter(r => r !== null) as { title: string; favicon: string; url: string }[];
+          setLinkMetadataList(validResults);
+        });
+      }, 500); // 500ms debounce
+      
+      return () => clearTimeout(timeoutId);
     } else {
       setLinkMetadataList([]);
     }

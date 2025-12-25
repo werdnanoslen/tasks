@@ -31,4 +31,9 @@ export async function initialize() {
   DB.User = modelUser(sequelize);
   DB.Task = modelTask(sequelize);
   await sequelize.sync();
+  
+  // Create indexes for better performance
+  if (DB.Task.addIndex) {
+    await DB.Task.addIndex();
+  }
 }
