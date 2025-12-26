@@ -31,8 +31,35 @@ export function modelTask(sequelize) {
   
   // Add indexes for better query performance
   Task.addIndex = async function() {
-    await sequelize.query('CREATE INDEX IF NOT EXISTS idx_user_position ON Tasks(user_id, position)');
-    await sequelize.query('CREATE INDEX IF NOT EXISTS idx_user_done ON Tasks(user_id, done)');
+    try {
+      // Check if idx_user_position exists
+      const [rows] = await sequelize.query(
+        "SHOW INDEX FROM Tasks WHERE Key_name = 'idx_user_position'"
+      );
+      if (rows.length === 0) {
+        await sequelize.query('CREATE INDEX idx_user_position ON Tasks(user_id, position)');
+      }
+    } catch (err) {
+      // Index might already exist, ignore error
+      if (!err.message.includes('Duplicate key name')) {
+        console.error('Error creating idx_user_position:', err.message);
+      }
+    }
+    
+    try {
+      // Check if idx_user_done exists
+      const [rows] = await sequelize.query(
+        "SHOW INDEX FROM Tasks WHERE Key_name = 'idx_user_done'"
+      );
+      if (rows.length === 0) {
+        await sequelize.query('CREATE INDEX idx_user_done ON Tasks(user_id, done)');
+      }
+    } catch (err) {
+      // Index might already exist, ignore error
+      if (!err.message.includes('Duplicate key name')) {
+        console.error('Error creating idx_user_done:', err.message);
+      }
+    }
   };
   
   return Task;
