@@ -20,6 +20,7 @@ export default taskRouter;
 
 function addTaskSchema(req, res, next) {
   const schema = Joi.object({
+    id: Joi.string().uuid().required(),
     data: Joi.alternatives().try(
       Joi.string().max(10000),
       Joi.array().items(Joi.object({
