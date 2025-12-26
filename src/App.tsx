@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -51,7 +51,7 @@ export default function App() {
     setAuthed(status.isLoggedIn);
   }
 
-  function refreshTasks() {
+  const refreshTasks = useCallback(() => {
     API.getTasks()
       .then(setTasks)
       .catch((err) => {
@@ -61,9 +61,9 @@ export default function App() {
           console.error(err.response || err);
         }
       });
-  }
+  }, []);
 
-  function toggleTaskDone(id, done) {
+  const toggleTaskDone = useCallback((id, done) => {
     // Optimistic update
     setTasks(prevTasks => 
       prevTasks.map(task => 
@@ -75,9 +75,9 @@ export default function App() {
       refreshTasks(); // Revert on error
     });
     setNarrator(`Task marked ${done ? 'un' : ''}done. Next task now focused.`);
-  }
+  }, [refreshTasks]);
 
-  function toggleTaskPinned(id, pinned) {
+  const toggleTaskPinned = useCallback((id, pinned) => {
     // Optimistic update
     setTasks(prevTasks => 
       prevTasks.map(task => 
@@ -89,9 +89,9 @@ export default function App() {
       refreshTasks(); // Revert on error
     });
     setNarrator(`Task ${pinned ? 'un' : ''}pinned. Next task now focused.`);
-  }
+  }, [refreshTasks]);
 
-  function dragTask(event) {
+  const dragTask = useCallback((event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
       setTasks((items) => {
@@ -101,9 +101,9 @@ export default function App() {
         return arrayMove(items, oldIndex, newIndex);
       });
     }
-  }
+  }, [refreshTasks]);
 
-  function updateData(id: string, newData?: string | ListItem[], image?: File) {
+  const updateData = useCallback((id: string, newData?: string | ListItem[], image?: File) => {
     let updates: Partial<Task> = { ...(newData && { data: newData }) };
     if (image) {
       const imageForm = new FormData();
@@ -138,9 +138,9 @@ export default function App() {
         }
       });
     }
-  }
+  }, [refreshTasks]);
 
-  function addTask(data: string | ListItem[], image?: File) {
+  const addTask = useCallback((data: string | ListItem[], image?: File) => {
     let newTask: Task = {
       position: tasks.length + 1,
       id: crypto.randomUUID(),
@@ -160,16 +160,16 @@ export default function App() {
     } else {
       API.addTask(newTask).then(refreshTasks);
     }
-  }
+  }, [tasks.length, refreshTasks]);
 
-  function deleteTask(id: string) {
+  const deleteTask = useCallback((id: string) => {
     API.deleteTask(id)
       .then(refreshTasks)
       .catch((e) => console.error(e.response.data.message));
     setNarrator('Deleted task');
-  }
+  }, [refreshTasks]);
 
-  async function deleteListItem(taskId: string, itemId: string): Promise<void> {
+  const deleteListItem = useCallback(async (taskId: string, itemId: string): Promise<void> => {
     try {
       await API.deleteListItem(taskId, itemId);
       refreshTasks();
@@ -177,7 +177,7 @@ export default function App() {
     } catch (e: any) {
       console.error(e.response?.data?.message || e);
     }
-  }
+  }, [refreshTasks]);
 
   const filterList = FILTER_TASKS.map((data) => (
     <FilterButton
@@ -194,19 +194,28 @@ export default function App() {
   useEffect(() => {
     isAuthed();
     authed && refreshTasks();
-  }, [authed]);
+  }, [authed, refreshTasks]);
   useEffect(() => {
-    authed && console.table(tasks);
     if (prevTaskLength && tasks.length - prevTaskLength === -1) {
       listHeadingRef.current && listHeadingRef.current.focus();
     }
   }, [tasks, prevTaskLength, narrator, authed]);
 
+  // Memoize filtered task lists
+  const { pinnedTasks, unpinnedTasks } = useMemo(() => {
+    const filtered = tasks.filter(FILTER_MAP[filter]);
+    return {
+      pinnedTasks: filtered.filter(t => t.pinned),
+      unpinnedTasks: filtered.filter(t => !t.pinned)
+    };
+  }, [tasks, filter]);
+
+  // Memoize task IDs for DnD context
+  const taskIds = useMemo(() => tasks.map(t => t.id), [tasks]);
+
   const emptyAll = tasks.length === 0;
-  const emptyDone =
-    'Done' === filter && tasks.filter(FILTER_MAP['Done']).length === 0;
-  const emptyDoing =
-    'Doing' === filter && tasks.filter(FILTER_MAP['Doing']).length === 0;
+  const emptyDone = 'Done' === filter && pinnedTasks.length === 0 && unpinnedTasks.length === 0;
+  const emptyDoing = 'Doing' === filter && pinnedTasks.length === 0 && unpinnedTasks.length === 0;
   const emptyMsg =
     (emptyAll && 'No tasks added yet') ||
     (emptyDone && 'Nothing is marked done yet') ||
@@ -250,10 +259,7 @@ export default function App() {
       >
         <SortableContext items={tasks.map((t) => t.id)}>
           <ul>
-            {tasks
-              .filter(FILTER_MAP[filter])
-              .filter((t) => t.pinned)
-              .map(formSection)}
+            {pinnedTasks.map(formSection)}
           </ul>
         </SortableContext>
       </DndContext>
@@ -264,10 +270,7 @@ export default function App() {
       >
         <SortableContext items={tasks.map((t) => t.id)}>
           <ul>
-            {tasks
-              .filter(FILTER_MAP[filter])
-              .filter((t) => !t.pinned)
-              .map(formSection)}
+            {unpinnedTasks.map(formSection)}
           </ul>
         </SortableContext>
       </DndContext>

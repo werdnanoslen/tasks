@@ -23,7 +23,7 @@ interface DataAreaProps {
   showLinkPreview?: boolean;
 }
 
-function DataArea({
+const DataArea = React.memo(function DataArea({
   id,
   handleInput,
   setIsEditing,
@@ -124,5 +124,5 @@ function DataArea({
       />
     </>
   );
-}
+});
 export default DataArea;

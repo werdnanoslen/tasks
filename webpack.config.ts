@@ -1,12 +1,16 @@
 module.exports = {
   entry: './src/App.tsx',
-  mode: 'development',
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   output: {
     filename: './bundle.js'
   },
   resolve: {
     // changed from extensions: [".js", ".jsx"]
     extensions: [".ts", ".tsx", ".js", ".jsx"]
+  },
+  optimization: {
+    usedExports: true,
+    sideEffects: false,
   },
   module: {
     rules: [

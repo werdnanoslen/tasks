@@ -1,6 +1,12 @@
 import React from 'react';
 
-function FilterButton(props) {
+interface FilterButtonProps {
+  isPressed: boolean;
+  setFilter: (filter: string) => void;
+  data: string;
+}
+
+const FilterButton = React.memo(function FilterButton(props: FilterButtonProps) {
   return (
     <button
       type="button"
@@ -12,6 +18,6 @@ function FilterButton(props) {
       {props.data}
     </button>
   );
-}
+});
 
 export default FilterButton;
