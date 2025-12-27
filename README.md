@@ -1,7 +1,6 @@
 A web app for keeping track of tasks
 
-<img alt="Demo on phone" src="public/demo-screenshot.png" width="500px"/>
-
+<img alt="Demo on phone" src="./public/demo-screenshot.png" width="500px" />
 
 # Setup
 
@@ -9,4 +8,24 @@ First, be sure mysql is running, `npm install` packages, and create an `.env` fi
 
 Then start the server (`npm run server`) and app (`npm start`). Open [localhost:3000](http://localhost:3000) to view it in your browser. The page will reload when you make changes. Run with `--demo` arg to create demo data.
 
-Build the app for production with `npm run build` to the `build` folder. The build is minified and the filenames include the hashes. See the [create-react-app deployment docs](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Android App
+
+The front-end is configured to build as a native Android app using Capacitor. After making changes to the web app, rebuild and sync:
+
+```bash
+npm run build && npx cap sync android
+```
+
+The Android project is located in the `/android` folder. App configuration can be modified in `capacitor.config.ts`.
+
+Open in Android Studio:
+
+```bash
+npx cap open android
+```
+
+Or build from command line (requires Android SDK):
+
+```bash
+cd android && ./gradlew assembleDebug
+```
