@@ -241,9 +241,6 @@ export default function App() {
     };
   }, [tasks, filter]);
 
-  // Memoize task IDs for DnD context
-  const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
-
   const emptyAll = tasks.length === 0;
   const emptyDone =
     'Done' === filter && pinnedTasks.length === 0 && unpinnedTasks.length === 0;
