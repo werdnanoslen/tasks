@@ -8,6 +8,15 @@ First, be sure mysql is running, `npm install` packages, and create an `.env` fi
 
 Then start the server (`npm run server`) and app (`npm start`). Open [localhost:3000](http://localhost:3000) to view it in your browser. The page will reload when you make changes. Run with `--demo` arg to create demo data.
 
+## Git Hooks
+
+Git hooks are configured to automatically:
+
+- **pre-commit**: Run Prettier on staged files
+- **pre-push**: Build the app and sync to Android
+
+This ensures code is formatted and the Android app is up-to-date before pushing changes.
+
 # Android App
 
 The front-end is configured to build as a native Android app using Capacitor. After making changes to the web app, rebuild and sync:
