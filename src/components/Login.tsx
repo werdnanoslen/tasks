@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { registerUser, loginUser } from '../api';
+import { registerUser, loginUser, setServerURL, getServerURL } from '../api';
 
 function Login({ isAuthed }) {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [serverURL, setServerURLState] = useState(getServerURL());
   const [error, setError] = useState('');
 
   const login = async () => {
+    // Update server URL before login
+    setServerURL(serverURL);
+    
     loginUser({
       username,
       password,
@@ -42,6 +46,15 @@ function Login({ isAuthed }) {
           {error}
         </p>
       )}
+      <label htmlFor="serverURL">Server URL</label>
+      <input
+        type="url"
+        id="serverURL"
+        required
+        value={serverURL}
+        onChange={(e) => setServerURLState(e.target.value)}
+      />
+
       <label htmlFor="username">Username</label>
       <input
         type="text"

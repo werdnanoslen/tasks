@@ -2,10 +2,27 @@ import axios from 'axios';
 import { Task } from './tasks/task.model';
 import { Credentials } from './users/user.model';
 
+function getBaseURL(): string {
+  const savedURL = localStorage.getItem('serverURL');
+  if (savedURL) {
+    return savedURL;
+  }
+  return `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`;
+}
+
 const client = axios.create({
-  baseURL: `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
+  baseURL: getBaseURL(),
   withCredentials: true,
 });
+
+export function setServerURL(url: string): void {
+  localStorage.setItem('serverURL', url);
+  client.defaults.baseURL = url;
+}
+
+export function getServerURL(): string {
+  return localStorage.getItem('serverURL') || `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`;
+}
 
 // TASK
 
