@@ -6,7 +6,9 @@ interface FilterButtonProps {
   data: string;
 }
 
-const FilterButton = React.memo(function FilterButton(props: FilterButtonProps) {
+const FilterButton = React.memo(function FilterButton(
+  props: FilterButtonProps
+) {
   return (
     <button
       type="button"

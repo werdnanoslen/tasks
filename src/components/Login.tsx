@@ -10,7 +10,7 @@ function Login({ isAuthed }) {
   const login = async () => {
     // Update server URL before login
     setServerURL(serverURL);
-    
+
     loginUser({
       username,
       password,

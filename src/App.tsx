@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import {
   DndContext,
   closestCenter,
@@ -63,121 +69,146 @@ export default function App() {
       });
   }, []);
 
-  const toggleTaskDone = useCallback((id, done) => {
-    // Optimistic update
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === id ? { ...task, done: !done } : task
-      )
-    );
-    API.updateTask(id, { done: !done }).catch((err) => {
-      console.error(err);
-      refreshTasks(); // Revert on error
-    });
-    setNarrator(`Task marked ${done ? 'un' : ''}done. Next task now focused.`);
-  }, [refreshTasks]);
-
-  const toggleTaskPinned = useCallback((id, pinned) => {
-    // Optimistic update
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === id ? { ...task, pinned: !pinned } : task
-      )
-    );
-    API.updateTask(id, { pinned: !pinned }).catch((err) => {
-      console.error(err);
-      refreshTasks(); // Revert on error
-    });
-    setNarrator(`Task ${pinned ? 'un' : ''}pinned. Next task now focused.`);
-  }, [refreshTasks]);
-
-  const dragTask = useCallback((event) => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setTasks((items) => {
-        const oldIndex = items.findIndex(({ id }) => id === active.id);
-        const newIndex = items.findIndex(({ id }) => id === over.id);
-        API.moveTask(active.id, newIndex + 1).then(refreshTasks);
-        return arrayMove(items, oldIndex, newIndex);
+  const toggleTaskDone = useCallback(
+    (id, done) => {
+      // Optimistic update
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id ? { ...task, done: !done } : task
+        )
+      );
+      API.updateTask(id, { done: !done }).catch((err) => {
+        console.error(err);
+        refreshTasks(); // Revert on error
       });
-    }
-  }, [refreshTasks]);
+      setNarrator(
+        `Task marked ${done ? 'un' : ''}done. Next task now focused.`
+      );
+    },
+    [refreshTasks]
+  );
 
-  const updateData = useCallback((id: string, newData?: string | ListItem[], image?: File) => {
-    let updates: Partial<Task> = { ...(newData && { data: newData }) };
-    if (image) {
-      const imageForm = new FormData();
-      imageForm.append('upload', image);
-      API.addImage(imageForm)
-        .then((imagePath) => {
-          updates.image = imagePath;
-          API.updateTask(id, updates).then((ret) => {
-            if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
-              setError('Task content is too long. No changes have been saved.');
-            } else {
-              setError('');
-              refreshTasks();
-            }
-          });
-        })
-        .catch(console.error);
-    } else if (image === undefined && newData === undefined) {
-      // Explicitly delete the image when both are undefined
-      updates.image = '';
-      API.updateTask(id, updates).then((ret) => {
-        setError('');
-        refreshTasks();
+  const toggleTaskPinned = useCallback(
+    (id, pinned) => {
+      // Optimistic update
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id ? { ...task, pinned: !pinned } : task
+        )
+      );
+      API.updateTask(id, { pinned: !pinned }).catch((err) => {
+        console.error(err);
+        refreshTasks(); // Revert on error
       });
-    } else {
-      API.updateTask(id, updates).then((ret) => {
-        if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
-          setError('Task content is too long. No changes have been saved.');
-        } else {
+      setNarrator(`Task ${pinned ? 'un' : ''}pinned. Next task now focused.`);
+    },
+    [refreshTasks]
+  );
+
+  const dragTask = useCallback(
+    (event) => {
+      const { active, over } = event;
+      if (active.id !== over.id) {
+        setTasks((items) => {
+          const oldIndex = items.findIndex(({ id }) => id === active.id);
+          const newIndex = items.findIndex(({ id }) => id === over.id);
+          API.moveTask(active.id, newIndex + 1).then(refreshTasks);
+          return arrayMove(items, oldIndex, newIndex);
+        });
+      }
+    },
+    [refreshTasks]
+  );
+
+  const updateData = useCallback(
+    (id: string, newData?: string | ListItem[], image?: File) => {
+      let updates: Partial<Task> = { ...(newData && { data: newData }) };
+      if (image) {
+        const imageForm = new FormData();
+        imageForm.append('upload', image);
+        API.addImage(imageForm)
+          .then((imagePath) => {
+            updates.image = imagePath;
+            API.updateTask(id, updates).then((ret) => {
+              if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
+                setError(
+                  'Task content is too long. No changes have been saved.'
+                );
+              } else {
+                setError('');
+                refreshTasks();
+              }
+            });
+          })
+          .catch(console.error);
+      } else if (image === undefined && newData === undefined) {
+        // Explicitly delete the image when both are undefined
+        updates.image = '';
+        API.updateTask(id, updates).then((ret) => {
           setError('');
           refreshTasks();
-        }
-      });
-    }
-  }, [refreshTasks]);
+        });
+      } else {
+        API.updateTask(id, updates).then((ret) => {
+          if (ret.code && ret.code === 'ER_DATA_TOO_LONG') {
+            setError('Task content is too long. No changes have been saved.');
+          } else {
+            setError('');
+            refreshTasks();
+          }
+        });
+      }
+    },
+    [refreshTasks]
+  );
 
-  const addTask = useCallback((data: string | ListItem[], image?: File) => {
-    let newTask: Task = {
-      position: tasks.length + 1,
-      id: crypto.randomUUID(),
-      data: data ?? '',
-      done: false,
-      pinned: false,
-    };
-    if (image) {
-      const imageForm = new FormData();
-      imageForm.append('upload', image);
-      API.addImage(imageForm)
-        .then((imagePath) => {
-          newTask.image = imagePath;
-          API.addTask(newTask).then(refreshTasks).catch(console.error);
-        })
-        .catch(console.error);
-    } else {
-      API.addTask(newTask).then(refreshTasks);
-    }
-  }, [tasks.length, refreshTasks]);
+  const addTask = useCallback(
+    (data: string | ListItem[], image?: File) => {
+      let newTask: Task = {
+        position: tasks.length + 1,
+        id: crypto.randomUUID(),
+        data: data ?? '',
+        done: false,
+        pinned: false,
+      };
+      if (image) {
+        const imageForm = new FormData();
+        imageForm.append('upload', image);
+        API.addImage(imageForm)
+          .then((imagePath) => {
+            newTask.image = imagePath;
+            API.addTask(newTask).then(refreshTasks).catch(console.error);
+          })
+          .catch(console.error);
+      } else {
+        API.addTask(newTask).then(refreshTasks);
+      }
+    },
+    [tasks.length, refreshTasks]
+  );
 
-  const deleteTask = useCallback((id: string) => {
-    API.deleteTask(id)
-      .then(refreshTasks)
-      .catch((e) => console.error(e.response.data.message));
-    setNarrator('Deleted task');
-  }, [refreshTasks]);
+  const deleteTask = useCallback(
+    (id: string) => {
+      API.deleteTask(id)
+        .then(refreshTasks)
+        .catch((e) => console.error(e.response.data.message));
+      setNarrator('Deleted task');
+    },
+    [refreshTasks]
+  );
 
-  const deleteListItem = useCallback(async (taskId: string, itemId: string): Promise<void> => {
-    try {
-      await API.deleteListItem(taskId, itemId);
-      refreshTasks();
-      setNarrator('Deleted list item');
-    } catch (e: any) {
-      console.error(e.response?.data?.message || e);
-    }
-  }, [refreshTasks]);
+  const deleteListItem = useCallback(
+    async (taskId: string, itemId: string): Promise<void> => {
+      try {
+        await API.deleteListItem(taskId, itemId);
+        refreshTasks();
+        setNarrator('Deleted list item');
+      } catch (e: any) {
+        console.error(e.response?.data?.message || e);
+      }
+    },
+    [refreshTasks]
+  );
 
   const filterList = FILTER_TASKS.map((data) => (
     <FilterButton
@@ -205,17 +236,21 @@ export default function App() {
   const { pinnedTasks, unpinnedTasks } = useMemo(() => {
     const filtered = tasks.filter(FILTER_MAP[filter]);
     return {
-      pinnedTasks: filtered.filter(t => t.pinned),
-      unpinnedTasks: filtered.filter(t => !t.pinned)
+      pinnedTasks: filtered.filter((t) => t.pinned),
+      unpinnedTasks: filtered.filter((t) => !t.pinned),
     };
   }, [tasks, filter]);
 
   // Memoize task IDs for DnD context
-  const taskIds = useMemo(() => tasks.map(t => t.id), [tasks]);
+  const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
 
   const emptyAll = tasks.length === 0;
-  const emptyDone = 'Done' === filter && pinnedTasks.length === 0 && unpinnedTasks.length === 0;
-  const emptyDoing = 'Doing' === filter && pinnedTasks.length === 0 && unpinnedTasks.length === 0;
+  const emptyDone =
+    'Done' === filter && pinnedTasks.length === 0 && unpinnedTasks.length === 0;
+  const emptyDoing =
+    'Doing' === filter &&
+    pinnedTasks.length === 0 &&
+    unpinnedTasks.length === 0;
   const emptyMsg =
     (emptyAll && 'No tasks added yet') ||
     (emptyDone && 'Nothing is marked done yet') ||
@@ -258,9 +293,7 @@ export default function App() {
         onDragEnd={dragTask}
       >
         <SortableContext items={tasks.map((t) => t.id)}>
-          <ul>
-            {pinnedTasks.map(formSection)}
-          </ul>
+          <ul>{pinnedTasks.map(formSection)}</ul>
         </SortableContext>
       </DndContext>
       <DndContext
@@ -269,9 +302,7 @@ export default function App() {
         onDragEnd={dragTask}
       >
         <SortableContext items={tasks.map((t) => t.id)}>
-          <ul>
-            {unpinnedTasks.map(formSection)}
-          </ul>
+          <ul>{unpinnedTasks.map(formSection)}</ul>
         </SortableContext>
       </DndContext>
     </>

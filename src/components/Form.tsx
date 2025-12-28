@@ -1,4 +1,11 @@
-import React, { useState, useEffect, SyntheticEvent, useCallback, useRef, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  SyntheticEvent,
+  useCallback,
+  useRef,
+  useMemo,
+} from 'react';
 import classNames from 'classnames';
 import * as API from '../api';
 import {
@@ -85,7 +92,7 @@ const Form = React.memo(function Form(props: FormProps) {
 
   const lastSavedChecklistData = useRef<ListItem[]>(iChecklistData);
   const lastSavedData = useRef<any>(iChecklist ? '' : props.data);
-  
+
   // Sync lastSaved refs when props change (e.g., after external update)
   useEffect(() => {
     if (!isEditing) {
@@ -95,25 +102,31 @@ const Form = React.memo(function Form(props: FormProps) {
   }, [props.data, iChecklist, iChecklistData, isEditing]);
 
   // Extract URLs from checklist data for link previews
-  const [linkMetadataList, setLinkMetadataList] = useState<{ title: string; favicon: string; url: string }[]>([]);
-  
+  const [linkMetadataList, setLinkMetadataList] = useState<
+    { title: string; favicon: string; url: string }[]
+  >([]);
+
   useEffect(() => {
     if (checklist && !newTask) {
       const urlRegex = /https?:\/\/[^\s]+/gi;
-      const allText = checklistData.map(item => item.data).join(' ');
+      const allText = checklistData.map((item) => item.data).join(' ');
       const urls = allText.match(urlRegex) || [];
-      
+
       if (urls.length > 0) {
         // Debounce link metadata fetching
         const timeoutId = setTimeout(() => {
           Promise.all(
-            urls.map(url => API.getLinkMetadata(url).catch(() => null))
-          ).then(results => {
-            const validResults = results.filter(r => r !== null) as { title: string; favicon: string; url: string }[];
+            urls.map((url) => API.getLinkMetadata(url).catch(() => null))
+          ).then((results) => {
+            const validResults = results.filter((r) => r !== null) as {
+              title: string;
+              favicon: string;
+              url: string;
+            }[];
             setLinkMetadataList(validResults);
           });
         }, 500); // 500ms debounce
-        
+
         return () => clearTimeout(timeoutId);
       } else {
         setLinkMetadataList([]);
@@ -125,7 +138,9 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
-    const lastSaved = checklist ? lastSavedChecklistData.current : lastSavedData.current;
+    const lastSaved = checklist
+      ? lastSavedChecklistData.current
+      : lastSavedData.current;
     const newStuff = checklist ? checklistData : data;
     if (newTask) {
       if (props.addTask) {
@@ -139,15 +154,17 @@ const Form = React.memo(function Form(props: FormProps) {
       lastSavedChecklistData.current = [NewChecklistItem()];
     } else {
       // For arrays (checklists), compare JSON strings; for strings, compare directly
-      const hasChanged = checklist 
+      const hasChanged = checklist
         ? JSON.stringify(lastSaved) !== JSON.stringify(newStuff)
         : lastSaved !== newStuff;
-      
+
       if (hasChanged && props.updateData) {
         props.updateData(props.id, newStuff, imagePreview);
         // Update last saved state after successful save
         if (checklist) {
-          lastSavedChecklistData.current = JSON.parse(JSON.stringify(checklistData));
+          lastSavedChecklistData.current = JSON.parse(
+            JSON.stringify(checklistData)
+          );
         } else {
           lastSavedData.current = data;
         }
@@ -283,16 +300,21 @@ const Form = React.memo(function Form(props: FormProps) {
     return (
       <>
         {linkMetadataList.map((linkMetadata, index) => (
-          <a 
+          <a
             key={linkMetadata.url + index}
-            href={linkMetadata.url} 
-            target="_blank" 
-            rel="noopener noreferrer" 
+            href={linkMetadata.url}
+            target="_blank"
+            rel="noopener noreferrer"
             className="link-button"
             title={linkMetadata.title}
           >
             {linkMetadata.favicon && (
-              <img src={linkMetadata.favicon} alt="" className="link-favicon" onError={(e) => e.currentTarget.style.display = 'none'} />
+              <img
+                src={linkMetadata.favicon}
+                alt=""
+                className="link-favicon"
+                onError={(e) => (e.currentTarget.style.display = 'none')}
+              />
             )}
             <span className="link-title">{linkMetadata.title}</span>
           </a>
@@ -340,7 +362,8 @@ const Form = React.memo(function Form(props: FormProps) {
     const reader = new FileReader();
     reader.onload = () => setImage(reader.result as string);
     if (newImage) reader.readAsDataURL(newImage);
-    if (!newTask && props.updateData) props.updateData(props.id, null, newImage);
+    if (!newTask && props.updateData)
+      props.updateData(props.id, null, newImage);
   }
 
   function removeImage() {
@@ -381,11 +404,7 @@ const Form = React.memo(function Form(props: FormProps) {
       <button type="submit" className="btn visually-hidden">
         Save
       </button>
-      <button
-        type="button"
-        className="btn visually-hidden"
-        {...listeners}
-      >
+      <button type="button" className="btn visually-hidden" {...listeners}>
         Move
       </button>
       <button
@@ -546,6 +565,6 @@ const Form = React.memo(function Form(props: FormProps) {
       </form>
     </li>
   );
-})
+});
 
 export default Form;

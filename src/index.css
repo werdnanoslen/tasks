@@ -104,7 +104,8 @@ form.isEditing {
 form > .input {
   width: 100%;
 }
-input[type='checkbox'], textarea {
+input[type='checkbox'],
+textarea {
   margin-top: 0.5rem;
 }
 input[type='checkbox'] {
@@ -253,7 +254,7 @@ main > ul {
   list-style-type: none;
   cursor: grab;
   touch-action: none;
-  
+
   &[aria-pressed='true'] {
     cursor: grabbing;
   }
@@ -366,4 +367,3 @@ footer {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-

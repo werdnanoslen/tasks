@@ -41,7 +41,12 @@ async function _delete(taskId, itemId?) {
       `${process.env.UPLOAD_WEBROOT}/`
     )[1];
     // Prevent path traversal attacks
-    if (filename && !filename.includes('..') && !filename.includes('/') && !filename.includes('\\')) {
+    if (
+      filename &&
+      !filename.includes('..') &&
+      !filename.includes('/') &&
+      !filename.includes('\\')
+    ) {
       const filePath = path.join(process.cwd(), 'public', 'storage', filename);
       fs.unlink(filePath, (err) => {
         if (err) console.error('Error deleting image file:', err);
@@ -70,21 +75,26 @@ export async function update(id: string, fields: Partial<Task>) {
     fields.data = JSON.stringify(fields.data);
   }
   const task = await getTask(id);
-  
+
   // If image field is being set to empty string, delete the old image file
   if (fields.image === '' && task.image) {
     const filename: string = task.image.split(
       `${process.env.UPLOAD_WEBROOT}/`
     )[1];
     // Prevent path traversal attacks
-    if (filename && !filename.includes('..') && !filename.includes('/') && !filename.includes('\\')) {
+    if (
+      filename &&
+      !filename.includes('..') &&
+      !filename.includes('/') &&
+      !filename.includes('\\')
+    ) {
       const filePath = path.join(process.cwd(), 'public', 'storage', filename);
       fs.unlink(filePath, (err) => {
         if (err) console.error('Error deleting image file:', err);
       });
     }
   }
-  
+
   await task.update(fields);
   await task.save();
   return task.get();
@@ -106,9 +116,7 @@ export async function move(id: string, newPos: number) {
   let insertIndex = Math.max(0, Math.min(newPos - 1, allTasks.length));
   allTasks.splice(insertIndex, 0, movedTask);
   // Re-sequence all positions
-  await Promise.all(
-    allTasks.map((t, idx) => t.update({ position: idx + 1 }))
-  );
+  await Promise.all(allTasks.map((t, idx) => t.update({ position: idx + 1 })));
   return 1;
 }
 

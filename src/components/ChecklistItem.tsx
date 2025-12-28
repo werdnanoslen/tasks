@@ -41,7 +41,7 @@ const ChecklistItem = React.memo(function ChecklistItem({
         >
           <span className="visually-hidden">Move list item</span>
           <span className="ascii-icon" aria-hidden="true">
-            {String.fromCharCode(0x205E) + String.fromCharCode(0x205E)}
+            {String.fromCharCode(0x205e) + String.fromCharCode(0x205e)}
           </span>
         </span>
         <input

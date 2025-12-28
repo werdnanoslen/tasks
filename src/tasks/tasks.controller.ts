@@ -21,18 +21,22 @@ export default taskRouter;
 function addTaskSchema(req, res, next) {
   const schema = Joi.object({
     id: Joi.string().uuid().required(),
-    data: Joi.alternatives().try(
-      Joi.string().max(10000),
-      Joi.array().items(Joi.object({
-        id: Joi.string().required(),
-        data: Joi.string().max(1000).allow(''),
-        done: Joi.boolean()
-      }))
-    ).required(),
+    data: Joi.alternatives()
+      .try(
+        Joi.string().max(10000),
+        Joi.array().items(
+          Joi.object({
+            id: Joi.string().required(),
+            data: Joi.string().max(1000).allow(''),
+            done: Joi.boolean(),
+          })
+        )
+      )
+      .required(),
     position: Joi.number().integer(),
     done: Joi.boolean(),
     pinned: Joi.boolean(),
-    image: Joi.string().allow('', null)
+    image: Joi.string().allow('', null),
   });
   validateRequest(req, next, schema);
 }
@@ -41,15 +45,17 @@ function updateTaskSchema(req, res, next) {
   const schema = Joi.object({
     data: Joi.alternatives().try(
       Joi.string().max(10000),
-      Joi.array().items(Joi.object({
-        id: Joi.string().required(),
-        data: Joi.string().max(1000).allow(''),
-        done: Joi.boolean()
-      }))
+      Joi.array().items(
+        Joi.object({
+          id: Joi.string().required(),
+          data: Joi.string().max(1000).allow(''),
+          done: Joi.boolean(),
+        })
+      )
     ),
     done: Joi.boolean(),
     pinned: Joi.boolean(),
-    image: Joi.string().allow('', null)
+    image: Joi.string().allow('', null),
   });
   validateRequest(req, next, schema);
 }
@@ -91,12 +97,12 @@ async function updateTask(req, res, next) {
   // Whitelist allowed fields to prevent mass assignment
   const allowedFields = ['data', 'done', 'pinned', 'image'];
   const updates = {};
-  allowedFields.forEach(field => {
+  allowedFields.forEach((field) => {
     if (field in req.body) {
       updates[field] = req.body[field];
     }
   });
-  
+
   taskService
     .update(req.params.id, updates)
     .then((ret) => res.json(ret))
@@ -120,7 +126,7 @@ async function getLinkMetadata(req, res, next) {
 
   try {
     const urlObj = new URL(url);
-    
+
     // SSRF protection: block private/internal IP ranges and localhost
     const hostname = urlObj.hostname.toLowerCase();
     const blockedPatterns = [
@@ -136,14 +142,18 @@ async function getLinkMetadata(req, res, next) {
       /^metadata\.google\.internal$/i,
       /169\.254\.169\.254/,
     ];
-    
-    if (blockedPatterns.some(pattern => pattern.test(hostname))) {
-      return res.status(400).json({ error: 'Invalid URL: Cannot access private or internal resources' });
+
+    if (blockedPatterns.some((pattern) => pattern.test(hostname))) {
+      return res.status(400).json({
+        error: 'Invalid URL: Cannot access private or internal resources',
+      });
     }
-    
+
     // Only allow http and https protocols
     if (!['http:', 'https:'].includes(urlObj.protocol)) {
-      return res.status(400).json({ error: 'Invalid URL: Only http and https protocols are allowed' });
+      return res.status(400).json({
+        error: 'Invalid URL: Only http and https protocols are allowed',
+      });
     }
 
     const response = await fetch(url, {
@@ -151,43 +161,52 @@ async function getLinkMetadata(req, res, next) {
       redirect: 'follow',
       signal: AbortSignal.timeout(5000), // 5 second timeout
     });
-    
+
     // Limit response size to prevent DoS
     const maxSize = 5 * 1024 * 1024; // 5MB
     const contentLength = response.headers.get('content-length');
     if (contentLength && parseInt(contentLength) > maxSize) {
       return res.status(400).json({ error: 'Response too large' });
     }
-    
+
     const html = await response.text();
-    
-    const ogTitle = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/i)?.[1];
+
+    const ogTitle = html.match(
+      /<meta[^>]*property="og:title"[^>]*content="([^"]+)"/i
+    )?.[1];
     let title = ogTitle || html.match(/<title>([^<]+)<\/title>/i)?.[1] || url;
-    
+
     // Decode HTML entities
     title = title
       .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
-      .replace(/&#x([0-9a-f]+);/gi, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+      .replace(/&#x([0-9a-f]+);/gi, (match, hex) =>
+        String.fromCharCode(parseInt(hex, 16))
+      )
       .replace(/&quot;/g, '"')
       .replace(/&apos;/g, "'")
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&amp;/g, '&');
-    
+
     // Try to find favicon - prefer dark mode version
     const origin = urlObj.origin;
-    
+
     // First check for dark mode favicon
-    let favicon = html.match(/<link[^>]*rel="icon"[^>]*media="[^"]*dark[^"]*"[^>]*href="([^"]+)"/i)?.[1];
-    
+    let favicon = html.match(
+      /<link[^>]*rel="icon"[^>]*media="[^"]*dark[^"]*"[^>]*href="([^"]+)"/i
+    )?.[1];
+
     // Fallback to standard favicon
     if (!favicon) {
-      favicon = html.match(/<link[^>]*rel="icon"[^>]*href="([^"]+)"/i)?.[1] || 
-                html.match(/<link[^>]*rel="shortcut icon"[^>]*href="([^"]+)"/i)?.[1];
+      favicon =
+        html.match(/<link[^>]*rel="icon"[^>]*href="([^"]+)"/i)?.[1] ||
+        html.match(/<link[^>]*rel="shortcut icon"[^>]*href="([^"]+)"/i)?.[1];
     }
-    
+
     if (favicon && !favicon.startsWith('http')) {
-      favicon = favicon.startsWith('/') ? `${origin}${favicon}` : `${origin}/${favicon}`;
+      favicon = favicon.startsWith('/')
+        ? `${origin}${favicon}`
+        : `${origin}/${favicon}`;
     }
     if (!favicon) {
       favicon = `${origin}/favicon.ico`;
