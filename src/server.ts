@@ -43,6 +43,15 @@ APP.use((req, res, next) => {
   const origin = req.headers.origin;
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'X-Requested-With,content-type, Accept'
+    );
     return res.sendStatus(200);
   }
   if (origin && allowedDomains.includes(origin)) {
