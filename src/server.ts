@@ -33,14 +33,9 @@ APP.use((req, res, next) => {
 });
 
 APP.use((req, res, next) => {
-  const allowedDomains = [
-    'http://localhost:3000',
-    'https://localhost:3000',
-    'https://localhost',
-    'https://andyhub.com',
-    `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
-    `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`,
-  ];
+  const allowedDomains = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .filter(Boolean);
   const origin = req.headers.origin;
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
@@ -152,8 +147,8 @@ initialize()
   })
   .catch(console.error);
 
-APP.listen(process.env.REACT_APP_SERVER_PORT, () => {
+APP.listen(process.env.SERVER_PORT, () => {
   console.log(
-    `Server started on ${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}${APP.mountpath}`
+    `Server started on ${process.env.BASE_URL}:${process.env.SERVER_PORT}${APP.mountpath ?? ''}`
   );
 });

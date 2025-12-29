@@ -7,13 +7,14 @@ function getBaseURL(): string {
   if (savedURL) {
     return savedURL;
   }
-  const baseURL = process.env.REACT_APP_BASE_URL;
-  const port = process.env.REACT_APP_SERVER_PORT;
+  const baseURL = process.env.BASE_URL;
+  const port = process.env.SERVER_PORT;
   // Only add port if it's not a standard port (80/443)
-  if (port && port !== 80 && port !== 443) {
-    return `${baseURL}:${port}`;
+  const portNumber = port ? Number(port) : undefined;
+  if (portNumber && portNumber !== 80 && portNumber !== 443) {
+    return `${baseURL}:${portNumber}`;
   }
-  return baseURL;
+  return baseURL ?? '';
 }
 
 const client = axios.create({
@@ -30,12 +31,13 @@ export function getServerURL(): string {
   const saved = localStorage.getItem('serverURL');
   if (saved) return saved;
 
-  const baseURL = process.env.REACT_APP_BASE_URL;
-  const port = process.env.REACT_APP_SERVER_PORT;
-  if (port && port !== 80 && port !== 443) {
-    return `${baseURL}:${port}`;
+  const baseURL = process.env.BASE_URL;
+  const port = process.env.SERVER_PORT;
+  const portNumber = port ? Number(port) : undefined;
+  if (portNumber && portNumber !== 80 && portNumber !== 443) {
+    return `${baseURL}:${portNumber}`;
   }
-  return baseURL;
+  return baseURL ?? '';
 }
 
 // TASK

@@ -6,12 +6,13 @@ declare global {
       MYSQL_PASSWORD: string;
       MYSQL_DATABASE: string;
       NODE_ENV: string;
-      PORT: number;
-      REACT_APP_BASE_URL: string;
-      REACT_APP_SERVER_PORT: number;
+      APP_PORT: number;
+      SERVER_PORT: number;
+      BASE_URL: string;
       TOKEN_SECRET: jwt.Secret;
       UPLOAD_PATH: string;
       UPLOAD_WEBROOT: string;
+      ALLOWED_ORIGINS: string;
     }
   }
 }
