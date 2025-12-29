@@ -34,7 +34,7 @@ function login(req, res, next) {
         .cookie('token', user.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
           maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
         })
         .send({
@@ -53,7 +53,7 @@ function logout(req, res, next) {
         .cookie('token', null, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
           maxAge: 0,
         })
         .json({
@@ -90,6 +90,8 @@ function register(req, res, next) {
       res
         .cookie('token', ret, {
           httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
           maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age,
         })
         .json({
