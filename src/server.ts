@@ -36,6 +36,7 @@ APP.use((req, res, next) => {
   const allowedDomains = [
     'http://localhost:3000',
     'https://localhost:3000',
+    'https://localhost',
     'https://andyhub.com',
     `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
     `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`,
