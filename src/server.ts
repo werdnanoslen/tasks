@@ -41,6 +41,10 @@ APP.use((req, res, next) => {
     `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`,
   ];
   const origin = req.headers.origin;
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    return res.sendStatus(200);
+  }
   if (origin && allowedDomains.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
