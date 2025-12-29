@@ -33,13 +33,15 @@ APP.use((req, res, next) => {
 });
 
 APP.use((req, res, next) => {
-  var allowedDomains = [
+  const allowedDomains = [
+    'http://localhost',
+    'https://localhost',
+    'https://andyhub.com',
     `${process.env.REACT_APP_BASE_URL}:${process.env.REACT_APP_SERVER_PORT}`,
     `${process.env.REACT_APP_BASE_URL}:${process.env.PORT}`,
-    'https://localhost',
   ];
-  var origin = req.headers.origin;
-  if (origin && allowedDomains.indexOf(origin) > -1) {
+  const origin = req.headers.origin;
+  if (origin && allowedDomains.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   res.setHeader(

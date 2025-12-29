@@ -17,7 +17,8 @@ function Login({ isAuthed }) {
     })
       .then(isAuthed)
       .catch((err) => {
-        const msg = err.response?.data.message ?? err.message;
+        const msg =
+          err.response?.data?.message || err.message || 'Network error';
         setError(msg);
       });
   };
@@ -32,7 +33,9 @@ function Login({ isAuthed }) {
       })
         .then(login)
         .catch((err) => {
-          setError(err.response.data.message);
+          const msg =
+            err.response?.data?.message || err.message || 'Network error';
+          setError(msg);
         });
     } else {
       login();
