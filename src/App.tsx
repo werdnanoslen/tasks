@@ -25,6 +25,7 @@ import FilterButton from './components/FilterButton';
 import { Task, ListItem } from './tasks/task.model';
 import * as API from './api';
 import usePrevious from './hooks';
+import { errorToast } from './errorToast';
 
 const FILTER_MAP = {
   Doing: (task: Task) => !task.done,
@@ -64,7 +65,7 @@ export default function App() {
         if (err.response?.status === 401) {
           setAuthed(false);
         } else {
-          console.error(err.response || err);
+          errorToast(err.response || err);
         }
       });
   }, []);
@@ -78,7 +79,7 @@ export default function App() {
         )
       );
       API.updateTask(id, { done: !done }).catch((err) => {
-        console.error(err);
+        errorToast(err);
         refreshTasks(); // Revert on error
       });
       setNarrator(
@@ -97,7 +98,7 @@ export default function App() {
         )
       );
       API.updateTask(id, { pinned: !pinned }).catch((err) => {
-        console.error(err);
+        errorToast(err);
         refreshTasks(); // Revert on error
       });
       setNarrator(`Task ${pinned ? 'un' : ''}pinned. Next task now focused.`);
@@ -140,7 +141,7 @@ export default function App() {
               }
             });
           })
-          .catch(console.error);
+          .catch(errorToast);
       } else if (image === undefined && newData === undefined) {
         // Explicitly delete the image when both are undefined
         updates.image = '';
@@ -177,9 +178,9 @@ export default function App() {
         API.addImage(imageForm)
           .then((imagePath) => {
             newTask.image = imagePath;
-            API.addTask(newTask).then(refreshTasks).catch(console.error);
+            API.addTask(newTask).then(refreshTasks).catch(errorToast);
           })
-          .catch(console.error);
+          .catch(errorToast);
       } else {
         API.addTask(newTask).then(refreshTasks);
       }
@@ -191,7 +192,7 @@ export default function App() {
     (id: string) => {
       API.deleteTask(id)
         .then(refreshTasks)
-        .catch((e) => console.error(e.response.data.message));
+        .catch((e) => errorToast(e.response?.data?.message || e));
       setNarrator('Deleted task');
     },
     [refreshTasks]
@@ -204,7 +205,7 @@ export default function App() {
         refreshTasks();
         setNarrator('Deleted list item');
       } catch (e: any) {
-        console.error(e.response?.data?.message || e);
+        errorToast(e.response?.data?.message || e);
       }
     },
     [refreshTasks]
