@@ -66,6 +66,7 @@ APP.use((req, res, next) => {
 });
 
 APP.use(express.static(process.env.UPLOAD_PATH));
+APP.use(express.static('public'));
 
 APP.use('/users', userRouter);
 APP.use('/tasks', taskRouter);

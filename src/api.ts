@@ -40,6 +40,27 @@ export function getServerURL(): string {
   return baseURL ?? '';
 }
 
+export function resolveImageURL(path: string | undefined): string | undefined {
+  if (!path) return undefined;
+  // Already absolute or a local data URL — use as-is
+  if (
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('data:')
+  )
+    return path;
+  // Normalize ./foo → /foo
+  const normalised = path.startsWith('./')
+    ? path.slice(1)
+    : path.startsWith('/')
+      ? path
+      : '/' + path;
+  // Prefix with the configured server URL so Android doesn't
+  // try to load it from https://localhost (the Capacitor asset origin)
+  const base = getServerURL().replace(/\/$/, '');
+  return `${base}${normalised}`;
+}
+
 // TASK
 
 export async function getTasks(): Promise<Task[]> {

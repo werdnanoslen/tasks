@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import * as API from '../api';
+import { resolveImageURL } from '../api';
 import {
   DndContext,
   closestCenter,
@@ -376,7 +377,7 @@ const Form = React.memo(function Form(props: FormProps) {
   }
 
   const previewImage = () => {
-    const imgSrc = image || undefined;
+    const imgSrc = resolveImageURL(image);
     return (
       <div className="task-image-container">
         <img
