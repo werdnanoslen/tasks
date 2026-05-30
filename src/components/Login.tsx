@@ -4,6 +4,7 @@ import { registerUser, loginUser, setServerURL, getServerURL } from '../api';
 function Login({ isAuthed }) {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [serverURL, setServerURLState] = useState(getServerURL());
   const [error, setError] = useState('');
 
@@ -68,13 +69,23 @@ function Login({ isAuthed }) {
       />
 
       <label htmlFor="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        required
-        minLength={6}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+      <div className="password-wrapper">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          id="password"
+          required
+          minLength={6}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          type="button"
+          className="btn password-toggle"
+          onClick={() => setShowPassword((v) => !v)}
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        >
+          {showPassword ? 'Hide' : 'Show'}
+        </button>
+      </div>
 
       <button type="submit" className="btn" value="login">
         Log in
