@@ -30,6 +30,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "tsc -w & nodemon --trace-warnings --require dotenv/config ./dist/server.js",
+    "server:prod": "tsc && node --trace-warnings --require dotenv/config ./dist/server.js",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
     "format:fix": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
     "prepare": "husky"
