@@ -28,6 +28,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { ListItem } from '../tasks/task.model';
 import ChecklistItem from './ChecklistItem';
 import DataArea from './DataArea';
+import ImageViewer from './ImageViewer';
 import checkbox from '../images/checkbox.svg';
 import check from '../images/check.svg';
 import rubbish from '../images/rubbish.svg';
@@ -78,6 +79,7 @@ const Form = React.memo(function Form(props: FormProps) {
   const [data, setData] = useState(iChecklist ? '' : props.data);
   const [imagePreview, setImagePreview] = useState<File | undefined>();
   const [image, setImage] = useState<string | undefined>(props.image);
+  const [viewingImage, setViewingImage] = useState(false);
   const iChecklistData: ListItem[] = useMemo(
     () => (iChecklist ? props.data : [NewChecklistItem()]),
     [iChecklist, props.data]
@@ -380,11 +382,16 @@ const Form = React.memo(function Form(props: FormProps) {
     const imgSrc = resolveImageURL(image);
     return (
       <div className="task-image-container">
+        {viewingImage && imgSrc && (
+          <ImageViewer src={imgSrc} onClose={() => setViewingImage(false)} />
+        )}
         <img
           src={imgSrc}
           alt="Upload"
           aria-describedby={`edit-${props.id}`}
           className="task-image"
+          onClick={() => imgSrc && setViewingImage(true)}
+          style={{ cursor: 'zoom-in' }}
         />
         <button
           type="button"

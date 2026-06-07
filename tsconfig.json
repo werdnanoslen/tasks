@@ -16,6 +16,7 @@
       "./src/**/*",
   ],
   "exclude": [
-      "./src/errorToast.ts"
+      "./src/errorToast.ts",
+      "./src/components/ImageViewer.tsx"
   ]
 }
