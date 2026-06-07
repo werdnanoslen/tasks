@@ -361,6 +361,7 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newImage = e.target.files ? e.target.files[0] : undefined;
+    e.target.value = '';
     setImagePreview(newImage);
     const reader = new FileReader();
     reader.onload = () => setImage(reader.result as string);
