@@ -23,7 +23,7 @@ function addTaskSchema(req, res, next) {
     id: Joi.string().uuid().required(),
     data: Joi.alternatives()
       .try(
-        Joi.string().max(10000),
+        Joi.string().max(10000).allow(''),
         Joi.array().items(
           Joi.object({
             id: Joi.string().required(),
