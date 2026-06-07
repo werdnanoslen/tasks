@@ -19,6 +19,20 @@ APP.use(express.urlencoded({ extended: false, limit: '1mb' }));
 APP.use(express.json({ limit: '1mb' }));
 APP.use(cookieParser());
 
+// Request logger — output is captured by systemd/journald
+APP.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const ms = Date.now() - start;
+    const level =
+      res.statusCode >= 500 ? 'ERROR' : res.statusCode >= 400 ? 'WARN' : 'INFO';
+    console.log(
+      `[${level}] ${req.method} ${req.path} ${res.statusCode} ${ms}ms origin=${req.headers.origin ?? '-'}`
+    );
+  });
+  next();
+});
+
 // Security headers
 APP.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
