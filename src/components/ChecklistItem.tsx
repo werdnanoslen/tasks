@@ -1,6 +1,4 @@
 import React from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { ListItem } from '../tasks/task.model';
 
 interface ChecklistItemProps {
@@ -16,29 +14,10 @@ const ChecklistItem = React.memo(function ChecklistItem({
   deleteListItem,
   toggleListItemDone,
 }: ChecklistItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-  } = useSortable({
-    id: item.id,
-  });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
   return (
-    <li key={item.id} ref={setNodeRef} style={style}>
+    <li key={item.id}>
       <div className="list-controls">
-        <span
-          className="btn btn__icon btn__drag"
-          ref={setActivatorNodeRef}
-          {...attributes}
-          {...listeners}
-        >
+        <span className="btn btn__icon btn__drag" aria-label="Move list item">
           <span className="visually-hidden">Move list item</span>
           <span className="ascii-icon" aria-hidden="true">
             {String.fromCharCode(0x205e) + String.fromCharCode(0x205e)}

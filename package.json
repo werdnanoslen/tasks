@@ -9,7 +9,6 @@
     "@capacitor/cli": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/toast": "^8.0.1",
-    "@dnd-kit/sortable": "^10.0.0",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "classnames": "^2.5.1",
@@ -23,7 +22,8 @@
     "react-dom": "^19.2.3",
     "react-sortablejs": "^6.1.4",
     "react-textarea-autosize": "^8.5.9",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "sortablejs": "^1.15.7"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -9,22 +9,7 @@ import React, {
 import classNames from 'classnames';
 import * as API from '../api';
 import { resolveImageURL } from '../api';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { ReactSortable } from 'react-sortablejs';
 import { ListItem } from '../tasks/task.model';
 import ChecklistItem from './ChecklistItem';
 import DataArea from './DataArea';
@@ -64,15 +49,6 @@ type FormProps = {
 };
 
 const Form = React.memo(function Form(props: FormProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.id });
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   const iChecklist: boolean = props.data && typeof props.data !== 'string';
   const [checklist, setChecklist] = useState(iChecklist);
 
@@ -285,18 +261,9 @@ const Form = React.memo(function Form(props: FormProps) {
     }
   }
 
-  function dragChecklistItem(event) {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setChecklistData((items) => {
-        const oldIndex = items.findIndex(({ id }) => id === active.id);
-        const newIndex = items.findIndex(({ id }) => id === over.id);
-        const newItems = arrayMove(items, oldIndex, newIndex);
-        // Persist new order immediately
-        if (!newTask && props.updateData) props.updateData(props.id, newItems);
-        return newItems;
-      });
-    }
+  function dragChecklistItem(newOrder: ListItem[]) {
+    setChecklistData(newOrder);
+    if (!newTask && props.updateData) props.updateData(props.id, newOrder);
   }
 
   function checklistGroup() {
@@ -322,39 +289,41 @@ const Form = React.memo(function Form(props: FormProps) {
             <span className="link-title">{linkMetadata.title}</span>
           </a>
         ))}
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={dragChecklistItem}
+        <ReactSortable
+          list={checklistData.map((i) => ({
+            ...i,
+            chosen: false,
+            selected: false,
+          }))}
+          setList={dragChecklistItem}
+          delay={500}
+          delayOnTouchOnly={true}
+          touchStartThreshold={5}
+          animation={150}
         >
-          <SortableContext
-            items={checklistData.map((i) => i.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {checklistData.map((item, i) => (
-              <ChecklistItem
-                item={item}
-                deleteListItem={deleteListItem}
-                toggleListItemDone={toggleListItemDone}
-                key={item.id}
-              >
-                <DataArea
-                  updateChecklistItem={updateChecklistItem}
-                  handleInput={handleInput}
-                  setIsEditing={setIsEditing}
-                  handleBlur={newTask ? undefined : handleSubmit}
-                  id={item.id}
-                  index={i}
-                  done={item.done}
-                  data={item.data}
-                  newTask={newTask}
-                  focusThis={props.newItemId === item.id}
-                  showLinkPreview={false}
-                />
-              </ChecklistItem>
-            ))}
-          </SortableContext>
-        </DndContext>
+          {checklistData.map((item, i) => (
+            <ChecklistItem
+              item={item}
+              deleteListItem={deleteListItem}
+              toggleListItemDone={toggleListItemDone}
+              key={item.id}
+            >
+              <DataArea
+                updateChecklistItem={updateChecklistItem}
+                handleInput={handleInput}
+                setIsEditing={setIsEditing}
+                handleBlur={newTask ? undefined : handleSubmit}
+                id={item.id}
+                index={i}
+                done={item.done}
+                data={item.data}
+                newTask={newTask}
+                focusThis={props.newItemId === item.id}
+                showLinkPreview={false}
+              />
+            </ChecklistItem>
+          ))}
+        </ReactSortable>
       </>
     );
   }
@@ -412,9 +381,6 @@ const Form = React.memo(function Form(props: FormProps) {
     <>
       <button type="submit" className="btn visually-hidden">
         Save
-      </button>
-      <button type="button" className="btn visually-hidden" {...listeners}>
-        Move
       </button>
       <button
         type="button"
@@ -483,11 +449,6 @@ const Form = React.memo(function Form(props: FormProps) {
     </button>
   );
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
   useEffect(() => {
     if (checklistData.length === 0) {
       setChecklist(false);
@@ -498,20 +459,11 @@ const Form = React.memo(function Form(props: FormProps) {
   return (
     <li
       id={props.id}
-      className={classNames(
-        'task',
-        CSS.Transform.toString(transform),
-        transition,
-        {
-          hide: props.hide,
-        }
-      )}
+      className={classNames('task', {
+        hide: props.hide,
+      })}
       aria-label={`${checklist ? `checklist` : ``} task`}
       onDragEnd={newTask ? undefined : handleSubmit}
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
     >
       <form
         onSubmit={handleSubmit}

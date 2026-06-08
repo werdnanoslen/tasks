@@ -4,6 +4,8 @@ export type ListItem = {
   id: string;
   data: string;
   done: boolean;
+  chosen?: boolean;
+  selected?: boolean;
 };
 
 export type Task = {
@@ -14,6 +16,9 @@ export type Task = {
   pinned: boolean;
   user_id?: string;
   image?: string;
+  // react-sortablejs required fields
+  chosen?: boolean;
+  selected?: boolean;
 };
 
 export function modelTask(sequelize) {

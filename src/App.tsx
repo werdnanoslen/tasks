@@ -5,19 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
+import { ScrollableSortable } from './components/ScrollableSortable';
 import Login from './components/Login';
 import Account from './components/Account';
 import Form from './components/Form';
@@ -41,17 +29,6 @@ export default function App() {
   const [error, setError] = useState('');
   const [authed, setAuthed] = useState(false);
   const [newItemId, setNewItemId] = useState('');
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 100,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
   async function isAuthed() {
     const status = await API.getLoginStatus();
@@ -107,18 +84,18 @@ export default function App() {
   );
 
   const dragTask = useCallback(
-    (event) => {
-      const { active, over } = event;
-      if (active.id !== over.id) {
-        setTasks((items) => {
-          const oldIndex = items.findIndex(({ id }) => id === active.id);
-          const newIndex = items.findIndex(({ id }) => id === over.id);
-          API.moveTask(active.id, newIndex + 1).then(refreshTasks);
-          return arrayMove(items, oldIndex, newIndex);
-        });
+    (newOrder: Task[]) => {
+      // newOrder is the reordered array after drag ends
+      // Find which task moved by comparing with current tasks
+      const movedTask = newOrder.find(
+        (t, i) => tasks.findIndex((o) => o.id === t.id) !== i
+      );
+      if (movedTask) {
+        const newIndex = newOrder.findIndex((t) => t.id === movedTask.id);
+        API.moveTask(movedTask.id, newIndex + 1).then(refreshTasks);
       }
     },
-    [refreshTasks]
+    [tasks, refreshTasks]
   );
 
   const updateData = useCallback(
@@ -285,24 +262,52 @@ export default function App() {
       <p id="emptyMsg" hidden={!emptyMsg}>
         {emptyMsg}
       </p>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={dragTask}
+      <ScrollableSortable
+        tag="ul"
+        className="sortable-list"
+        list={pinnedTasks.map((t) => ({
+          ...t,
+          chosen: false,
+          selected: false,
+        }))}
+        setList={(newOrder) => {
+          dragTask(newOrder);
+          setTasks((prev) => {
+            const pinnedIds = new Set(pinnedTasks.map((t) => t.id));
+            const unpinned = prev.filter((t) => !pinnedIds.has(t.id));
+            return [...newOrder, ...unpinned];
+          });
+        }}
+        delay={500}
+        delayOnTouchOnly={true}
+        touchStartThreshold={5}
+        animation={150}
       >
-        <SortableContext items={tasks.map((t) => t.id)}>
-          <ul>{pinnedTasks.map(formSection)}</ul>
-        </SortableContext>
-      </DndContext>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={dragTask}
+        {pinnedTasks.map(formSection)}
+      </ScrollableSortable>
+      <ScrollableSortable
+        tag="ul"
+        className="sortable-list"
+        list={unpinnedTasks.map((t) => ({
+          ...t,
+          chosen: false,
+          selected: false,
+        }))}
+        setList={(newOrder) => {
+          dragTask(newOrder);
+          setTasks((prev) => {
+            const unpinnedIds = new Set(unpinnedTasks.map((t) => t.id));
+            const pinned = prev.filter((t) => !unpinnedIds.has(t.id));
+            return [...pinned, ...newOrder];
+          });
+        }}
+        delay={500}
+        delayOnTouchOnly={true}
+        touchStartThreshold={5}
+        animation={150}
       >
-        <SortableContext items={tasks.map((t) => t.id)}>
-          <ul>{unpinnedTasks.map(formSection)}</ul>
-        </SortableContext>
-      </DndContext>
+        {unpinnedTasks.map(formSection)}
+      </ScrollableSortable>
     </>
   );
 

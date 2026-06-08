@@ -273,14 +273,17 @@ li.task:focus-within li > .list-controls > .btn__drag {
   white-space: nowrap;
 }
 main > ul,
+main ul.sortable-list,
 .task li {
   display: flex;
   gap: 1rem;
 }
-main > ul {
+main > ul,
+main ul.sortable-list {
   flex-wrap: wrap;
 }
-main > ul {
+main > ul,
+main ul.sortable-list {
   padding: 0;
 }
 .task {
@@ -311,6 +314,7 @@ li.moving:focus-visible {
   text-align: center;
   margin-top: 3rem;
 }
+
 .task-image-container {
   position: relative;
   margin: -1.25rem;
@@ -322,6 +326,7 @@ li.moving:focus-visible {
   width: -webkit-fill-available;
   width: -moz-available;
   display: block;
+  touch-action: pan-y;
 }
 .task-image-container .btn__close {
   opacity: 0;
