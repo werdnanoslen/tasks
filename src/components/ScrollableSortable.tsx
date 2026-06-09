@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { ReactSortable, ReactSortableProps } from 'react-sortablejs';
+import { useMasonry } from '../hooks/useMasonry';
 
 // Wraps ReactSortable to allow native-feeling scroll even when
 // Sortable sets touch-action:none on its container.
@@ -15,6 +16,7 @@ export function ScrollableSortable<T extends { id: string | number }>({
   const lastY = useRef(0);
   const velocity = useRef(0);
   const rafRef = useRef<number | null>(null);
+  const masonryRef = useMasonry();
 
   function cancelMomentum() {
     if (rafRef.current !== null) {
@@ -39,6 +41,7 @@ export function ScrollableSortable<T extends { id: string | number }>({
 
   return (
     <div
+      ref={masonryRef}
       style={{ display: 'contents' }}
       onTouchStart={(e) => {
         cancelMomentum();
