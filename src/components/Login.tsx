@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { registerUser, loginUser, setServerURL, getServerURL } from '../api';
+import visibilityOff from '../images/visibility-off.svg';
+import visibilityOn from '../images/visibility-on.svg';
 
 function Login({ isAuthed }) {
   const [username, setUserName] = useState('');
@@ -79,11 +81,11 @@ function Login({ isAuthed }) {
         />
         <button
           type="button"
-          className="btn password-toggle"
+          className="btn btn__icon"
           onClick={() => setShowPassword((v) => !v)}
           aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
-          {showPassword ? 'Hide' : 'Show'}
+          <img src={showPassword ? visibilityOn : visibilityOff} alt="" />
         </button>
       </div>
 

@@ -363,27 +363,47 @@ li.moving:focus-visible {
   align-items: center;
   border: none;
 
-  input,
-  button {
+  input {
+    margin-top: 0.5rem;
     margin-bottom: 2rem;
+    width: 12rem;
+  }
+
+  button:not(.btn__icon) {
+    margin-bottom: 2rem;
+    color: lightblue;
+    border: initial;
+  }
+
+  input:not([type='submit']) {
+    border: 1px solid gray;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    outline: none;
+
+    &:focus {
+      border-color: lightblue;
+      outline: 1px lightblue solid;
+    }
   }
 }
 
 .password-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  position: relative;
   margin-bottom: 2rem;
+  width: 13.5rem;
 
   input {
     margin-bottom: 0;
+    padding-right: 2.5rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .password-toggle {
-    margin-bottom: 0;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.85rem;
-    white-space: nowrap;
+  .btn__icon {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 5%;
   }
 }
 
