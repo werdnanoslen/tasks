@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
-import TextareaAutosize from 'react-textarea-autosize';
 import * as API from '../api';
 
 interface DataAreaProps {
@@ -93,6 +92,16 @@ const DataArea = React.memo(function DataArea({
     }
   }, [shouldAutoFocus]);
 
+  useEffect(() => {
+    const el = newItemRef.current;
+    if (el) {
+      const { selectionStart, selectionEnd } = el;
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
+      el.setSelectionRange(selectionStart, selectionEnd);
+    }
+  }, [data]);
+
   return (
     <>
       {linkMetadataList.map((linkMetadata, index) => (
@@ -115,7 +124,7 @@ const DataArea = React.memo(function DataArea({
           <span className="link-title">{linkMetadata.title}</span>
         </a>
       ))}
-      <TextareaAutosize
+      <textarea
         id={`edit-${id}`}
         name="data"
         className={classNames('input', { done: done })}
@@ -127,7 +136,7 @@ const DataArea = React.memo(function DataArea({
         placeholder={placeholderLabel}
         aria-label={ariaLabel}
         rows={1}
-        ref={shouldAutoFocus ? newItemRef : null}
+        ref={newItemRef}
         autoFocus={shouldAutoFocus}
         maxLength={MAXLENGTH}
       />

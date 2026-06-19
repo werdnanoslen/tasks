@@ -223,6 +223,8 @@ button:focus {
   border: initial;
   background-color: initial;
   text-align: center;
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 .btn__icon:hover,
 .btn__icon:focus {
@@ -243,6 +245,8 @@ button:focus {
 .btn__close {
   color: lightblue;
   display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
 }
 .btn__drag {
@@ -277,6 +281,9 @@ main ul.sortable-list,
 .task li {
   display: flex;
   gap: 1rem;
+}
+.task li {
+  align-items: flex-start;
 }
 main > ul,
 main ul.sortable-list {
@@ -408,12 +415,12 @@ li.moving:focus-visible {
 }
 
 footer {
-  margin-top: 3rem;
+  margin: 3rem;
   text-align: center;
 
   .btn {
-    border: 1px gray solid;
-    color: rgb(157, 157, 157);
+    border: initial;
+    color: lightblue;
   }
 }
 

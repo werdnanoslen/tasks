@@ -299,6 +299,9 @@ const Form = React.memo(function Form(props: FormProps) {
           delay={500}
           delayOnTouchOnly={true}
           touchStartThreshold={5}
+          handle=".btn__drag"
+          filter="textarea"
+          preventOnFilter={false}
           animation={150}
         >
           {checklistData.map((item, i) => (

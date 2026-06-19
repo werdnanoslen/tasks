@@ -21,7 +21,6 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-sortablejs": "^6.1.4",
-    "react-textarea-autosize": "^8.5.9",
     "sequelize": "^6.37.7",
     "sortablejs": "^1.15.7"
   },

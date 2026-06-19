@@ -281,6 +281,8 @@ export default function App() {
         delay={500}
         delayOnTouchOnly={true}
         touchStartThreshold={5}
+        filter="textarea"
+        preventOnFilter={false}
         animation={150}
       >
         {pinnedTasks.map(formSection)}
@@ -304,6 +306,8 @@ export default function App() {
         delay={500}
         delayOnTouchOnly={true}
         touchStartThreshold={5}
+        filter="textarea"
+        preventOnFilter={false}
         animation={150}
       >
         {unpinnedTasks.map(formSection)}
