@@ -71,6 +71,7 @@ const Form = React.memo(function Form(props: FormProps) {
 
   const lastSavedChecklistData = useRef<ListItem[]>(iChecklistData);
   const lastSavedData = useRef<any>(iChecklist ? '' : props.data);
+  const checklistDragRef = useRef(false);
 
   // Sync lastSaved refs when props change (e.g., after external update)
   useEffect(() => {
@@ -263,7 +264,10 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function dragChecklistItem(newOrder: ListItem[]) {
     setChecklistData(newOrder);
-    if (!newTask && props.updateData) props.updateData(props.id, newOrder);
+    if (checklistDragRef.current) {
+      checklistDragRef.current = false;
+      if (!newTask && props.updateData) props.updateData(props.id, newOrder);
+    }
   }
 
   function checklistGroup() {
@@ -296,6 +300,9 @@ const Form = React.memo(function Form(props: FormProps) {
             selected: false,
           }))}
           setList={dragChecklistItem}
+          onStart={() => {
+            checklistDragRef.current = true;
+          }}
           delay={500}
           delayOnTouchOnly={true}
           touchStartThreshold={5}

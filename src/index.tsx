@@ -8,7 +8,7 @@ import App from './App';
 window.addEventListener(
   'error',
   (e) => {
-    if (e.message.includes('ResizeObserver loop')) {
+    if (e.message?.includes('ResizeObserver loop')) {
       e.stopImmediatePropagation();
     }
   },
