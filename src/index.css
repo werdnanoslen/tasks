@@ -293,6 +293,28 @@ input[type='checkbox']:checked,
   text-decoration: line-through;
 }
 
+.checklist-done {
+  margin-top: 0.5rem;
+}
+
+.checklist-done summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: rgb(157, 157, 157);
+  padding: 0.25rem 0;
+  user-select: none;
+}
+
+.checklist-done summary:hover {
+  color: inherit;
+}
+
+.checklist-done > ul {
+  padding: 0;
+  margin: 0.25rem 0 0;
+  list-style: none;
+}
+
 /* ── Task list layout ── */
 main > ul,
 main ul.sortable-list {

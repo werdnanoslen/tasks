@@ -271,6 +271,9 @@ const Form = React.memo(function Form(props: FormProps) {
   }
 
   function checklistGroup() {
+    const undoneItems = checklistData.filter((i) => !i.done);
+    const doneItems = checklistData.filter((i) => i.done);
+
     return (
       <>
         {linkMetadataList.map((linkMetadata, index) => (
@@ -294,12 +297,14 @@ const Form = React.memo(function Form(props: FormProps) {
           </a>
         ))}
         <ReactSortable
-          list={checklistData.map((i) => ({
+          list={undoneItems.map((i) => ({
             ...i,
             chosen: false,
             selected: false,
           }))}
-          setList={dragChecklistItem}
+          setList={(newUndone) =>
+            dragChecklistItem([...newUndone, ...doneItems])
+          }
           onStart={() => {
             checklistDragRef.current = true;
           }}
@@ -311,29 +316,66 @@ const Form = React.memo(function Form(props: FormProps) {
           preventOnFilter={false}
           animation={150}
         >
-          {checklistData.map((item, i) => (
-            <ChecklistItem
-              item={item}
-              deleteListItem={deleteListItem}
-              toggleListItemDone={toggleListItemDone}
-              key={item.id}
-            >
-              <DataArea
-                updateChecklistItem={updateChecklistItem}
-                handleInput={handleInput}
-                setIsEditing={setIsEditing}
-                handleBlur={newTask ? undefined : handleSubmit}
-                id={item.id}
-                index={i}
-                done={item.done}
-                data={item.data}
-                newTask={newTask}
-                focusThis={props.newItemId === item.id}
-                showLinkPreview={false}
-              />
-            </ChecklistItem>
-          ))}
+          {undoneItems.map((item) => {
+            const i = checklistData.indexOf(item);
+            return (
+              <ChecklistItem
+                item={item}
+                deleteListItem={deleteListItem}
+                toggleListItemDone={toggleListItemDone}
+                key={item.id}
+              >
+                <DataArea
+                  updateChecklistItem={updateChecklistItem}
+                  handleInput={handleInput}
+                  setIsEditing={setIsEditing}
+                  handleBlur={newTask ? undefined : handleSubmit}
+                  id={item.id}
+                  index={i}
+                  done={item.done}
+                  data={item.data}
+                  newTask={newTask}
+                  focusThis={props.newItemId === item.id}
+                  showLinkPreview={false}
+                />
+              </ChecklistItem>
+            );
+          })}
         </ReactSortable>
+        {doneItems.length > 0 && (
+          <details className="checklist-done">
+            <summary>
+              {doneItems.length} checked item{doneItems.length !== 1 ? 's' : ''}
+            </summary>
+            <ul>
+              {doneItems.map((item) => {
+                const i = checklistData.indexOf(item);
+                return (
+                  <ChecklistItem
+                    item={item}
+                    deleteListItem={deleteListItem}
+                    toggleListItemDone={toggleListItemDone}
+                    key={item.id}
+                  >
+                    <DataArea
+                      updateChecklistItem={updateChecklistItem}
+                      handleInput={handleInput}
+                      setIsEditing={setIsEditing}
+                      handleBlur={newTask ? undefined : handleSubmit}
+                      id={item.id}
+                      index={i}
+                      done={item.done}
+                      data={item.data}
+                      newTask={newTask}
+                      focusThis={false}
+                      showLinkPreview={false}
+                    />
+                  </ChecklistItem>
+                );
+              })}
+            </ul>
+          </details>
+        )}
       </>
     );
   }
