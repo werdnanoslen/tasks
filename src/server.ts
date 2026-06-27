@@ -90,10 +90,16 @@ APP.use((req, res, next) => {
 
 APP.use(express.static(process.env.UPLOAD_PATH));
 APP.use(express.static('public'));
+APP.use(express.static('build'));
 
 APP.use('/users', userRouter);
 APP.use('/tasks', taskRouter);
 APP.use(errorHandler);
+
+// Catch-all: serve React app for any non-API route
+APP.get('*', (_req, res) => {
+  res.sendFile('index.html', { root: 'build' });
+});
 
 initialize()
   .then(async () => {
