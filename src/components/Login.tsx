@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { registerUser, loginUser, setServerURL, getServerURL } from '../api';
+import React, { useState, useEffect } from 'react';
+import {
+  registerUser,
+  loginUser,
+  setServerURL,
+  getServerURL,
+  getRegistrationStatus,
+} from '../api';
 import visibilityOff from '../images/visibility-off.svg';
 import visibilityOn from '../images/visibility-on.svg';
 
@@ -7,8 +13,16 @@ function Login({ isAuthed }) {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const showServerURL = process.env.REACT_APP_SHOW_SERVER_URL === 'true';
   const [serverURL, setServerURLState] = useState(getServerURL());
   const [error, setError] = useState('');
+  const [registrationOpen, setRegistrationOpen] = useState(false);
+
+  useEffect(() => {
+    getRegistrationStatus(serverURL)
+      .then((s) => setRegistrationOpen(s.open))
+      .catch(() => setRegistrationOpen(false));
+  }, [serverURL]);
 
   const login = async () => {
     // Update server URL before login
@@ -52,14 +66,18 @@ function Login({ isAuthed }) {
           {error}
         </p>
       )}
-      <label htmlFor="serverURL">Server URL</label>
-      <input
-        type="url"
-        id="serverURL"
-        required
-        value={serverURL}
-        onChange={(e) => setServerURLState(e.target.value)}
-      />
+      {showServerURL && (
+        <>
+          <label htmlFor="serverURL">Server URL</label>
+          <input
+            type="url"
+            id="serverURL"
+            required
+            value={serverURL}
+            onChange={(e) => setServerURLState(e.target.value)}
+          />
+        </>
+      )}
 
       <label htmlFor="username">Username</label>
       <input
@@ -93,9 +111,11 @@ function Login({ isAuthed }) {
         Log in
       </button>
 
-      <button type="submit" className="btn" value="register">
-        Register
-      </button>
+      {registrationOpen && (
+        <button type="submit" className="btn" value="register">
+          Register
+        </button>
+      )}
     </form>
   );
 }

@@ -22,13 +22,7 @@ const upload = multer({
   },
   fileFilter: function (req, file, cb) {
     // Only allow image files
-    const allowedMimes = [
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-      'image/webp',
-      'image/svg+xml',
-    ];
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
     const ext = path.extname(file.originalname).toLowerCase();
 

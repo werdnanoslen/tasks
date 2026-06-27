@@ -3,18 +3,11 @@ import { Task } from './tasks/task.model';
 import { Credentials } from './users/user.model';
 
 function getBaseURL(): string {
-  const savedURL = localStorage.getItem('serverURL');
-  if (savedURL) {
-    return savedURL;
+  if (process.env.REACT_APP_SHOW_SERVER_URL === 'true') {
+    const saved = localStorage.getItem('serverURL');
+    if (saved) return saved;
   }
-  const baseURL = process.env.BASE_URL;
-  const port = process.env.SERVER_PORT;
-  // Only add port if it's not a standard port (80/443)
-  const portNumber = port ? Number(port) : undefined;
-  if (portNumber && portNumber !== 80 && portNumber !== 443) {
-    return `${baseURL}:${portNumber}`;
-  }
-  return baseURL ?? '';
+  return process.env.REACT_APP_SERVER_URL ?? '';
 }
 
 const client = axios.create({
@@ -23,21 +16,18 @@ const client = axios.create({
 });
 
 export function setServerURL(url: string): void {
-  localStorage.setItem('serverURL', url);
-  client.defaults.baseURL = url;
+  if (process.env.REACT_APP_SHOW_SERVER_URL === 'true') {
+    localStorage.setItem('serverURL', url);
+    client.defaults.baseURL = url;
+  }
 }
 
 export function getServerURL(): string {
-  const saved = localStorage.getItem('serverURL');
-  if (saved) return saved;
-
-  const baseURL = process.env.BASE_URL;
-  const port = process.env.SERVER_PORT;
-  const portNumber = port ? Number(port) : undefined;
-  if (portNumber && portNumber !== 80 && portNumber !== 443) {
-    return `${baseURL}:${portNumber}`;
+  if (process.env.REACT_APP_SHOW_SERVER_URL === 'true') {
+    const saved = localStorage.getItem('serverURL');
+    if (saved) return saved;
   }
-  return baseURL ?? '';
+  return process.env.REACT_APP_SERVER_URL ?? '';
 }
 
 export function resolveImageURL(path: string | undefined): string | undefined {
@@ -153,5 +143,15 @@ export async function logoutUser(): Promise<any> {
 
 export async function registerUser(credentials: Credentials): Promise<any> {
   const response = await client.post('/users/register', credentials);
+  return response.data;
+}
+
+export async function getRegistrationStatus(
+  baseURL?: string
+): Promise<{ open: boolean }> {
+  const url =
+    (baseURL ?? getServerURL()).replace(/\/$/, '') +
+    '/users/registration-status';
+  const response = await axios.get(url, { withCredentials: true });
   return response.data;
 }

@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
 import errorHandler from './_middleware/error-handler.js';
 import { initialize } from './_helpers/db.js';
 import userRouter from './users/users.controller.js';
@@ -43,6 +44,10 @@ APP.use((req, res, next) => {
     'max-age=31536000; includeSubDomains'
   );
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; frame-ancestors 'none'"
+  );
   next();
 });
 
@@ -52,8 +57,10 @@ APP.use((req, res, next) => {
     .filter(Boolean);
   const origin = req.headers.origin;
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    if (origin && allowedDomains.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
     res.setHeader(
       'Access-Control-Allow-Methods',
       'GET, POST, OPTIONS, PUT, PATCH, DELETE'
@@ -62,7 +69,9 @@ APP.use((req, res, next) => {
       'Access-Control-Allow-Headers',
       'X-Requested-With,content-type, Accept'
     );
-    return res.sendStatus(200);
+    return res.sendStatus(
+      origin && allowedDomains.includes(origin) ? 200 : 403
+    );
   }
   if (origin && allowedDomains.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);

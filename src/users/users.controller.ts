@@ -1,20 +1,28 @@
 import express from 'express';
 import Joi from 'joi';
+import rateLimit from 'express-rate-limit';
 import validateRequest from '../_middleware/validate-request.js';
 import authorize from '../_middleware/authorize.js';
 import * as userService from './user.service.js';
 
 const userRouter = express.Router();
 
-userRouter.post('/login', loginSchema, login);
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many login attempts, please try again later.' },
+});
+
+userRouter.post('/login', loginLimiter, loginSchema, login);
 userRouter.get('/login-status', getLoginStatus);
-userRouter.post('/register', registerSchema, register);
+userRouter.get('/registration-status', getRegistrationStatus);
+userRouter.post('/register', loginLimiter, registerSchema, register);
 userRouter.get('/logout', authorize(), logout);
-userRouter.get('/', authorize(), getAll);
 userRouter.get('/current', authorize(), getCurrent);
-userRouter.get('/:id', authorize(), getById);
-userRouter.put('/:id', authorize(), updateSchema, update);
-userRouter.delete('/:id', authorize(), _delete);
+userRouter.put('/:id', authorize(), requireSelf, updateSchema, update);
+userRouter.delete('/:id', authorize(), requireSelf, _delete);
 
 export default userRouter;
 
@@ -64,6 +72,10 @@ function logout(req, res, next) {
     .catch(next);
 }
 
+function getRegistrationStatus(req, res, _next) {
+  res.json({ open: process.env.REGISTRATION_OPEN === 'true' });
+}
+
 function getLoginStatus(req, res, next) {
   userService
     .getBySession(req.cookies?.token)
@@ -84,6 +96,9 @@ function registerSchema(req, res, next) {
 }
 
 function register(req, res, next) {
+  if (process.env.REGISTRATION_OPEN !== 'true') {
+    return res.status(403).json({ message: 'Registration is disabled.' });
+  }
   userService
     .create(req.body)
     .then((ret) => {
@@ -103,19 +118,15 @@ function register(req, res, next) {
     .catch(next);
 }
 
-function getAll(req, res, next) {
-  userService.getAll().then(res.json).catch(next);
+function requireSelf(req, res, next) {
+  if (req.params.id !== String(req.user.id)) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  next();
 }
 
 function getCurrent(req, res, next) {
   res.json(req.user);
-}
-
-function getById(req, res, next) {
-  userService
-    .getById(req.params.id)
-    .then((user) => res.json(user))
-    .catch(next);
 }
 
 function updateSchema(req, res, next) {
@@ -128,14 +139,14 @@ function updateSchema(req, res, next) {
 
 function update(req, res, next) {
   userService
-    .update(req.params.id, req.body)
+    .update(req.user.id, req.body)
     .then((user) => res.json(user))
     .catch(next);
 }
 
 function _delete(req, res, next) {
   userService
-    .delete(req.params.id)
+    .delete(req.user.id)
     .then(() => res.json({ message: 'User deleted successfully' }))
     .catch(next);
 }

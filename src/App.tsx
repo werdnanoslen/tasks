@@ -608,30 +608,32 @@ export default function App() {
 
   return (
     <>
-      <header>
+      <header data-authed={authed}>
         <a href="#main" id="skip-main">
           Skip to main content
         </a>
         <h1>Tasks</h1>
-        <div className="header-right" hidden={!authed}>
-          {(() => {
-            if (!isOnline)
-              return (
-                <span className="sync-status offline">
-                  {getOfflineLabel(offlineSince)}
-                  {pendingCount > 0
-                    ? ` — ${pendingCount} change${pendingCount !== 1 ? 's' : ''} saved locally`
-                    : ''}
-                </span>
-              );
-            if (syncStatus === 'syncing')
-              return <span className="sync-status syncing">Syncing</span>;
-            if (syncStatus === 'synced-flash')
-              return <span className="sync-status">Synced</span>;
-            return null;
-          })()}
-          <div className="filters">{filterList}</div>
-        </div>
+        {authed && (
+          <div className="header-right">
+            {(() => {
+              if (!isOnline)
+                return (
+                  <span className="sync-status offline">
+                    {getOfflineLabel(offlineSince)}
+                    {pendingCount > 0
+                      ? ` — ${pendingCount} change${pendingCount !== 1 ? 's' : ''} saved locally`
+                      : ''}
+                  </span>
+                );
+              if (syncStatus === 'syncing')
+                return <span className="sync-status syncing">Syncing</span>;
+              if (syncStatus === 'synced-flash')
+                return <span className="sync-status">Synced</span>;
+              return null;
+            })()}
+            <div className="filters">{filterList}</div>
+          </div>
+        )}
       </header>
       <div role="alert" hidden={!error}>
         {error}

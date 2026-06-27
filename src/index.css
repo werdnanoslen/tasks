@@ -58,6 +58,11 @@ header {
   align-items: center;
 }
 
+header:not([data-authed='true']) h1 {
+  flex: 1;
+  text-align: center;
+}
+
 .header-right {
   display: flex;
   align-items: center;
