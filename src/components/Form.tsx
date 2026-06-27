@@ -81,41 +81,6 @@ const Form = React.memo(function Form(props: FormProps) {
     }
   }, [props.data, iChecklist, iChecklistData, isEditing]);
 
-  // Extract URLs from checklist data for link previews
-  const [linkMetadataList, setLinkMetadataList] = useState<
-    { title: string; favicon: string; url: string }[]
-  >([]);
-
-  useEffect(() => {
-    if (checklist && !newTask) {
-      const urlRegex = /https?:\/\/[^\s]+/gi;
-      const allText = checklistData.map((item) => item.data).join(' ');
-      const urls = allText.match(urlRegex) || [];
-
-      if (urls.length > 0) {
-        // Debounce link metadata fetching
-        const timeoutId = setTimeout(() => {
-          Promise.all(
-            urls.map((url) => API.getLinkMetadata(url).catch(() => null))
-          ).then((results) => {
-            const validResults = results.filter((r) => r !== null) as {
-              title: string;
-              favicon: string;
-              url: string;
-            }[];
-            setLinkMetadataList(validResults);
-          });
-        }, 500); // 500ms debounce
-
-        return () => clearTimeout(timeoutId);
-      } else {
-        setLinkMetadataList([]);
-      }
-    } else {
-      setLinkMetadataList([]);
-    }
-  }, [checklist, checklistData, newTask]);
-
   function handleSubmit(e?: SyntheticEvent) {
     if (e) e.preventDefault();
     const lastSaved = checklist
@@ -276,26 +241,6 @@ const Form = React.memo(function Form(props: FormProps) {
 
     return (
       <>
-        {linkMetadataList.map((linkMetadata, index) => (
-          <a
-            key={linkMetadata.url + index}
-            href={linkMetadata.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link-button"
-            title={linkMetadata.title}
-          >
-            {linkMetadata.favicon && (
-              <img
-                src={linkMetadata.favicon}
-                alt=""
-                className="link-favicon"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            )}
-            <span className="link-title">{linkMetadata.title}</span>
-          </a>
-        ))}
         <ReactSortable
           list={undoneItems.map((i) => ({
             ...i,
@@ -336,7 +281,6 @@ const Form = React.memo(function Form(props: FormProps) {
                   data={item.data}
                   newTask={newTask}
                   focusThis={props.newItemId === item.id}
-                  showLinkPreview={false}
                 />
               </ChecklistItem>
             );
@@ -368,7 +312,6 @@ const Form = React.memo(function Form(props: FormProps) {
                       data={item.data}
                       newTask={newTask}
                       focusThis={false}
-                      showLinkPreview={false}
                     />
                   </ChecklistItem>
                 );

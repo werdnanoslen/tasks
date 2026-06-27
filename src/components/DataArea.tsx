@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
-import * as API from '../api';
 
 interface DataAreaProps {
   id: string;
@@ -19,7 +18,6 @@ interface DataAreaProps {
   data?: string;
   newTask?: boolean;
   focusThis?: boolean;
-  showLinkPreview?: boolean;
 }
 
 const DataArea = React.memo(function DataArea({
@@ -33,44 +31,33 @@ const DataArea = React.memo(function DataArea({
   data,
   newTask,
   focusThis,
-  showLinkPreview = true,
 }: DataAreaProps) {
   const placeholderLabel = newTask ? 'Type to add a task' : undefined;
   const ariaLabel = newTask ? 'Type to add a task' : 'Edit task';
   const MAXLENGTH = 1000;
   const newItemRef = useRef<HTMLTextAreaElement>(null);
   const shouldAutoFocus = !!(newTask || focusThis);
-  const [linkMetadataList, setLinkMetadataList] = useState<
-    { title: string; favicon: string; url: string }[]
-  >([]);
+  const [isFocused, setIsFocused] = useState(false);
+  const showView = !isFocused && !newTask;
 
-  // Extract URLs from text
-  const urlRegex = /https?:\/\/[^\s]+/gi;
-  const urls = (data || '').match(urlRegex) || [];
-  const urlsKey = urls.join(',');
-
-  useEffect(() => {
-    if (urls.length > 0 && !newTask && showLinkPreview) {
-      // Debounce link metadata fetching
-      const timeoutId = setTimeout(() => {
-        Promise.all(
-          urls.map((url) => API.getLinkMetadata(url).catch(() => null))
-        ).then((results) => {
-          const validResults = results.filter((r) => r !== null) as {
-            title: string;
-            favicon: string;
-            url: string;
-          }[];
-          setLinkMetadataList(validResults);
-        });
-      }, 500); // 500ms debounce
-
-      return () => clearTimeout(timeoutId);
-    } else {
-      setLinkMetadataList([]);
-    }
-  }, [urlsKey, newTask]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  function renderWithLinks(text: string): React.ReactNode[] {
+    return text.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+      /^https?:\/\//.test(part) ? (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-link"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {part}
+        </a>
+      ) : (
+        <React.Fragment key={i}>{part}</React.Fragment>
+      )
+    );
+  }
   if ((undefined === updateChecklistItem) !== (undefined === index)) {
     console.error(
       'updateChecklistItem and index must all be defined or undefined, id:',
@@ -100,46 +87,44 @@ const DataArea = React.memo(function DataArea({
       el.style.height = `${el.scrollHeight}px`;
       el.setSelectionRange(selectionStart, selectionEnd);
     }
-  }, [data]);
+  }, [data, isFocused]);
 
   return (
     <>
-      {linkMetadataList.map((linkMetadata, index) => (
-        <a
-          key={linkMetadata.url + index}
-          href={linkMetadata.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="link-button"
-          title={linkMetadata.title}
+      {showView ? (
+        <div
+          className={classNames('input input--view', { done })}
+          onClick={() => {
+            setIsFocused(true);
+            setTimeout(() => newItemRef.current?.focus(), 0);
+          }}
         >
-          {linkMetadata.favicon && (
-            <img
-              src={linkMetadata.favicon}
-              alt=""
-              className="link-favicon"
-              onError={(e) => (e.currentTarget.style.display = 'none')}
-            />
-          )}
-          <span className="link-title">{linkMetadata.title}</span>
-        </a>
-      ))}
-      <textarea
-        id={`edit-${id}`}
-        name="data"
-        className={classNames('input', { done: done })}
-        value={data}
-        onKeyDown={keydown}
-        onInput={(e) => handleInput(e, index)}
-        onFocus={() => setIsEditing(true)}
-        onBlur={() => handleBlur && handleBlur()}
-        placeholder={placeholderLabel}
-        aria-label={ariaLabel}
-        rows={1}
-        ref={newItemRef}
-        autoFocus={shouldAutoFocus}
-        maxLength={MAXLENGTH}
-      />
+          {renderWithLinks(data || '')}
+        </div>
+      ) : (
+        <textarea
+          id={`edit-${id}`}
+          name="data"
+          className={classNames('input', { done: done })}
+          value={data}
+          onKeyDown={keydown}
+          onInput={(e) => handleInput(e, index)}
+          onFocus={() => {
+            setIsFocused(true);
+            setIsEditing(true);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            handleBlur && handleBlur();
+          }}
+          placeholder={placeholderLabel}
+          aria-label={ariaLabel}
+          rows={1}
+          ref={newItemRef}
+          autoFocus={shouldAutoFocus || isFocused}
+          maxLength={MAXLENGTH}
+        />
+      )}
     </>
   );
 });
