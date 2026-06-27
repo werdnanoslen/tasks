@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
+import Markdown from 'react-markdown';
 
 interface DataAreaProps {
   id: string;
@@ -40,24 +41,6 @@ const DataArea = React.memo(function DataArea({
   const [isFocused, setIsFocused] = useState(false);
   const showView = !isFocused && !newTask;
 
-  function renderWithLinks(text: string): React.ReactNode[] {
-    return text.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
-      /^https?:\/\//.test(part) ? (
-        <a
-          key={i}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-link"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {part}
-        </a>
-      ) : (
-        <React.Fragment key={i}>{part}</React.Fragment>
-      )
-    );
-  }
   if ((undefined === updateChecklistItem) !== (undefined === index)) {
     console.error(
       'updateChecklistItem and index must all be defined or undefined, id:',
@@ -99,7 +82,23 @@ const DataArea = React.memo(function DataArea({
             setTimeout(() => newItemRef.current?.focus(), 0);
           }}
         >
-          {renderWithLinks(data || '')}
+          <Markdown
+            components={{
+              a: ({ href, children }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-link"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {children}
+                </a>
+              ),
+            }}
+          >
+            {data || ''}
+          </Markdown>
         </div>
       ) : (
         <textarea
