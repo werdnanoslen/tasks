@@ -136,11 +136,30 @@ const Form = React.memo(function Form(props: FormProps) {
         e.preventDefault();
         const newList = checklistData.slice();
         const newItem = NewChecklistItem();
+        newItem.indent = checklistData[i].indent;
         if (props.setNewItemId) {
           props.setNewItemId(newItem.id);
         }
         newList.splice(i + 1, 0, newItem);
         setChecklistData(newList);
+      } else if (e.key === ']' && e.ctrlKey) {
+        e.preventDefault();
+        const newList = checklistData.slice();
+        newList[i] = {
+          ...newList[i],
+          indent: Math.min(1, (newList[i].indent || 0) + 1),
+        };
+        setChecklistData(newList);
+        if (!newTask && props.updateData) props.updateData(props.id, newList);
+      } else if (e.key === '[' && e.ctrlKey) {
+        e.preventDefault();
+        const newList = checklistData.slice();
+        newList[i] = {
+          ...newList[i],
+          indent: Math.max(0, (newList[i].indent || 0) - 1),
+        };
+        setChecklistData(newList);
+        if (!newTask && props.updateData) props.updateData(props.id, newList);
       } else if (e.key === 'Backspace') {
         const item = checklistData[i];
         if (item.data.length === 0) {
@@ -151,6 +170,19 @@ const Form = React.memo(function Form(props: FormProps) {
         }
       }
     }
+  }
+
+  function indentListItem(id: string, direction: 1 | -1) {
+    const newList = checklistData.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            indent: Math.min(1, Math.max(0, (item.indent || 0) + direction)),
+          }
+        : item
+    );
+    setChecklistData(newList);
+    if (!newTask && props.updateData) props.updateData(props.id, newList);
   }
 
   async function deleteListItem(id: string) {
@@ -231,7 +263,11 @@ const Form = React.memo(function Form(props: FormProps) {
     setChecklistData(newOrder);
     if (checklistDragRef.current) {
       checklistDragRef.current = false;
-      if (!newTask && props.updateData) props.updateData(props.id, newOrder);
+      const orderChanged =
+        newOrder.map((i) => i.id).join() !==
+        checklistData.map((i) => i.id).join();
+      if (orderChanged && !newTask && props.updateData)
+        props.updateData(props.id, newOrder);
     }
   }
 
@@ -241,51 +277,54 @@ const Form = React.memo(function Form(props: FormProps) {
 
     return (
       <>
-        <ReactSortable
-          list={undoneItems.map((i) => ({
-            ...i,
-            chosen: false,
-            selected: false,
-          }))}
-          setList={(newUndone) =>
-            dragChecklistItem([...newUndone, ...doneItems])
-          }
-          onStart={() => {
-            checklistDragRef.current = true;
-          }}
-          delay={500}
-          delayOnTouchOnly={true}
-          touchStartThreshold={5}
-          handle=".btn__drag"
-          filter="textarea"
-          preventOnFilter={false}
-          animation={150}
-        >
-          {undoneItems.map((item) => {
-            const i = checklistData.indexOf(item);
-            return (
-              <ChecklistItem
-                item={item}
-                deleteListItem={deleteListItem}
-                toggleListItemDone={toggleListItemDone}
-                key={item.id}
-              >
-                <DataArea
-                  updateChecklistItem={updateChecklistItem}
-                  handleInput={handleInput}
-                  setIsEditing={setIsEditing}
-                  handleBlur={newTask ? undefined : handleSubmit}
-                  id={item.id}
-                  index={i}
-                  done={item.done}
-                  data={item.data}
-                  newTask={newTask}
-                  focusThis={props.newItemId === item.id}
-                />
-              </ChecklistItem>
-            );
-          })}
-        </ReactSortable>
+        <div onDragEnd={(e) => e.stopPropagation()}>
+          <ReactSortable
+            list={undoneItems.map((i) => ({
+              ...i,
+              chosen: false,
+              selected: false,
+            }))}
+            setList={(newUndone) =>
+              dragChecklistItem([...newUndone, ...doneItems])
+            }
+            onStart={() => {
+              checklistDragRef.current = true;
+            }}
+            delay={500}
+            delayOnTouchOnly={true}
+            touchStartThreshold={5}
+            handle=".btn__drag"
+            filter="textarea"
+            preventOnFilter={false}
+            animation={150}
+          >
+            {undoneItems.map((item) => {
+              const i = checklistData.indexOf(item);
+              return (
+                <ChecklistItem
+                  item={item}
+                  deleteListItem={deleteListItem}
+                  toggleListItemDone={toggleListItemDone}
+                  indentListItem={indentListItem}
+                  key={item.id}
+                >
+                  <DataArea
+                    updateChecklistItem={updateChecklistItem}
+                    handleInput={handleInput}
+                    setIsEditing={setIsEditing}
+                    handleBlur={newTask ? undefined : handleSubmit}
+                    id={item.id}
+                    index={i}
+                    done={item.done}
+                    data={item.data}
+                    newTask={newTask}
+                    focusThis={props.newItemId === item.id}
+                  />
+                </ChecklistItem>
+              );
+            })}
+          </ReactSortable>
+        </div>
         {doneItems.length > 0 && (
           <details className="checklist-done">
             <summary>
@@ -299,6 +338,7 @@ const Form = React.memo(function Form(props: FormProps) {
                     item={item}
                     deleteListItem={deleteListItem}
                     toggleListItemDone={toggleListItemDone}
+                    indentListItem={indentListItem}
                     key={item.id}
                   >
                     <DataArea

@@ -29,6 +29,7 @@ function addTaskSchema(req, res, next) {
             id: Joi.string().required(),
             data: Joi.string().max(1000).allow(''),
             done: Joi.boolean(),
+            indent: Joi.number().integer().min(0).max(1),
           })
         )
       )
@@ -50,6 +51,7 @@ function updateTaskSchema(req, res, next) {
           id: Joi.string().required(),
           data: Joi.string().max(1000).allow(''),
           done: Joi.boolean(),
+          indent: Joi.number().integer().min(0).max(1),
         })
       )
     ),

@@ -4,6 +4,7 @@ export type ListItem = {
   id: string;
   data: string;
   done: boolean;
+  indent?: number;
   chosen?: boolean;
   selected?: boolean;
 };
