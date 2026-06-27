@@ -628,15 +628,6 @@ export default function App() {
               return <span className="sync-status syncing">Syncing</span>;
             if (syncStatus === 'synced-flash')
               return <span className="sync-status">Synced</span>;
-            if (lastSynced)
-              return (
-                <span
-                  className="sync-status"
-                  title={lastSynced.toLocaleString()}
-                >
-                  Synced
-                </span>
-              );
             return null;
           })()}
           <div className="filters">{filterList}</div>
