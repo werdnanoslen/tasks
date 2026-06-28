@@ -101,9 +101,11 @@ function Login({ isAuthed }) {
           type="button"
           className="btn btn__icon"
           onClick={() => setShowPassword((v) => !v)}
-          aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
           <img src={showPassword ? visibilityOn : visibilityOff} alt="" />
+          <span className="visually-hidden">
+            {showPassword ? 'Hide' : 'Show'} password
+          </span>
         </button>
       </div>
 

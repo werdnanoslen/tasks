@@ -573,8 +573,7 @@ li.moving:focus-visible {
   .btn__icon {
     position: absolute;
     right: 0.5rem;
-    bottom: 5%;
-    width: auto;
+    top: 0.65rem;
   }
 }
 

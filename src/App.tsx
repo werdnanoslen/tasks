@@ -82,7 +82,7 @@ export default function App() {
     () => localStorage.getItem('authed') === 'true'
   );
   const [newItemId, setNewItemId] = useState('');
-  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  const [, setLastSynced] = useState<Date | null>(null);
   const [, setTick] = useState(0);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [offlineSince, setOfflineSince] = useState<Date | null>(() => {
