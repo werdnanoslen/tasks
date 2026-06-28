@@ -29,6 +29,7 @@ def convert_keep_to_task(data, user_id):
                 "id": str(uuid.uuid4()),
                 "data": item["text"],
                 "done": item.get("isChecked", False),
+                "indent": 1 if item.get("isNested", False) else 0,
             })
         task_data = items
     else:
@@ -120,10 +121,14 @@ def main():
         if not json.loads(f.read_text(encoding="utf-8")).get("isTrashed", False)
         and not json.loads(f.read_text(encoding="utf-8")).get("isArchived", False)
     ]
+    active_files.sort(
+        key=lambda f: json.loads(f.read_text(encoding="utf-8")).get("userEditedTimestampUsec", 0),
+        reverse=True,
+    )
     total = min(len(active_files), args.limit) if args.limit else len(active_files)
     print(f"Found {len(active_files)} active notes{f' (uploading {total})' if args.limit else ''}")
 
-    for f in files:
+    for f in active_files:
         if args.limit and uploaded >= args.limit:
             break
         try:
