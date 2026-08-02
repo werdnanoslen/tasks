@@ -4,6 +4,7 @@ import { ListItem } from '../tasks/task.model';
 interface ChecklistItemProps {
   children: React.ReactNode;
   item: ListItem;
+  isEditing?: boolean;
   deleteListItem: (id: string) => void;
   toggleListItemDone: (id: string) => void;
   indentListItem: (id: string, direction: 1 | -1) => void;
@@ -12,6 +13,7 @@ interface ChecklistItemProps {
 const ChecklistItem = React.memo(function ChecklistItem({
   children,
   item,
+  isEditing,
   deleteListItem,
   toggleListItemDone,
   indentListItem,
@@ -101,19 +103,22 @@ const ChecklistItem = React.memo(function ChecklistItem({
   return (
     <li key={item.id} style={{ paddingLeft: `${indent * 1.5}rem` }}>
       <div className="list-controls">
-        <span
-          ref={handleRef}
-          className="btn btn__icon btn__drag"
-          aria-label="Move list item"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-        >
-          <span className="visually-hidden">Move list item</span>
-          <span className="ascii-icon" aria-hidden="true">
-            {String.fromCharCode(0x205e) + String.fromCharCode(0x205e)}
+        {isEditing && (
+          <span
+            ref={handleRef}
+            className="btn btn__icon btn__drag"
+            aria-label="Move list item"
+            tabIndex={-1}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+          >
+            <span className="visually-hidden">Move list item</span>
+            <span className="ascii-icon" aria-hidden="true">
+              {String.fromCharCode(0x205e) + String.fromCharCode(0x205e)}
+            </span>
           </span>
-        </span>
+        )}
         <input
           type="checkbox"
           checked={item.done}
@@ -122,16 +127,18 @@ const ChecklistItem = React.memo(function ChecklistItem({
         />
       </div>
       {children}
-      <button
-        type="button"
-        className="btn btn__icon btn__close"
-        onClick={() => deleteListItem(item.id)}
-      >
-        <span className="ascii-icon" aria-hidden="true">
-          {String.fromCharCode(10005)}
-        </span>
-        <span className="visually-hidden">Delete list item</span>
-      </button>
+      {isEditing && (
+        <button
+          type="button"
+          className="btn btn__icon btn__close"
+          onClick={() => deleteListItem(item.id)}
+        >
+          <span className="ascii-icon" aria-hidden="true">
+            {String.fromCharCode(10005)}
+          </span>
+          <span className="visually-hidden">Delete list item</span>
+        </button>
+      )}
     </li>
   );
 });

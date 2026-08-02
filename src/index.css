@@ -423,12 +423,11 @@ li.task li:focus-within .btn__icon {
   opacity: 1;
 }
 
-li.task:focus-within li > .list-controls > .btn__drag {
-  opacity: 1;
-}
-
 .list-controls {
   display: flex;
+}
+
+li.task.isEditing li > .list-controls {
   margin-left: -0.75rem;
 }
 

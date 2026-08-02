@@ -556,7 +556,7 @@ export default function App() {
         delay={500}
         delayOnTouchOnly={true}
         touchStartThreshold={5}
-        filter="textarea"
+        filter="textarea, .isEditing"
         preventOnFilter={false}
         animation={150}
       >
@@ -597,7 +597,7 @@ export default function App() {
         delay={500}
         delayOnTouchOnly={true}
         touchStartThreshold={5}
-        filter="textarea"
+        filter="textarea, .isEditing"
         preventOnFilter={false}
         animation={150}
       >

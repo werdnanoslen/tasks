@@ -72,6 +72,27 @@ const Form = React.memo(function Form(props: FormProps) {
   const lastSavedChecklistData = useRef<ListItem[]>(iChecklistData);
   const lastSavedData = useRef<any>(iChecklist ? '' : props.data);
   const checklistDragRef = useRef(false);
+  const dragFinalOrderRef = useRef<ListItem[] | null>(null);
+  const preDragOrderRef = useRef<ListItem[]>([]);
+  const formRef = useRef<HTMLFormElement>(null);
+  const handleSubmitRef = useRef(handleSubmit);
+
+  // Sync lastSaved refs when props change (e.g., after external update)
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  });
+
+  useEffect(() => {
+    if (!isEditing || newTask) return;
+    function onPointerDown(e: PointerEvent) {
+      if (checklistDragRef.current) return;
+      if (formRef.current && !formRef.current.contains(e.target as Node)) {
+        handleSubmitRef.current();
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [isEditing, newTask]);
 
   // Sync lastSaved refs when props change (e.g., after external update)
   useEffect(() => {
@@ -119,6 +140,7 @@ const Form = React.memo(function Form(props: FormProps) {
   }
 
   function handleBlur(e: React.FocusEvent) {
+    if (checklistDragRef.current) return;
     if (!e.currentTarget.contains(e.relatedTarget)) {
       if (newTask) {
         // Preserve input on blur for new task; just exit editing mode
@@ -261,14 +283,7 @@ const Form = React.memo(function Form(props: FormProps) {
 
   function dragChecklistItem(newOrder: ListItem[]) {
     setChecklistData(newOrder);
-    if (checklistDragRef.current) {
-      checklistDragRef.current = false;
-      const orderChanged =
-        newOrder.map((i) => i.id).join() !==
-        checklistData.map((i) => i.id).join();
-      if (orderChanged && !newTask && props.updateData)
-        props.updateData(props.id, newOrder);
-    }
+    dragFinalOrderRef.current = newOrder;
   }
 
   function checklistGroup() {
@@ -289,6 +304,22 @@ const Form = React.memo(function Form(props: FormProps) {
             }
             onStart={() => {
               checklistDragRef.current = true;
+              preDragOrderRef.current = checklistData;
+              dragFinalOrderRef.current = null;
+            }}
+            onEnd={() => {
+              const final = dragFinalOrderRef.current;
+              if (final) {
+                const orderChanged =
+                  final.map((i) => i.id).join() !==
+                  preDragOrderRef.current.map((i) => i.id).join();
+                if (orderChanged && !newTask && props.updateData)
+                  props.updateData(props.id, final);
+                dragFinalOrderRef.current = null;
+              }
+              setTimeout(() => {
+                checklistDragRef.current = false;
+              }, 0);
             }}
             delay={500}
             delayOnTouchOnly={true}
@@ -303,6 +334,7 @@ const Form = React.memo(function Form(props: FormProps) {
               return (
                 <ChecklistItem
                   item={item}
+                  isEditing={isEditing}
                   deleteListItem={deleteListItem}
                   toggleListItemDone={toggleListItemDone}
                   indentListItem={indentListItem}
@@ -336,6 +368,7 @@ const Form = React.memo(function Form(props: FormProps) {
                 return (
                   <ChecklistItem
                     item={item}
+                    isEditing={isEditing}
                     deleteListItem={deleteListItem}
                     toggleListItemDone={toggleListItemDone}
                     indentListItem={indentListItem}
@@ -496,13 +529,22 @@ const Form = React.memo(function Form(props: FormProps) {
       id={props.id}
       className={classNames('task', {
         hide: props.hide,
+        isEditing: isEditing && !newTask,
       })}
       aria-label={`${checklist ? `checklist` : ``} task`}
       onDragEnd={newTask ? undefined : handleSubmit}
+      onClick={
+        newTask
+          ? undefined
+          : () => {
+              if (!isEditing) setIsEditing(true);
+            }
+      }
     >
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
-        onBlur={newTask ? handleBlur : handleSubmit}
+        onBlur={handleBlur}
         id={`form-${props.id}`}
         className={classNames({ isEditing: isEditing })}
         encType="multipart/form-data"
@@ -524,10 +566,12 @@ const Form = React.memo(function Form(props: FormProps) {
         <div className="btn-group">
           {newTask
             ? addingTools
-            : confirmDelete
-              ? confirmDeleteButtons
-              : editingTools}
-          {!confirmDelete && (
+            : isEditing
+              ? confirmDelete
+                ? confirmDeleteButtons
+                : editingTools
+              : null}
+          {(newTask || isEditing) && !confirmDelete && (
             <>
               <button
                 type="button"
