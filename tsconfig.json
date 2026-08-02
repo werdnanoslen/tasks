@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+      "rootDir": "./src/",        // root directory of source files
       "outDir": "./dist/",        // path to output directory
       "sourceMap": true,          // allow sourcemap support
       "strictNullChecks": true,   // enable strict null checks as a best practice
@@ -9,7 +10,7 @@
       "allowJs": true,            // allow a partial TypeScript and JavaScript codebase
       "esModuleInterop": true,    // Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'.
       "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export. This does not affect code emit, just typechecking.
-      "moduleResolution": "node",
+      "moduleResolution": "bundler",
       "skipLibCheck": true
   },
   "include": [
